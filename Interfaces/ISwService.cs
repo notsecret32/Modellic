@@ -1,16 +1,23 @@
-﻿using SolidWorks.Interop.sldworks;
+﻿using Modellic.Enums;
+using SolidWorks.Interop.sldworks;
 using System;
+using System.Threading.Tasks;
 
 namespace Modellic.Interfaces
 {
     public interface ISwService : IDisposable
     {
-        ISldWorks SwApp { get; }
+        event EventHandler ConnectionStatusChanged;
 
+        ISldWorks SwApp { get; }
+        SwConnectionStatus ConnectionStatus { get; }
+
+        bool IsDisconnected { get; }
+        bool IsDisconnecting { get; }
+        bool IsConnecting { get; }
         bool IsConnected { get; }
 
-        bool Connect();
-
-        void Disconnect();
+        Task ConnectAsync();
+        Task DisconnectAsync();
     }
 }

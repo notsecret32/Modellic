@@ -1,5 +1,6 @@
 ﻿using Modellic.Services;
 using System;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Modellic.UI.Forms
@@ -11,63 +12,83 @@ namespace Modellic.UI.Forms
         public MainForm()
         {
             InitializeComponent();
+            SetupEventHandlers();
+            UpdateUI();
         }
 
-        private void MainForm_Load(object sender, EventArgs e)
+        #region Form Handlers
+        
+        private async void BtnConnectToSw_Click(object sender, EventArgs e)
         {
-            Update();
+            await HandleSwConnection();
         }
 
-        private void BtnConnectToSw_Click(object sender, EventArgs e)
+        #endregion
+
+        #region Callbacks
+
+        private void OnConnectionStatusChanged(object sender, EventArgs e)
         {
-            HandleSwConnection();
+            this.Invoke((Action)UpdateUI);
         }
 
-        private new void Update()
+        #endregion
+
+        #region Private Methods
+
+        private void SetupEventHandlers()
         {
-            // Fixture Group
-            groupFixture.Enabled = _swService.IsConnected;
-
-            // Solidworks Group
-            labelConnectionState.Text = _swService.ToString();
-            btnConnectToSw.Text = !_swService.IsConnected ? "Подключиться" : "Отключиться";
+            _swService.ConnectionStatusChanged += OnConnectionStatusChanged;
         }
 
-        private void HandleSwConnection(bool isRetry = false)
+        private async Task HandleSwConnection(bool isRetry = false)
         {
             try
             {
                 if (!_swService.IsConnected)
                 {
-                    _swService.Connect();
+                    await _swService.ConnectAsync();
                 }
                 else
                 {
-                    _swService.Disconnect();
+                    await _swService.DisconnectAsync();
                 }
             }
             catch (Exception ex)
             {
-                string message = isRetry
-                    ? $"Повторная попытка не удалась:\n{ex.Message}"
-                    : ex.Message;
+                string message = isRetry ? $"Повторная попытка не удалась:\n{ex.Message}" : ex.Message;
 
-                DialogResult result = MessageBox.Show(
+                var result = MessageBox.Show(
                     message,
-                    "Ошибка подключения к SolidWorks",
+                    "Ошибка подключения",
                     MessageBoxButtons.RetryCancel,
                     MessageBoxIcon.Error
                 );
 
                 if (result == DialogResult.Retry)
                 {
-                    HandleSwConnection(true);
+                    await HandleSwConnection(true);
                 }
             }
             finally
             {
-                Update();
+                UpdateUI();
             }
         }
+
+        private void UpdateUI()
+        {
+            // Группа Приспособление
+            groupFixture.Enabled = _swService.IsConnected;
+
+            // Группа Solidworks
+            labelConnectionState.Text = _swService.ToString();
+
+            // Кнопка подключения
+            btnConnectToSw.Enabled = !_swService.IsConnecting && !_swService.IsDisconnecting;
+            btnConnectToSw.Text = _swService.IsConnected ? "Отключиться" : "Подключиться";
+        }
+
+        #endregion
     }
 }
