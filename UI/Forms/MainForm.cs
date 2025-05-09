@@ -41,7 +41,7 @@ namespace Modellic.UI.Forms
             _swService.ConnectionStatusChanged += OnConnectionStatusChanged;
         }
 
-        private async Task HandleSwConnection(bool isRetry = false)
+        private async Task HandleSwConnection()
         {
             try
             {
@@ -56,10 +56,8 @@ namespace Modellic.UI.Forms
             }
             catch (Exception ex)
             {
-                string message = isRetry ? $"Повторная попытка не удалась:\n{ex.Message}" : ex.Message;
-
                 var result = MessageBox.Show(
-                    message,
+                    ex.Message,
                     "Ошибка подключения",
                     MessageBoxButtons.RetryCancel,
                     MessageBoxIcon.Error
@@ -67,7 +65,7 @@ namespace Modellic.UI.Forms
 
                 if (result == DialogResult.Retry)
                 {
-                    await HandleSwConnection(true);
+                    await HandleSwConnection();
                 }
             }
             finally

@@ -64,7 +64,7 @@ namespace Modellic.Services
             catch (Exception ex)
             {
                 ConnectionStatus = SwConnectionStatus.Disconnected;
-                throw new Exception("Ошибка подключения к SolidWorks", ex);
+                throw new Exception($"Ошибка подключения к SolidWorks:\n{ex}");
             }
         }
 
