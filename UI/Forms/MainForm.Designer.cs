@@ -412,6 +412,7 @@
             this.btnConnectToSw.TabIndex = 2;
             this.btnConnectToSw.Text = "Подключиться";
             this.btnConnectToSw.UseVisualStyleBackColor = true;
+            this.btnConnectToSw.Click += new System.EventHandler(this.BtnConnectToSw_Click);
             // 
             // MainForm
             // 
@@ -424,6 +425,7 @@
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Modellic";
+            this.Load += new System.EventHandler(this.MainForm_Load);
             this.tableLayoutBg.ResumeLayout(false);
             this.tableLayoutBg.PerformLayout();
             this.groupFixture.ResumeLayout(false);
