@@ -46,10 +46,7 @@
             this.label6 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
-            this.btnUndo = new System.Windows.Forms.Button();
-            this.btnRedo = new System.Windows.Forms.Button();
             this.btnNextStage = new System.Windows.Forms.Button();
-            this.btnStageSettings = new System.Windows.Forms.Button();
             this.groupSw = new System.Windows.Forms.GroupBox();
             this.tableLayoutSw = new System.Windows.Forms.TableLayoutPanel();
             this.label1 = new System.Windows.Forms.Label();
@@ -74,7 +71,7 @@
             this.tableLayoutBg.RowCount = 2;
             this.tableLayoutBg.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutBg.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutBg.Size = new System.Drawing.Size(334, 451);
+            this.tableLayoutBg.Size = new System.Drawing.Size(334, 355);
             this.tableLayoutBg.TabIndex = 0;
             // 
             // groupFixture
@@ -84,7 +81,7 @@
             this.groupFixture.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupFixture.Location = new System.Drawing.Point(3, 3);
             this.groupFixture.Name = "groupFixture";
-            this.groupFixture.Size = new System.Drawing.Size(328, 351);
+            this.groupFixture.Size = new System.Drawing.Size(328, 255);
             this.groupFixture.TabIndex = 0;
             this.groupFixture.TabStop = false;
             this.groupFixture.Text = "Приспособление";
@@ -94,7 +91,7 @@
             this.tableLayoutDevice.ColumnCount = 2;
             this.tableLayoutDevice.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutDevice.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutDevice.Controls.Add(this.btnAssembly, 0, 10);
+            this.tableLayoutDevice.Controls.Add(this.btnAssembly, 0, 8);
             this.tableLayoutDevice.Controls.Add(this.labelState7, 1, 6);
             this.tableLayoutDevice.Controls.Add(this.labelState6, 1, 5);
             this.tableLayoutDevice.Controls.Add(this.labelState5, 1, 4);
@@ -109,14 +106,11 @@
             this.tableLayoutDevice.Controls.Add(this.label6, 0, 4);
             this.tableLayoutDevice.Controls.Add(this.label7, 0, 5);
             this.tableLayoutDevice.Controls.Add(this.label8, 0, 6);
-            this.tableLayoutDevice.Controls.Add(this.btnUndo, 0, 7);
-            this.tableLayoutDevice.Controls.Add(this.btnRedo, 1, 7);
-            this.tableLayoutDevice.Controls.Add(this.btnNextStage, 0, 8);
-            this.tableLayoutDevice.Controls.Add(this.btnStageSettings, 0, 9);
+            this.tableLayoutDevice.Controls.Add(this.btnNextStage, 0, 7);
             this.tableLayoutDevice.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutDevice.Location = new System.Drawing.Point(3, 16);
             this.tableLayoutDevice.Name = "tableLayoutDevice";
-            this.tableLayoutDevice.RowCount = 11;
+            this.tableLayoutDevice.RowCount = 9;
             this.tableLayoutDevice.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutDevice.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutDevice.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
@@ -126,9 +120,9 @@
             this.tableLayoutDevice.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutDevice.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutDevice.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutDevice.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutDevice.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutDevice.Size = new System.Drawing.Size(322, 332);
+            this.tableLayoutDevice.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutDevice.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutDevice.Size = new System.Drawing.Size(322, 236);
             this.tableLayoutDevice.TabIndex = 0;
             // 
             // btnAssembly
@@ -136,7 +130,7 @@
             this.tableLayoutDevice.SetColumnSpan(this.btnAssembly, 2);
             this.btnAssembly.Dock = System.Windows.Forms.DockStyle.Fill;
             this.btnAssembly.ImeMode = System.Windows.Forms.ImeMode.NoControl;
-            this.btnAssembly.Location = new System.Drawing.Point(3, 287);
+            this.btnAssembly.Location = new System.Drawing.Point(3, 191);
             this.btnAssembly.Name = "btnAssembly";
             this.btnAssembly.Size = new System.Drawing.Size(316, 42);
             this.btnAssembly.TabIndex = 18;
@@ -310,33 +304,11 @@
             this.label8.TabIndex = 6;
             this.label8.Text = "Этап 7:";
             // 
-            // btnUndo
-            // 
-            this.btnUndo.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.btnUndo.Location = new System.Drawing.Point(3, 143);
-            this.btnUndo.Name = "btnUndo";
-            this.btnUndo.Size = new System.Drawing.Size(155, 42);
-            this.btnUndo.TabIndex = 14;
-            this.btnUndo.Text = "Назад";
-            this.btnUndo.UseVisualStyleBackColor = true;
-            this.btnUndo.Click += new System.EventHandler(this.BtnUndo_Click);
-            // 
-            // btnRedo
-            // 
-            this.btnRedo.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.btnRedo.Location = new System.Drawing.Point(164, 143);
-            this.btnRedo.Name = "btnRedo";
-            this.btnRedo.Size = new System.Drawing.Size(155, 42);
-            this.btnRedo.TabIndex = 15;
-            this.btnRedo.Text = "Вперед";
-            this.btnRedo.UseVisualStyleBackColor = true;
-            this.btnRedo.Click += new System.EventHandler(this.BtnRedo_Click);
-            // 
             // btnNextStage
             // 
             this.tableLayoutDevice.SetColumnSpan(this.btnNextStage, 2);
             this.btnNextStage.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.btnNextStage.Location = new System.Drawing.Point(3, 191);
+            this.btnNextStage.Location = new System.Drawing.Point(3, 143);
             this.btnNextStage.Name = "btnNextStage";
             this.btnNextStage.Size = new System.Drawing.Size(316, 42);
             this.btnNextStage.TabIndex = 16;
@@ -344,24 +316,13 @@
             this.btnNextStage.UseVisualStyleBackColor = true;
             this.btnNextStage.Click += new System.EventHandler(this.BtnNextStage_Click);
             // 
-            // btnStageSettings
-            // 
-            this.tableLayoutDevice.SetColumnSpan(this.btnStageSettings, 2);
-            this.btnStageSettings.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.btnStageSettings.Location = new System.Drawing.Point(3, 239);
-            this.btnStageSettings.Name = "btnStageSettings";
-            this.btnStageSettings.Size = new System.Drawing.Size(316, 42);
-            this.btnStageSettings.TabIndex = 17;
-            this.btnStageSettings.Text = "Параметры";
-            this.btnStageSettings.UseVisualStyleBackColor = true;
-            // 
             // groupSw
             // 
             this.groupSw.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.groupSw.Controls.Add(this.tableLayoutSw);
-            this.groupSw.Location = new System.Drawing.Point(3, 360);
+            this.groupSw.Location = new System.Drawing.Point(3, 264);
             this.groupSw.Name = "groupSw";
             this.groupSw.Size = new System.Drawing.Size(328, 88);
             this.groupSw.TabIndex = 1;
@@ -421,7 +382,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(334, 451);
+            this.ClientSize = new System.Drawing.Size(334, 355);
             this.Controls.Add(this.tableLayoutBg);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
@@ -464,10 +425,7 @@
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.Label label8;
-        private System.Windows.Forms.Button btnUndo;
-        private System.Windows.Forms.Button btnRedo;
         private System.Windows.Forms.Button btnNextStage;
-        private System.Windows.Forms.Button btnStageSettings;
         private System.Windows.Forms.Button btnAssembly;
     }
 }

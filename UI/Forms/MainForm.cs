@@ -36,16 +36,6 @@ namespace Modellic.UI.Forms
             form.ShowDialog();
         }
 
-        private void BtnRedo_Click(object sender, EventArgs e)
-        {
-            _fixtureService.NextStep();
-        }
-
-        private void BtnUndo_Click(object sender, EventArgs e)
-        {
-            _fixtureService.PrevStep();
-        }
-
         #endregion
 
         #region Callbacks
@@ -125,9 +115,6 @@ namespace Modellic.UI.Forms
             string btnNextStageText = _fixtureService.IsStart ? "Начать" : !_fixtureService.IsEnd ? "Продолжить" : "Завершено";
             btnNextStage.Text = btnNextStageText;
             btnNextStage.Enabled = !_fixtureService.IsEnd;
-
-            btnUndo.Enabled = _fixtureService.HasPrevStep;
-            btnRedo.Enabled = _fixtureService.HasNextStep;
 
             // Группа Solidworks
             labelConnectionState.Text = _swService.ToString();
