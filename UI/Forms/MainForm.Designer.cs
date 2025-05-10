@@ -340,6 +340,7 @@
             this.btnNextStage.TabIndex = 16;
             this.btnNextStage.Text = "[btnNextStage]";
             this.btnNextStage.UseVisualStyleBackColor = true;
+            this.btnNextStage.Click += new System.EventHandler(this.BtnNextStage_Click);
             // 
             // btnStageSettings
             // 

@@ -1,4 +1,6 @@
-﻿using Modellic.Services;
+﻿using Modellic.Interfaces;
+using Modellic.Models;
+using Modellic.Services;
 using System;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -23,6 +25,15 @@ namespace Modellic.UI.Forms
             await HandleSwConnection();
         }
 
+        private void BtnNextStage_Click(object sender, EventArgs e)
+        {
+            using FixtureStepForm form = new FixtureStepForm(new FixtureStep1());
+
+            form.FormClosed += OnFixtureStepFormClosed;
+
+            form.ShowDialog();
+        }
+
         #endregion
 
         #region Callbacks
@@ -30,6 +41,15 @@ namespace Modellic.UI.Forms
         private void OnConnectionStatusChanged(object sender, EventArgs e)
         {
             this.Invoke((Action)UpdateUI);
+        }
+
+        private void OnFixtureStepFormClosed(object sender, FormClosedEventArgs e)
+        {
+            FixtureStepForm form = (FixtureStepForm)sender;
+
+            IFixtureStep fixtureStep = (IFixtureStep)form.PropertyGrid.SelectedObject;
+
+            MessageBox.Show($"Тип закрытия: {form.Result}\nНазвание шага: {fixtureStep.Title}", form.Text);
         }
 
         #endregion
