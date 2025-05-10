@@ -1,5 +1,5 @@
-﻿using Modellic.Interfaces;
-using Modellic.Models;
+﻿using Modellic.Events;
+using Modellic.Interfaces;
 using Modellic.Services;
 using System;
 using System.Threading.Tasks;
@@ -10,6 +10,8 @@ namespace Modellic.UI.Forms
     public partial class MainForm : Form
     {
         private readonly SwService _swService = new SwService();
+
+        private readonly FixtureService _fixtureService = new FixtureService();
 
         public MainForm()
         {
@@ -27,11 +29,21 @@ namespace Modellic.UI.Forms
 
         private void BtnNextStage_Click(object sender, EventArgs e)
         {
-            using FixtureStepForm form = new FixtureStepForm(new FixtureStep1());
+            using FixtureStepForm form = new FixtureStepForm(_fixtureService.GetCurrentStep());
 
             form.FormClosed += OnFixtureStepFormClosed;
 
             form.ShowDialog();
+        }
+
+        private void BtnRedo_Click(object sender, EventArgs e)
+        {
+            _fixtureService.NextStep();
+        }
+
+        private void BtnUndo_Click(object sender, EventArgs e)
+        {
+            _fixtureService.PrevStep();
         }
 
         #endregion
@@ -47,9 +59,19 @@ namespace Modellic.UI.Forms
         {
             FixtureStepForm form = (FixtureStepForm)sender;
 
+            if (form.Result == Enums.FixtureStepFormResult.Continue)
+            {
+                _fixtureService.NextStep();
+            }
+
             IFixtureStep fixtureStep = (IFixtureStep)form.PropertyGrid.SelectedObject;
 
             MessageBox.Show($"Тип закрытия: {form.Result}\nНазвание шага: {fixtureStep.Title}", form.Text);
+        }
+
+        private void OnCurrentStepChanged(object sender, CurrentStepChangedEventArgs e)
+        {
+            UpdateUI();
         }
 
         #endregion
@@ -59,6 +81,7 @@ namespace Modellic.UI.Forms
         private void SetupEventHandlers()
         {
             _swService.ConnectionStatusChanged += OnConnectionStatusChanged;
+            _fixtureService.CurrentStepChanged += OnCurrentStepChanged;
         }
 
         private async Task HandleSwConnection()
@@ -98,6 +121,13 @@ namespace Modellic.UI.Forms
         {
             // Группа Приспособление
             groupFixture.Enabled = _swService.IsConnected;
+
+            string btnNextStageText = _fixtureService.IsStart ? "Начать" : !_fixtureService.IsEnd ? "Продолжить" : "Завершено";
+            btnNextStage.Text = btnNextStageText;
+            btnNextStage.Enabled = !_fixtureService.IsEnd;
+
+            btnUndo.Enabled = _fixtureService.HasPrevStep;
+            btnRedo.Enabled = _fixtureService.HasNextStep;
 
             // Группа Solidworks
             labelConnectionState.Text = _swService.ToString();

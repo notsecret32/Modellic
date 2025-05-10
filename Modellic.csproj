@@ -101,11 +101,15 @@
   <ItemGroup>
     <Compile Include="Enums\FixtureStepFormResult.cs" />
     <Compile Include="Enums\SwConnectionStatus.cs" />
+    <Compile Include="Events\CurrentStepChangedEventArgs.cs" />
+    <Compile Include="Interfaces\IFixtureService.cs" />
     <Compile Include="Interfaces\IFixtureStep.cs" />
     <Compile Include="Interfaces\ISwService.cs" />
     <Compile Include="Models\FixtureStep1.cs" />
+    <Compile Include="Models\FixtureStep2.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\FixtureService.cs" />
     <Compile Include="Services\SwService.cs" />
     <Compile Include="UI\Forms\FixtureStepForm.cs">
       <SubType>Form</SubType>

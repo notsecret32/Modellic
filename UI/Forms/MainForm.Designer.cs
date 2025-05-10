@@ -319,6 +319,7 @@
             this.btnUndo.TabIndex = 14;
             this.btnUndo.Text = "Назад";
             this.btnUndo.UseVisualStyleBackColor = true;
+            this.btnUndo.Click += new System.EventHandler(this.BtnUndo_Click);
             // 
             // btnRedo
             // 
@@ -329,6 +330,7 @@
             this.btnRedo.TabIndex = 15;
             this.btnRedo.Text = "Вперед";
             this.btnRedo.UseVisualStyleBackColor = true;
+            this.btnRedo.Click += new System.EventHandler(this.BtnRedo_Click);
             // 
             // btnNextStage
             // 
