@@ -3,6 +3,7 @@ using Modellic.Interfaces;
 using Modellic.Models;
 using System;
 using System.Collections.Generic;
+using System.Windows.Forms;
 
 namespace Modellic.Services
 {
@@ -15,6 +16,11 @@ namespace Modellic.Services
         /// Индекс текущего шага.
         /// </summary>
         private int _currentStep = 0;
+
+        /// <summary>
+        /// Объект типа DataGridView на котором будет отображаться подробности построения.
+        /// </summary>
+        private DataGridView _stepsGridView;
 
         /// <summary>
         /// Массив шагов, необходимых для создания приспособления.
@@ -65,6 +71,11 @@ namespace Modellic.Services
         public bool HasPrevStep => _currentStep > 0;
 
         /// <summary>
+        /// Объект типа DataGridView на котором будет отображаться подробности построения.
+        /// </summary>
+        public DataGridView GridView => _stepsGridView;
+
+        /// <summary>
         /// Событие, которое вызывается каждый раз, когда меняется текущий индекс шага.
         /// </summary>
         public event EventHandler<CurrentStepChangedEventArgs> CurrentStepChanged;
@@ -72,8 +83,10 @@ namespace Modellic.Services
         /// <summary>
         /// Стандартный конструктор в котором уже определено нужное кол-во шагов.
         /// </summary>
-        public FixtureService()
+        /// <param name="gridView">Объект типа DataGridView, который будет отображать детали построения приспособления.</param>
+        public FixtureService(DataGridView gridView)
         {
+            _stepsGridView = gridView;
             _steps = new List<IFixtureStep>
             {
                 new FixtureStep1(),
@@ -85,9 +98,11 @@ namespace Modellic.Services
         /// Конструктор, принимающий массив шагов необходимых для создания приспособления.
         /// </summary>
         /// <param name="steps">Массив шагов.</param>
-        public FixtureService(List<IFixtureStep> steps)
+        /// <param name="gridView">Объект типа DataGridView, который будет отображать детали построения приспособления.</param>
+        public FixtureService(List<IFixtureStep> steps, DataGridView gridView)
         {
             _steps = steps;
+            _stepsGridView = gridView;
         }
 
         /// <summary>

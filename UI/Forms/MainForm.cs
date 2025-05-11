@@ -9,13 +9,17 @@ namespace Modellic.UI.Forms
 {
     public partial class MainForm : Form
     {
-        private readonly SwService _swService = new SwService();
+        private readonly SwService _swService;
 
-        private readonly FixtureService _fixtureService = new FixtureService();
+        private readonly FixtureService _fixtureService;
 
         public MainForm()
         {
             InitializeComponent();
+
+            _swService = new SwService();
+            _fixtureService = new FixtureService(dataGridSteps);
+
             SetupEventHandlers();
             UpdateUI();
             UpdateDataGrid();
