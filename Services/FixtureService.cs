@@ -22,6 +22,11 @@ namespace Modellic.Services
         private readonly List<IFixtureStep> _steps;
 
         /// <summary>
+        /// Массив шагов необходимых для создания приспособления.
+        /// </summary>
+        public List<IFixtureStep> Steps => _steps;
+
+        /// <summary>
         /// Кол-во шагов необходимых для создания приспособления.
         /// </summary>
         public int Count => _steps.Count;

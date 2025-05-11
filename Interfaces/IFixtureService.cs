@@ -1,5 +1,6 @@
 ﻿using Modellic.Events;
 using System;
+using System.Collections.Generic;
 
 namespace Modellic.Interfaces
 {
@@ -8,6 +9,8 @@ namespace Modellic.Interfaces
     /// </summary>
     public interface IFixtureService
     {
+        List<IFixtureStep> Steps { get; }
+
         int Count { get; }
 
         int CurrentStep { get; }
