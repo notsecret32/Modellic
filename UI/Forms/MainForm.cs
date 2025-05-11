@@ -18,16 +18,17 @@ namespace Modellic.UI.Forms
             InitializeComponent();
             SetupEventHandlers();
             UpdateUI();
+            InitializeDataGrid();
         }
 
         #region Form Handlers
-        
+
         private async void BtnConnectToSw_Click(object sender, EventArgs e)
         {
             await HandleSwConnection();
         }
 
-        private void BtnNextStage_Click(object sender, EventArgs e)
+        private void BtnNextStep_Click(object sender, EventArgs e)
         {
             using FixtureStepForm form = new FixtureStepForm(_fixtureService.GetCurrentStep());
 
@@ -112,16 +113,30 @@ namespace Modellic.UI.Forms
             // Группа Приспособление
             groupFixture.Enabled = _swService.IsConnected;
 
-            string btnNextStageText = _fixtureService.IsStart ? "Начать" : !_fixtureService.IsEnd ? "Продолжить" : "Завершено";
-            btnNextStage.Text = btnNextStageText;
-            btnNextStage.Enabled = !_fixtureService.IsEnd;
+            string btnNextStepText = _fixtureService.IsStart ? "Начать" : !_fixtureService.IsEnd ? "Продолжить" : "Завершено";
+            btnNextStep.Text = btnNextStepText;
+            btnNextStep.Enabled = !_fixtureService.IsEnd;
+
+            btnAssembly.Enabled = _fixtureService.IsEnd;
 
             // Группа Solidworks
-            labelConnectionState.Text = _swService.ToString();
+            labelConnectionStatus.Text = _swService.ToString();
 
             // Кнопка подключения
             btnConnectToSw.Enabled = !_swService.IsConnecting && !_swService.IsDisconnecting;
             btnConnectToSw.Text = _swService.IsConnected ? "Отключиться" : "Подключиться";
+        }
+
+        private void InitializeDataGrid()
+        {
+            for (int i = 0; i < _fixtureService.Count; i++)
+            {
+                dataGridSteps.Rows.Add(
+                    _fixtureService.CurrentStep == i ? "•" : "",
+                    i + 1,
+                    "Не построен"
+                );
+            }
         }
 
         #endregion
