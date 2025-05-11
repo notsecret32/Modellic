@@ -136,7 +136,7 @@ namespace Modellic.UI.Forms
             for (int i = 0; i < _fixtureService.Count; i++)
             {
                 dataGridSteps.Rows.Add(
-                    _fixtureService.CurrentStep == i ? "•" : "",
+                    _fixtureService.CurrentStep == i ? "➤" : "",
                     i + 1,
                     "Не построен"
                 );
