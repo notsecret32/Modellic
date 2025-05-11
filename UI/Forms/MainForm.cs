@@ -18,7 +18,7 @@ namespace Modellic.UI.Forms
             InitializeComponent();
             SetupEventHandlers();
             UpdateUI();
-            InitializeDataGrid();
+            UpdateDataGrid();
         }
 
         #region Form Handlers
@@ -125,10 +125,14 @@ namespace Modellic.UI.Forms
             // Кнопка подключения
             btnConnectToSw.Enabled = !_swService.IsConnecting && !_swService.IsDisconnecting;
             btnConnectToSw.Text = _swService.IsConnected ? "Отключиться" : "Подключиться";
+
+            UpdateDataGrid();
         }
 
-        private void InitializeDataGrid()
+        private void UpdateDataGrid()
         {
+            dataGridSteps.Rows.Clear();
+
             for (int i = 0; i < _fixtureService.Count; i++)
             {
                 dataGridSteps.Rows.Add(
