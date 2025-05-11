@@ -1,9 +1,9 @@
 ﻿using Modellic.Events;
 using Modellic.Interfaces;
 using Modellic.Models;
+using Modellic.UI.Controls;
 using System;
 using System.Collections.Generic;
-using System.Windows.Forms;
 
 namespace Modellic.Services
 {
@@ -18,9 +18,9 @@ namespace Modellic.Services
         private int _currentStep = 0;
 
         /// <summary>
-        /// Объект типа DataGridView на котором будет отображаться подробности построения.
+        /// Объект на котором будет отображаться подробности построения.
         /// </summary>
-        private DataGridView _stepsGridView;
+        private StepsGridViewService _stepsGridViewService;
 
         /// <summary>
         /// Массив шагов, необходимых для создания приспособления.
@@ -71,9 +71,9 @@ namespace Modellic.Services
         public bool HasPrevStep => _currentStep > 0;
 
         /// <summary>
-        /// Объект типа DataGridView на котором будет отображаться подробности построения.
+        /// Объект на котором будет отображаться подробности построения.
         /// </summary>
-        public DataGridView GridView => _stepsGridView;
+        public StepsGridViewService GridView => _stepsGridViewService;
 
         /// <summary>
         /// Событие, которое вызывается каждый раз, когда меняется текущий индекс шага.
@@ -83,10 +83,10 @@ namespace Modellic.Services
         /// <summary>
         /// Стандартный конструктор в котором уже определено нужное кол-во шагов.
         /// </summary>
-        /// <param name="gridView">Объект типа DataGridView, который будет отображать детали построения приспособления.</param>
-        public FixtureService(DataGridView gridView)
+        /// <param name="gridView">Объект, который будет отображать детали построения приспособления.</param>
+        public FixtureService(StepsGridView gridView)
         {
-            _stepsGridView = gridView;
+            _stepsGridViewService = new StepsGridViewService(gridView, this);
             _steps = new List<IFixtureStep>
             {
                 new FixtureStep1(),
@@ -98,11 +98,11 @@ namespace Modellic.Services
         /// Конструктор, принимающий массив шагов необходимых для создания приспособления.
         /// </summary>
         /// <param name="steps">Массив шагов.</param>
-        /// <param name="gridView">Объект типа DataGridView, который будет отображать детали построения приспособления.</param>
-        public FixtureService(List<IFixtureStep> steps, DataGridView gridView)
+        /// <param name="gridView">Объект, который будет отображать детали построения приспособления.</param>
+        public FixtureService(List<IFixtureStep> steps, StepsGridView gridView)
         {
             _steps = steps;
-            _stepsGridView = gridView;
+            _stepsGridViewService = new StepsGridViewService(gridView, this);
         }
 
         /// <summary>

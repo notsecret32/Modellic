@@ -28,33 +28,31 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             this.splitContainer = new System.Windows.Forms.SplitContainer();
-            this.tableLayoutDataGrid = new System.Windows.Forms.TableLayoutPanel();
-            this.dataGridSteps = new System.Windows.Forms.DataGridView();
-            this.columnCursor = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.columnStepNumber = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.columnStatus = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.tableLayoutControls = new System.Windows.Forms.TableLayoutPanel();
             this.groupFixture = new System.Windows.Forms.GroupBox();
-            this.groupSw = new System.Windows.Forms.GroupBox();
             this.tableLayoutFixture = new System.Windows.Forms.TableLayoutPanel();
-            this.tableLayoutSolidworks = new System.Windows.Forms.TableLayoutPanel();
             this.btnNextStep = new System.Windows.Forms.Button();
             this.btnAssembly = new System.Windows.Forms.Button();
+            this.groupSw = new System.Windows.Forms.GroupBox();
+            this.tableLayoutSolidworks = new System.Windows.Forms.TableLayoutPanel();
             this.btnConnectToSw = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.labelConnectionStatus = new System.Windows.Forms.Label();
+            this.tableLayoutDataGrid = new System.Windows.Forms.TableLayoutPanel();
+            this.stepsGridView = new Modellic.UI.Controls.StepsGridView();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).BeginInit();
             this.splitContainer.Panel1.SuspendLayout();
             this.splitContainer.Panel2.SuspendLayout();
             this.splitContainer.SuspendLayout();
-            this.tableLayoutDataGrid.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridSteps)).BeginInit();
             this.tableLayoutControls.SuspendLayout();
             this.groupFixture.SuspendLayout();
-            this.groupSw.SuspendLayout();
             this.tableLayoutFixture.SuspendLayout();
+            this.groupSw.SuspendLayout();
             this.tableLayoutSolidworks.SuspendLayout();
+            this.tableLayoutDataGrid.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.stepsGridView)).BeginInit();
             this.SuspendLayout();
             // 
             // splitContainer
@@ -76,64 +74,6 @@
             this.splitContainer.SplitterDistance = 209;
             this.splitContainer.SplitterWidth = 1;
             this.splitContainer.TabIndex = 0;
-            // 
-            // tableLayoutDataGrid
-            // 
-            this.tableLayoutDataGrid.ColumnCount = 1;
-            this.tableLayoutDataGrid.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutDataGrid.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutDataGrid.Controls.Add(this.dataGridSteps, 0, 0);
-            this.tableLayoutDataGrid.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutDataGrid.Location = new System.Drawing.Point(0, 0);
-            this.tableLayoutDataGrid.Name = "tableLayoutDataGrid";
-            this.tableLayoutDataGrid.Padding = new System.Windows.Forms.Padding(0, 6, 2, 1);
-            this.tableLayoutDataGrid.RowCount = 1;
-            this.tableLayoutDataGrid.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutDataGrid.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 219F));
-            this.tableLayoutDataGrid.Size = new System.Drawing.Size(274, 217);
-            this.tableLayoutDataGrid.TabIndex = 0;
-            // 
-            // dataGridSteps
-            // 
-            this.dataGridSteps.AllowUserToAddRows = false;
-            this.dataGridSteps.AllowUserToDeleteRows = false;
-            this.dataGridSteps.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridSteps.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.columnCursor,
-            this.columnStepNumber,
-            this.columnStatus});
-            this.dataGridSteps.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dataGridSteps.Location = new System.Drawing.Point(3, 9);
-            this.dataGridSteps.Name = "dataGridSteps";
-            this.dataGridSteps.ReadOnly = true;
-            this.dataGridSteps.Size = new System.Drawing.Size(266, 204);
-            this.dataGridSteps.TabIndex = 1;
-            // 
-            // columnCursor
-            // 
-            this.columnCursor.HeaderText = "";
-            this.columnCursor.Name = "columnCursor";
-            this.columnCursor.ReadOnly = true;
-            this.columnCursor.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            this.columnCursor.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.columnCursor.Width = 30;
-            // 
-            // columnStepNumber
-            // 
-            this.columnStepNumber.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
-            this.columnStepNumber.HeaderText = "№ Шага";
-            this.columnStepNumber.Name = "columnStepNumber";
-            this.columnStepNumber.ReadOnly = true;
-            this.columnStepNumber.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            this.columnStepNumber.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.columnStepNumber.Width = 53;
-            // 
-            // columnStatus
-            // 
-            this.columnStatus.HeaderText = "Статус";
-            this.columnStatus.Name = "columnStatus";
-            this.columnStatus.ReadOnly = true;
-            this.columnStatus.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             // 
             // tableLayoutControls
             // 
@@ -161,17 +101,6 @@
             this.groupFixture.TabStop = false;
             this.groupFixture.Text = "Приспособления";
             // 
-            // groupSw
-            // 
-            this.groupSw.Controls.Add(this.tableLayoutSolidworks);
-            this.groupSw.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.groupSw.Location = new System.Drawing.Point(3, 126);
-            this.groupSw.Name = "groupSw";
-            this.groupSw.Size = new System.Drawing.Size(203, 88);
-            this.groupSw.TabIndex = 1;
-            this.groupSw.TabStop = false;
-            this.groupSw.Text = "Solidworks";
-            // 
             // tableLayoutFixture
             // 
             this.tableLayoutFixture.ColumnCount = 1;
@@ -186,23 +115,6 @@
             this.tableLayoutFixture.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 48F));
             this.tableLayoutFixture.Size = new System.Drawing.Size(197, 98);
             this.tableLayoutFixture.TabIndex = 0;
-            // 
-            // tableLayoutSolidworks
-            // 
-            this.tableLayoutSolidworks.ColumnCount = 2;
-            this.tableLayoutSolidworks.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutSolidworks.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutSolidworks.Controls.Add(this.btnConnectToSw, 0, 1);
-            this.tableLayoutSolidworks.Controls.Add(this.label1, 0, 0);
-            this.tableLayoutSolidworks.Controls.Add(this.labelConnectionStatus, 1, 0);
-            this.tableLayoutSolidworks.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutSolidworks.Location = new System.Drawing.Point(3, 16);
-            this.tableLayoutSolidworks.Name = "tableLayoutSolidworks";
-            this.tableLayoutSolidworks.RowCount = 2;
-            this.tableLayoutSolidworks.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutSolidworks.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 48F));
-            this.tableLayoutSolidworks.Size = new System.Drawing.Size(197, 69);
-            this.tableLayoutSolidworks.TabIndex = 0;
             // 
             // btnNextStep
             // 
@@ -224,6 +136,34 @@
             this.btnAssembly.TabIndex = 1;
             this.btnAssembly.Text = "Сборка";
             this.btnAssembly.UseVisualStyleBackColor = true;
+            // 
+            // groupSw
+            // 
+            this.groupSw.Controls.Add(this.tableLayoutSolidworks);
+            this.groupSw.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.groupSw.Location = new System.Drawing.Point(3, 126);
+            this.groupSw.Name = "groupSw";
+            this.groupSw.Size = new System.Drawing.Size(203, 88);
+            this.groupSw.TabIndex = 1;
+            this.groupSw.TabStop = false;
+            this.groupSw.Text = "Solidworks";
+            // 
+            // tableLayoutSolidworks
+            // 
+            this.tableLayoutSolidworks.ColumnCount = 2;
+            this.tableLayoutSolidworks.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutSolidworks.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutSolidworks.Controls.Add(this.btnConnectToSw, 0, 1);
+            this.tableLayoutSolidworks.Controls.Add(this.label1, 0, 0);
+            this.tableLayoutSolidworks.Controls.Add(this.labelConnectionStatus, 1, 0);
+            this.tableLayoutSolidworks.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutSolidworks.Location = new System.Drawing.Point(3, 16);
+            this.tableLayoutSolidworks.Name = "tableLayoutSolidworks";
+            this.tableLayoutSolidworks.RowCount = 2;
+            this.tableLayoutSolidworks.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutSolidworks.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 48F));
+            this.tableLayoutSolidworks.Size = new System.Drawing.Size(197, 69);
+            this.tableLayoutSolidworks.TabIndex = 0;
             // 
             // btnConnectToSw
             // 
@@ -257,6 +197,48 @@
             this.labelConnectionStatus.TabIndex = 3;
             this.labelConnectionStatus.Text = "[connection]";
             // 
+            // tableLayoutDataGrid
+            // 
+            this.tableLayoutDataGrid.ColumnCount = 1;
+            this.tableLayoutDataGrid.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutDataGrid.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutDataGrid.Controls.Add(this.stepsGridView, 0, 0);
+            this.tableLayoutDataGrid.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutDataGrid.Location = new System.Drawing.Point(0, 0);
+            this.tableLayoutDataGrid.Name = "tableLayoutDataGrid";
+            this.tableLayoutDataGrid.Padding = new System.Windows.Forms.Padding(0, 6, 2, 1);
+            this.tableLayoutDataGrid.RowCount = 1;
+            this.tableLayoutDataGrid.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutDataGrid.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 219F));
+            this.tableLayoutDataGrid.Size = new System.Drawing.Size(274, 217);
+            this.tableLayoutDataGrid.TabIndex = 0;
+            // 
+            // stepsGridView
+            // 
+            this.stepsGridView.AllowUserToAddRows = false;
+            this.stepsGridView.AllowUserToDeleteRows = false;
+            this.stepsGridView.AllowUserToOrderColumns = true;
+            this.stepsGridView.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this.stepsGridView.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.stepsGridView.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.SingleHorizontal;
+            this.stepsGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("Segoe UI", 9F);
+            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.stepsGridView.DefaultCellStyle = dataGridViewCellStyle1;
+            this.stepsGridView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.stepsGridView.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(240)))), ((int)(((byte)(240)))));
+            this.stepsGridView.Location = new System.Drawing.Point(3, 9);
+            this.stepsGridView.Name = "stepsGridView";
+            this.stepsGridView.RowHeadersVisible = false;
+            this.stepsGridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.stepsGridView.Size = new System.Drawing.Size(266, 204);
+            this.stepsGridView.TabIndex = 0;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -272,14 +254,14 @@
             this.splitContainer.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).EndInit();
             this.splitContainer.ResumeLayout(false);
-            this.tableLayoutDataGrid.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridSteps)).EndInit();
             this.tableLayoutControls.ResumeLayout(false);
             this.groupFixture.ResumeLayout(false);
-            this.groupSw.ResumeLayout(false);
             this.tableLayoutFixture.ResumeLayout(false);
+            this.groupSw.ResumeLayout(false);
             this.tableLayoutSolidworks.ResumeLayout(false);
             this.tableLayoutSolidworks.PerformLayout();
+            this.tableLayoutDataGrid.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.stepsGridView)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -288,10 +270,6 @@
 
         private System.Windows.Forms.SplitContainer splitContainer;
         private System.Windows.Forms.TableLayoutPanel tableLayoutDataGrid;
-        private System.Windows.Forms.DataGridView dataGridSteps;
-        private System.Windows.Forms.DataGridViewTextBoxColumn columnCursor;
-        private System.Windows.Forms.DataGridViewTextBoxColumn columnStepNumber;
-        private System.Windows.Forms.DataGridViewTextBoxColumn columnStatus;
         private System.Windows.Forms.TableLayoutPanel tableLayoutControls;
         private System.Windows.Forms.GroupBox groupFixture;
         private System.Windows.Forms.TableLayoutPanel tableLayoutFixture;
@@ -302,5 +280,6 @@
         private System.Windows.Forms.Button btnConnectToSw;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label labelConnectionStatus;
+        private Controls.StepsGridView stepsGridView;
     }
 }

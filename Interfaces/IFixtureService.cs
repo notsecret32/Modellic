@@ -1,7 +1,7 @@
 ﻿using Modellic.Events;
+using Modellic.Services;
 using System;
 using System.Collections.Generic;
-using System.Windows.Forms;
 
 namespace Modellic.Interfaces
 {
@@ -24,7 +24,7 @@ namespace Modellic.Interfaces
 
         bool HasPrevStep { get; }
 
-        DataGridView GridView { get; }
+        StepsGridViewService GridView { get; }
 
         event EventHandler<CurrentStepChangedEventArgs> CurrentStepChanged;
 

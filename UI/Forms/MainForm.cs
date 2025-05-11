@@ -18,11 +18,10 @@ namespace Modellic.UI.Forms
             InitializeComponent();
 
             _swService = new SwService();
-            _fixtureService = new FixtureService(dataGridSteps);
+            _fixtureService = new FixtureService(stepsGridView);
 
             SetupEventHandlers();
             UpdateUI();
-            UpdateDataGrid();
         }
 
         #region Form Handlers
@@ -130,23 +129,9 @@ namespace Modellic.UI.Forms
             btnConnectToSw.Enabled = !_swService.IsConnecting && !_swService.IsDisconnecting;
             btnConnectToSw.Text = _swService.IsConnected ? "Отключиться" : "Подключиться";
 
-            UpdateDataGrid();
+            _fixtureService.GridView.Update();
         }
-
-        private void UpdateDataGrid()
-        {
-            dataGridSteps.Rows.Clear();
-
-            for (int i = 0; i < _fixtureService.Count; i++)
-            {
-                dataGridSteps.Rows.Add(
-                    _fixtureService.CurrentStep == i ? "➤" : "",
-                    i + 1,
-                    "Не построен"
-                );
-            }
-        }
-
+       
         #endregion
     }
 }
