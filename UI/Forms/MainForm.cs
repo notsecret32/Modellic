@@ -1,5 +1,5 @@
-﻿using Modellic.Events;
-using Modellic.Interfaces;
+﻿using Modellic.Enums;
+using Modellic.Events;
 using Modellic.Services;
 using System;
 using System.Threading.Tasks;
@@ -49,18 +49,30 @@ namespace Modellic.UI.Forms
             this.Invoke((Action)UpdateUI);
         }
 
-        private void OnFixtureStepFormClosed(object sender, FormClosedEventArgs e)
+        private async void OnFixtureStepFormClosed(object sender, FormClosedEventArgs e)
         {
             FixtureStepForm form = (FixtureStepForm)sender;
 
-            if (form.Result == Enums.FixtureStepFormResult.Continue)
+            if (form.Result == FixtureStepFormResult.Continue)
             {
-                _fixtureService.NextStep();
+                try
+                {
+                    Cursor.Current = Cursors.WaitCursor;
+                    btnNextStep.Enabled = false;
+
+                    await _fixtureService.BuildAsync();
+                    _fixtureService.NextStep();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Ошибка: {ex.Message}", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                finally
+                {
+                    Cursor.Current = Cursors.Default;
+                    btnNextStep.Enabled = true;
+                }
             }
-
-            IFixtureStep fixtureStep = (IFixtureStep)form.PropertyGrid.SelectedObject;
-
-            MessageBox.Show($"Тип закрытия: {form.Result}\nНазвание шага: {fixtureStep.Title}", form.Text);
         }
 
         private void OnCurrentStepChanged(object sender, CurrentStepChangedEventArgs e)

@@ -28,6 +28,12 @@ namespace Modellic.Services
                     "Не построен"
                 );
             }
+
+            _gridView.Rows.Add(
+                _fixtureService.CurrentStep == _fixtureService.Count ? "➤" : "",
+                "",
+                "Завершение"
+            );
         }
     }
 }

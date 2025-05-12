@@ -1,9 +1,11 @@
-﻿using Modellic.Events;
+﻿using Modellic.Enums;
+using Modellic.Events;
 using Modellic.Interfaces;
 using Modellic.Models;
 using Modellic.UI.Controls;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Modellic.Services
 {
@@ -127,6 +129,14 @@ namespace Modellic.Services
                 _currentStep--;
                 CurrentStepChanged?.Invoke(this, new CurrentStepChangedEventArgs(this));
             }
+        }
+
+        public async Task BuildAsync()
+        {
+            await Task.Run(() =>
+            {
+                this._steps[this._currentStep].Build();
+            });
         }
 
         /// <summary>

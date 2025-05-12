@@ -5,6 +5,8 @@
     /// </summary>
     public interface IFixtureStep
     {
-       string Title { get; }
+        string Title { get; }
+
+        void Build();
     }
 }

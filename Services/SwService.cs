@@ -16,6 +16,8 @@ namespace Modellic.Services
 
         public event EventHandler ConnectionStatusChanged;
 
+        public static SwService Instance { get; private set; }
+        
         public ISldWorks SwApp => _swApp;
         public SwConnectionStatus ConnectionStatus
         {
@@ -34,6 +36,11 @@ namespace Modellic.Services
         public bool IsDisconnecting => _swConnectionStatus == SwConnectionStatus.Disconnecting;
         public bool IsConnecting => _swConnectionStatus == SwConnectionStatus.Connecting;
         public bool IsConnected => _swConnectionStatus == SwConnectionStatus.Connected;
+
+        public SwService()
+        {
+            Instance = this; 
+        }
 
         public async Task ConnectAsync()
         {
@@ -92,7 +99,18 @@ namespace Modellic.Services
         public void Dispose()
         {
             DisconnectAsync().GetAwaiter().GetResult();
+            Instance = null;
             GC.SuppressFinalize(this);
+        }
+
+        public static SwService GetInstance()
+        {
+            if (Instance == null)
+            {
+                throw new NullReferenceException("Попытка получить Instance сервиса SwService, который равен null.");
+            }
+
+            return Instance;
         }
 
         public override string ToString()

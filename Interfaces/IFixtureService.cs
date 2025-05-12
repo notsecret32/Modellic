@@ -2,6 +2,7 @@
 using Modellic.Services;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Modellic.Interfaces
 {
@@ -31,6 +32,8 @@ namespace Modellic.Interfaces
         void NextStep();
 
         void PrevStep();
+
+        Task BuildAsync();
 
         T Find<T>() where T : IFixtureStep;
 
