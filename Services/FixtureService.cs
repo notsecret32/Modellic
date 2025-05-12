@@ -12,7 +12,7 @@ namespace Modellic.Services
     /// <summary>
     /// Сервис, контролирующий процесс создания приспособления.
     /// </summary>
-    internal class FixtureService : IFixtureService
+    public class FixtureService : IFixtureService
     {
         /// <summary>
         /// Индекс текущего шага.
