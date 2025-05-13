@@ -124,9 +124,6 @@ namespace Modellic.UI.Forms
         {
             try
             {
-                // Обновляем UI только один раз перед началом построения
-                this.SafeInvoke(() => _fixtureService.GridView.Update());
-
                 await _fixtureService.BuildAsync().ConfigureAwait(false);
                 _fixtureService.NextStep();
             }
@@ -139,6 +136,10 @@ namespace Modellic.UI.Forms
                     MessageBox.Show($"Ошибка: {ex.Message}", "Ошибка",
                         MessageBoxButtons.OK, MessageBoxIcon.Error);
                 });
+            }
+            finally
+            {
+                this.SafeInvoke(UpdateUI);
             }
         }
 
@@ -158,6 +159,8 @@ namespace Modellic.UI.Forms
             // Кнопка подключения
             btnConnectToSw.Enabled = !_swService.IsConnecting && !_swService.IsDisconnecting;
             btnConnectToSw.Text = _swService.IsConnected ? "Отключиться" : "Подключиться";
+
+            _fixtureService.GridView.Update();
         }
 
         private string GetNextStepButtonText()
