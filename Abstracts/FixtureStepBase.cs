@@ -8,8 +8,6 @@ namespace Modellic.Abstracts
 {
     public abstract class FixtureStepBase : IFixtureStep
     {
-        private readonly ISwService _swService;
-
         [Browsable(false)]
         public ISldWorks SwApp => SwService.Instance.SwApp;
 
