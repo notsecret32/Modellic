@@ -9,35 +9,44 @@ namespace Modellic.UI.Forms
 {
     public partial class MainForm : Form
     {
-        private readonly SwService _swService;
+        private SwService _swService;
 
-        private readonly FixtureService _fixtureService;
+        private FixtureService _fixtureService;
 
         public MainForm()
         {
             InitializeComponent();
-
-            _swService = new SwService();
-            _fixtureService = new FixtureService(stepsGridView);
-
+            InitializeServices();
             SetupEventHandlers();
             UpdateUI();
         }
 
-        #region Form Handlers
+        #region Initialization
+
+        private void InitializeServices()
+        {
+            _swService = new SwService();
+            _fixtureService = new FixtureService(stepsGridView);
+        }
+
+        private void SetupEventHandlers()
+        {
+            _swService.ConnectionStatusChanged += OnConnectionStatusChanged;
+            _fixtureService.CurrentStepChanged += OnCurrentStepChanged;
+        }
+
+        #endregion
+
+        #region Event Handlers
 
         private async void BtnConnectToSw_Click(object sender, EventArgs e)
         {
-            await HandleSwConnection();
+            await HandleSwConnectionAsync().ConfigureAwait(false);
         }
 
         private void BtnNextStep_Click(object sender, EventArgs e)
         {
-            using FixtureStepForm form = new FixtureStepForm(_fixtureService.GetCurrentStep());
-
-            form.FormClosed += OnFixtureStepFormClosed;
-
-            form.ShowDialog();
+            ShowFixtureStepForm();
         }
 
         #endregion
@@ -46,72 +55,90 @@ namespace Modellic.UI.Forms
 
         private void OnConnectionStatusChanged(object sender, EventArgs e)
         {
-            this.Invoke((Action)UpdateUI);
+            this.SafeInvoke(UpdateUI);
         }
 
         private async void OnFixtureStepFormClosed(object sender, FormClosedEventArgs e)
         {
-            FixtureStepForm form = (FixtureStepForm)sender;
-
-            if (form.Result == FixtureStepFormResult.Continue)
+            if (sender is FixtureStepForm form && form.Result == FixtureStepFormResult.Continue)
             {
-                try
-                {
-                    await _fixtureService.BuildAsync();
-                    _fixtureService.NextStep();
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Ошибка: {ex.Message}", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
+                await ProcessCurrentStepAsync();
             }
         }
 
         private void OnCurrentStepChanged(object sender, CurrentStepChangedEventArgs e)
         {
-            UpdateUI();
+            this.SafeInvoke(UpdateUI);
         }
 
         #endregion
 
         #region Private Methods
 
-        private void SetupEventHandlers()
-        {
-            _swService.ConnectionStatusChanged += OnConnectionStatusChanged;
-            _fixtureService.CurrentStepChanged += OnCurrentStepChanged;
-        }
-
-        private async Task HandleSwConnection()
+        private async Task HandleSwConnectionAsync()
         {
             try
             {
                 if (!_swService.IsConnected)
                 {
-                    await _swService.ConnectAsync();
+                    await _swService.ConnectAsync().ConfigureAwait(false);
                 }
                 else
                 {
-                    await _swService.DisconnectAsync();
+                    await _swService.DisconnectAsync().ConfigureAwait(false);
                 }
             }
             catch (Exception ex)
             {
-                var result = MessageBox.Show(
-                    ex.Message,
-                    "Ошибка подключения",
-                    MessageBoxButtons.RetryCancel,
-                    MessageBoxIcon.Error
-                );
-
-                if (result == DialogResult.Retry)
-                {
-                    await HandleSwConnection();
-                }
+                await HandleConnectionErrorAsync(ex);
             }
             finally
             {
-                UpdateUI();
+                this.SafeInvoke(UpdateUI);
+            }
+        }
+
+        private async Task HandleConnectionErrorAsync(Exception ex)
+        {
+            var result = MessageBox.Show(
+                ex.Message,
+                "Ошибка подключения",
+                MessageBoxButtons.RetryCancel,
+                MessageBoxIcon.Error
+            );
+
+            if (result == DialogResult.Retry)
+            {
+                await HandleSwConnectionAsync().ConfigureAwait(false);
+            }
+        }
+
+        private void ShowFixtureStepForm()
+        {
+            using var form = new FixtureStepForm(_fixtureService.GetCurrentStep());
+            form.FormClosed += OnFixtureStepFormClosed;
+            form.ShowDialog(this);
+        }
+
+        private async Task ProcessCurrentStepAsync()
+        {
+            try
+            {
+                // Обновляем UI только один раз перед началом построения
+                this.SafeInvoke(() => _fixtureService.GridView.Update());
+
+                await _fixtureService.BuildAsync().ConfigureAwait(false);
+                _fixtureService.NextStep();
+            }
+            catch (Exception ex)
+            {
+                this.SafeInvoke(() =>
+                {
+                    // Обновляем статус ошибки
+                    _fixtureService.GridView.Update();
+                    MessageBox.Show($"Ошибка: {ex.Message}", "Ошибка",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                });
             }
         }
 
@@ -121,11 +148,9 @@ namespace Modellic.UI.Forms
             groupFixture.Enabled = _swService.IsConnected;
 
             btnNextStep.Enabled = !_fixtureService.IsCompleted;
-            btnNextStep.Text = _fixtureService.IsCompleted ? "Завершено"
-                                 : _fixtureService.IsLastStep ? "Завершить"
-                                 : _fixtureService.IsStart ? "Начать" : "Продолжить";
+            btnNextStep.Text = GetNextStepButtonText();
 
-            btnAssembly.Enabled = _fixtureService.IsCompleted;
+            btnAssembly.Enabled = _swService.IsConnected && _fixtureService.IsCompleted;
 
             // Группа Solidworks
             labelConnectionStatus.Text = _swService.ToString();
@@ -133,10 +158,30 @@ namespace Modellic.UI.Forms
             // Кнопка подключения
             btnConnectToSw.Enabled = !_swService.IsConnecting && !_swService.IsDisconnecting;
             btnConnectToSw.Text = _swService.IsConnected ? "Отключиться" : "Подключиться";
+        }
 
-            _fixtureService.GridView.Update();
+        private string GetNextStepButtonText()
+        {
+            if (_fixtureService.IsCompleted) return "Завершено";
+            if (_fixtureService.IsLastStep) return "Завершить";
+            return _fixtureService.IsStart ? "Начать" : "Продолжить";
         }
 
         #endregion
+    }
+
+    public static class ControlExtensions
+    {
+        public static void SafeInvoke(this Control control, Action action)
+        {
+            if (control.InvokeRequired)
+            {
+                control.Invoke(action);
+            }
+            else
+            {
+                action();
+            }
+        }
     }
 }

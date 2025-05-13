@@ -1,37 +1,51 @@
 ﻿using Modellic.Enums;
 using Modellic.Interfaces;
+using System;
 using System.Windows.Forms;
 
 namespace Modellic.UI.Forms
 {
     public partial class FixtureStepForm : Form
     {
-        private FixtureStepFormResult _result;
-
-        public FixtureStepFormResult Result => _result;
+        public FixtureStepFormResult Result { get; private set; }
 
         public PropertyGrid PropertyGrid => stepProperties;
 
         public FixtureStepForm(IFixtureStep step)
         {
             InitializeComponent();
-            stepProperties.SelectedObject = step;
+            InitializeForm(step);
         }
 
-        private void BtnContinue_Click(object sender, System.EventArgs e)
+        private void InitializeForm(IFixtureStep step)
         {
-            CloseForm(FixtureStepFormResult.Continue);
+            stepProperties.SelectedObject = step ?? throw new ArgumentNullException(nameof(step));
+            Result = FixtureStepFormResult.Cancel;
         }
 
-        private void BtnCancel_Click(object sender, System.EventArgs e)
+        private void BtnContinue_Click(object sender, EventArgs e)
         {
-            CloseForm(FixtureStepFormResult.Cancel);
+            SetResultAndClose(FixtureStepFormResult.Continue);
         }
 
-        private void CloseForm(FixtureStepFormResult result)
+        private void BtnCancel_Click(object sender, EventArgs e)
         {
-            _result = result;
-            this.Close();
+            SetResultAndClose(FixtureStepFormResult.Cancel);
+        }
+
+        private void SetResultAndClose(FixtureStepFormResult result)
+        {
+            Result = result;
+            DialogResult = result == FixtureStepFormResult.Continue
+                ? DialogResult.OK
+                : DialogResult.Cancel;
+            Close();
+        }
+
+        protected override void OnFormClosed(FormClosedEventArgs e)
+        {
+            base.OnFormClosed(e);
+            stepProperties.SelectedObject = null;
         }
     }
 }

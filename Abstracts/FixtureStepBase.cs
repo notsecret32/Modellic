@@ -1,4 +1,5 @@
-﻿using Modellic.Interfaces;
+﻿using Modellic.Enums;
+using Modellic.Interfaces;
 using Modellic.Services;
 using SolidWorks.Interop.sldworks;
 using System.ComponentModel;
@@ -23,6 +24,9 @@ namespace Modellic.Abstracts
 
         [Browsable(false)]
         public FeatureManager FeatureManager => ActiveDoc?.FeatureManager;
+
+        [Browsable(false)]
+        public FixtureStepBuildStatus BuildStatus { get; set; } = FixtureStepBuildStatus.NotBuilt;
 
         public abstract string Title { get; }
 

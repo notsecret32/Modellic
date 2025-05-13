@@ -1,4 +1,5 @@
-﻿using SolidWorks.Interop.sldworks;
+﻿using Modellic.Enums;
+using SolidWorks.Interop.sldworks;
 
 namespace Modellic.Interfaces
 {
@@ -18,6 +19,8 @@ namespace Modellic.Interfaces
         FeatureManager FeatureManager { get; }
 
         string Title { get; }
+
+        FixtureStepBuildStatus BuildStatus { get; set; }
 
         void Build();
     }

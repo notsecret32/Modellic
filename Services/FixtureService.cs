@@ -1,4 +1,6 @@
-﻿using Modellic.Events;
+﻿using Modellic.Abstracts;
+using Modellic.Enums;
+using Modellic.Events;
 using Modellic.Interfaces;
 using Modellic.Models;
 using Modellic.UI.Controls;
@@ -217,10 +219,34 @@ namespace Modellic.Services
 
         public async Task BuildAsync()
         {
-            await Task.Run(() =>
+            if (IsCompleted) return;
+
+            var currentStep = GetCurrentStep();
+            UpdateStepStatus(currentStep, FixtureStepBuildStatus.InProgress);
+
+            try
             {
-                this._steps[this._currentStepIndex].Build();
-            });
+                await Task.Run(() => currentStep.Build());
+                UpdateStepStatus(currentStep, FixtureStepBuildStatus.Built);
+            }
+            catch
+            {
+                UpdateStepStatus(currentStep, FixtureStepBuildStatus.Error);
+                throw;
+            }
+        }
+
+        #endregion
+
+        #region Private Methods
+
+        private void UpdateStepStatus(IFixtureStep step, FixtureStepBuildStatus status)
+        {
+            if (step is FixtureStepBase stepBase)
+            {
+                stepBase.BuildStatus = status;
+            }
+            GridView.Update();
         }
 
         #endregion

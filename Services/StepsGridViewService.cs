@@ -1,4 +1,6 @@
-﻿using Modellic.Interfaces;
+﻿using Modellic.Abstracts;
+using Modellic.Enums;
+using Modellic.Interfaces;
 using Modellic.UI.Controls;
 
 namespace Modellic.Services
@@ -25,10 +27,13 @@ namespace Modellic.Services
 
             for (int i = 0; i < _fixtureService.Count; i++)
             {
+                var step = _fixtureService.Steps[i] as FixtureStepBase;
+                var statusText = GetStatusText(step?.BuildStatus ?? FixtureStepBuildStatus.NotBuilt);
+
                 _gridView.Rows.Add(
                     _fixtureService.CurrentStepIndex == i ? "➤" : "",
                     i + 1,
-                    "Не построен"
+                    statusText
                 );
             }
 
@@ -37,6 +42,18 @@ namespace Modellic.Services
                 "",
                 "Завершение"
             );
+        }
+
+        private string GetStatusText(FixtureStepBuildStatus status)
+        {
+            return status switch
+            {
+                FixtureStepBuildStatus.NotBuilt => "Не построено",
+                FixtureStepBuildStatus.InProgress => "В процессе",
+                FixtureStepBuildStatus.Built => "Построено",
+                FixtureStepBuildStatus.Error => "Ошибка",
+                _ => "Неизвестно"
+            };
         }
     }
 }
