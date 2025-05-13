@@ -99,6 +99,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Abstracts\FixtureStepBase.cs" />
     <Compile Include="Enums\FixtureStepFormResult.cs" />
     <Compile Include="Enums\SwConnectionStatus.cs" />
     <Compile Include="Events\CurrentStepChangedEventArgs.cs" />

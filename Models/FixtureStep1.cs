@@ -1,12 +1,10 @@
 ﻿using System.ComponentModel;
-using Modellic.Interfaces;
-using Modellic.Services;
-using SolidWorks.Interop.sldworks;
+using Modellic.Abstracts;
 
 namespace Modellic.Models
 {
     [DefaultProperty("Name")]
-    public class FixtureStep1 : IFixtureStep
+    public class FixtureStep1 : FixtureStepBase
     {
         #region Private Members
 
@@ -18,37 +16,32 @@ namespace Modellic.Models
 
         [Category("Общий"), Description("Имя шага")]
         [DisplayName("Название")]
-        public string Title => _name;
+        public override string Title => _name;
 
         #endregion
 
-        #region Public Methods
+        #region Public Overrided Methods
 
-        public void Build()
-        {
-            var swService = SwService.GetInstance();
-            var activeDoc = (ModelDoc2)swService.SwApp.ActiveDoc;
-            var sketchManager = activeDoc.SketchManager;
-            var swModelDocExt = activeDoc.Extension;
-
+        public override void Build()
+        {          
             // Первый эскиз
-            swModelDocExt.SelectByID2("Front Plane", "PLANE", 0, 0, 0, false, 0, null, 0);
-            sketchManager.InsertSketch(true);
-            activeDoc.ClearSelection2(true);
+            this.Extension.SelectByID2("Front Plane", "PLANE", 0, 0, 0, false, 0, null, 0);
+            this.SketchManager.InsertSketch(true);
+            this.ActiveDoc.ClearSelection2(true);
 
             // Окружность #1
-            sketchManager.CreateCircle(0, 0, 0, -0.140, 0, 0);
-            activeDoc.ClearSelection2(true);
+            this.ActiveDoc.CreateCircle(0, 0, 0, -0.140, 0, 0);
+            this.ActiveDoc.ClearSelection2(true);
 
             // Окружность #2
-            sketchManager.CreateCircle(0, 0, 0, -0.130, 0, 0);
-            activeDoc.ClearSelection2(true);
+            this.SketchManager.CreateCircle(0, 0, 0, -0.130, 0, 0);
+            this.ActiveDoc.ClearSelection2(true);
 
             // Завершаем эскиз
-            sketchManager.InsertSketch(true);
+            this.SketchManager.InsertSketch(true);
 
             // Строим модель
-            var featureManager = activeDoc.FeatureManager;
+            var featureManager = this.FeatureManager;
 
             var feature = featureManager.FeatureExtrusion2(
                 true,
