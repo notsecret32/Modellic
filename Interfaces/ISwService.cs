@@ -5,19 +5,27 @@ using System.Threading.Tasks;
 
 namespace Modellic.Interfaces
 {
+    /// <summary>
+    /// Интерфейс, описывающий сервис по работе с Solidworks.
+    /// </summary>
     public interface ISwService : IDisposable
     {
-        event EventHandler ConnectionStatusChanged;
-
         ISldWorks SwApp { get; }
+
         SwConnectionStatus ConnectionStatus { get; }
 
         bool IsDisconnected { get; }
+
         bool IsDisconnecting { get; }
+
         bool IsConnecting { get; }
+
         bool IsConnected { get; }
 
+        event EventHandler ConnectionStatusChanged;
+     
         Task ConnectAsync();
+
         Task DisconnectAsync();
     }
 }

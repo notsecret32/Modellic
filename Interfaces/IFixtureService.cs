@@ -15,7 +15,7 @@ namespace Modellic.Interfaces
 
         int Count { get; }
 
-        int CurrentStep { get; }
+        int CurrentStepIndex { get; }
 
         bool IsStart { get; }
 

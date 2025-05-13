@@ -8,17 +8,48 @@ using System.Threading.Tasks;
 
 namespace Modellic.Services
 {
+    /// <summary>
+    /// Сервис по работе с Solidworks. В его задачи входит подключение к Solidworks, предоставление данных о Solidworks и т.д.
+    /// </summary>
     public class SwService : ISwService
     {
-        private ISldWorks _swApp;
-        private SwConnectionStatus _swConnectionStatus;
+        #region Constants
+
+        /// <summary>
+        /// Id программы Solidworks, по которому происходит поиск запущенных процессов.
+        /// Данный вариант работает только на Windows.
+        /// </summary>
         private const string SW_PROG_ID = "SldWorks.Application";
 
-        public event EventHandler ConnectionStatusChanged;
+        #endregion
 
-        public static SwService Instance { get; private set; }
+        #region Private Members
+
+        /// <summary>
+        /// Объект, указывающий на приложение Solidworks.
+        /// </summary>
+        private ISldWorks _swApp;
         
+        /// <summary>
+        /// Стутус подключения к приложению Solidworks.
+        /// </summary>
+        private SwConnectionStatus _swConnectionStatus;
+
+        #endregion
+
+        #region Private Static Members
+
+        /// <summary>
+        /// Статический объект, указывающий сам на себя. Нужен для получения доступа к полям и методам через статический вызов.
+        /// </summary>
+        private static SwService _instance;
+
+        #endregion
+
+        #region Properties
+
         public ISldWorks SwApp => _swApp;
+
         public SwConnectionStatus ConnectionStatus
         {
             get => _swConnectionStatus;
@@ -33,14 +64,54 @@ namespace Modellic.Services
         }
 
         public bool IsDisconnected => _swConnectionStatus == SwConnectionStatus.Disconnected;
+
         public bool IsDisconnecting => _swConnectionStatus == SwConnectionStatus.Disconnecting;
+
         public bool IsConnecting => _swConnectionStatus == SwConnectionStatus.Connecting;
+
         public bool IsConnected => _swConnectionStatus == SwConnectionStatus.Connected;
+
+        #endregion
+
+        #region Static Properties
+
+        /// <summary>
+        /// Объект, указывающий сам на себя.
+        /// </summary>
+        public static SwService Instance => _instance;
+        
+        #endregion
+
+        #region Events
+
+        /// <summary>
+        /// Происходит, когда меняется статус подключения.
+        /// </summary>
+        public event EventHandler ConnectionStatusChanged;
+
+        #endregion
+
+        #region Constructors
 
         public SwService()
         {
-            Instance = this; 
+            _instance = this; 
         }
+
+        #endregion
+
+        #region Public Methods
+
+        public void Dispose()
+        {
+            DisconnectAsync().GetAwaiter().GetResult();
+            _instance = null;
+            GC.SuppressFinalize(this);
+        }
+
+        #endregion
+
+        #region Public Async Methods
 
         public async Task ConnectAsync()
         {
@@ -96,12 +167,9 @@ namespace Modellic.Services
             });
         }
 
-        public void Dispose()
-        {
-            DisconnectAsync().GetAwaiter().GetResult();
-            Instance = null;
-            GC.SuppressFinalize(this);
-        }
+        #endregion
+
+        #region Public Static Methods
 
         public static SwService GetInstance()
         {
@@ -112,6 +180,10 @@ namespace Modellic.Services
 
             return Instance;
         }
+
+        #endregion
+
+        #region Overrided Methods
 
         public override string ToString()
         {
@@ -124,5 +196,7 @@ namespace Modellic.Services
                 _ => "Неизвестное состояние"
             };
         }
+
+        #endregion
     }
 }

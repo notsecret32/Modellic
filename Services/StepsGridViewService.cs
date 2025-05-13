@@ -3,6 +3,9 @@ using Modellic.UI.Controls;
 
 namespace Modellic.Services
 {
+    /// <summary>
+    /// Сервис по работе с StepsGridView. Предоставляет свойства и методы для работы с ним.
+    /// </summary>
     public class StepsGridViewService : IStepsGridViewService
     {
         private StepsGridView _gridView;
@@ -23,14 +26,14 @@ namespace Modellic.Services
             for (int i = 0; i < _fixtureService.Count; i++)
             {
                 _gridView.Rows.Add(
-                    _fixtureService.CurrentStep == i ? "➤" : "",
+                    _fixtureService.CurrentStepIndex == i ? "➤" : "",
                     i + 1,
                     "Не построен"
                 );
             }
 
             _gridView.Rows.Add(
-                _fixtureService.CurrentStep == _fixtureService.Count ? "➤" : "",
+                _fixtureService.CurrentStepIndex == _fixtureService.Count ? "➤" : "",
                 "",
                 "Завершение"
             );
