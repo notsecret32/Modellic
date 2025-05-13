@@ -104,6 +104,7 @@
     <Compile Include="Enums\FixtureStepFormResult.cs" />
     <Compile Include="Enums\SwConnectionStatus.cs" />
     <Compile Include="Events\CurrentStepChangedEventArgs.cs" />
+    <Compile Include="Events\FixtureStepBuildStatusChangedEventArgs.cs" />
     <Compile Include="Interfaces\IFixtureService.cs" />
     <Compile Include="Interfaces\IFixtureStep.cs" />
     <Compile Include="Interfaces\IStepsGridViewService.cs" />

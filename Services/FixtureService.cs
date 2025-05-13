@@ -90,6 +90,11 @@ namespace Modellic.Services
         /// </summary>
         public event EventHandler<CurrentStepChangedEventArgs> CurrentStepChanged;
 
+        /// <summary>
+        /// Событие, которое вызывавается каждый раз, когда меняется состояние создания текущего шага приспособления.
+        /// </summary>
+        public event EventHandler<FixtureStepBuildStatusChangedEventArgs> BuildStatusChanged;
+
         #endregion
 
         #region Constructors
@@ -245,6 +250,10 @@ namespace Modellic.Services
             if (step is FixtureStepBase stepBase)
             {
                 stepBase.BuildStatus = status;
+                BuildStatusChanged?.Invoke(
+                    this, 
+                    new FixtureStepBuildStatusChangedEventArgs(stepBase, stepBase.BuildStatus)
+                );
             }
             GridView.Update();
         }

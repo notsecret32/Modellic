@@ -31,6 +31,8 @@ namespace Modellic.Interfaces
 
         event EventHandler<CurrentStepChangedEventArgs> CurrentStepChanged;
 
+        event EventHandler<FixtureStepBuildStatusChangedEventArgs> BuildStatusChanged;
+
         void NextStep();
 
         void PrevStep();

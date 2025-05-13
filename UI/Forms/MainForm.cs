@@ -33,6 +33,7 @@ namespace Modellic.UI.Forms
         {
             _swService.ConnectionStatusChanged += OnConnectionStatusChanged;
             _fixtureService.CurrentStepChanged += OnCurrentStepChanged;
+            _fixtureService.BuildStatusChanged += OnBuildStatusChanged;
         }
 
         #endregion
@@ -56,6 +57,17 @@ namespace Modellic.UI.Forms
         private void OnConnectionStatusChanged(object sender, EventArgs e)
         {
             this.SafeInvoke(UpdateUI);
+        }
+
+        private void OnBuildStatusChanged(object sender, FixtureStepBuildStatusChangedEventArgs e)
+        {
+            this.SafeInvoke(() =>
+            {
+                var isInProgress = e.BuildStatus == FixtureStepBuildStatus.InProgress;
+                btnNextStep.Enabled = !isInProgress;
+                btnNextStep.Text = isInProgress ? "В процессе..." : GetNextStepButtonText();
+                btnConnectToSw.Enabled = !isInProgress && !_swService.IsConnecting && !_swService.IsDisconnecting;
+            });
         }
 
         private async void OnFixtureStepFormClosed(object sender, FormClosedEventArgs e)
