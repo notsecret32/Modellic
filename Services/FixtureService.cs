@@ -24,7 +24,7 @@ namespace Modellic.Services
         /// Массив шагов, необходимых для создания приспособления.
         /// </summary>
         private readonly List<IFixtureStep> _steps;
-        
+
         /// <summary>
         /// Объект на котором будет отображаться подробности построения.
         /// </summary>
@@ -35,46 +35,43 @@ namespace Modellic.Services
         #region Properties
 
         /// <summary>
-        /// Массив шагов необходимых для создания приспособления.
+        /// Список всех шагов построения приспособления.
         /// </summary>
         public List<IFixtureStep> Steps => _steps;
 
         /// <summary>
-        /// Кол-во шагов необходимых для создания приспособления.
+        /// Общее количество шагов.
         /// </summary>
         public int Count => _steps.Count;
 
         /// <summary>
-        /// Индекс текущего шага.
+        /// Текущий индекс активного шага.
         /// </summary>
         public int CurrentStepIndex => _currentStepIndex;
 
         /// <summary>
-        /// Возвращает true, если текущий индекс шага равен 0.
+        /// Флаг, указывающий что текущий шаг первый в последовательности.
         /// </summary>
         public bool IsStart => _currentStepIndex == 0;
 
         /// <summary>
-        /// Возвращает true, если текущий индекс указывает на последний шаг.
+        /// Флаг, указывающий что текущий шаг последний в последовательности.
         /// </summary>
-        public bool IsEnd => _currentStepIndex >= _steps.Count;
+        public bool IsLastStep => _currentStepIndex == _steps.Count - 1;
 
         /// <summary>
-        /// Возвращает true, если существует следующий шаг после текущего.
+        /// Флаг, указывающий что все шаги завершены.
         /// </summary>
-        /// <value>
-        /// true - можно перейти к следующему шагу через метод NextStep();
-        /// false - текущий шаг последний в коллекции.
-        /// </value>
-        public bool HasNextStep => _currentStepIndex <= _steps.Count - 1;
+        public bool IsCompleted => _currentStepIndex >= _steps.Count;
 
         /// <summary>
-        /// Возвращает true, если существует предыдущий шаг перед текущим.
+        /// Флаг, указывающий что существует следующий шаг после текущего.
         /// </summary>
-        /// <value>
-        /// true - можно перейти к предыдущему шагу через метод PrevStep();
-        /// false - текущий шаг первый в коллекции.
-        /// </value>
+        public bool HasNextStep => _currentStepIndex < _steps.Count - 1;
+
+        /// <summary>
+        /// Флаг, указывающий что существует предыдущий шаг перед текущим.
+        /// </summary>
         public bool HasPrevStep => _currentStepIndex > 0;
 
         /// <summary>
@@ -129,11 +126,13 @@ namespace Modellic.Services
         /// </summary>
         public void NextStep()
         {
-            if (HasNextStep)
+            if (IsCompleted)
             {
-                _currentStepIndex++;
-                CurrentStepChanged?.Invoke(this, new CurrentStepChangedEventArgs(this));
+                return;
             }
+
+            _currentStepIndex++;
+            CurrentStepChanged?.Invoke(this, new CurrentStepChangedEventArgs(this));
         }
 
         /// <summary>
@@ -141,11 +140,13 @@ namespace Modellic.Services
         /// </summary>
         public void PrevStep()
         {
-            if (HasPrevStep)
+            if (!HasPrevStep)
             {
-                _currentStepIndex--;
-                CurrentStepChanged?.Invoke(this, new CurrentStepChangedEventArgs(this));
+                return;
             }
+
+            _currentStepIndex--;
+            CurrentStepChanged?.Invoke(this, new CurrentStepChangedEventArgs(this));
         }
 
         /// <summary>
@@ -190,11 +191,18 @@ namespace Modellic.Services
         /// <summary>
         /// Метод для получения объекта текущего шага.
         /// </summary>
-        /// <returns>Объект текущего шага.</returns>
+        /// <returns>Объект текущего шага либо null, если все шаги завершены.</returns>
         /// <exception cref="IndexOutOfRangeException">Выбрасывает ошибку, если текущий индекс шага выходит за рамки длины массива.</exception>
         public IFixtureStep GetCurrentStep()
         {
-            if (!this.IsCurrentIndexValid())
+            // Если все шаги завершены - возвращаем null
+            if (IsCompleted)
+            {
+                return null;
+            }
+
+            // Проверяем на выход за границы
+            if (_currentStepIndex < 0 || _currentStepIndex >= _steps.Count)
             {
                 throw new IndexOutOfRangeException(
                     $"Текущий индекс шага {_currentStepIndex} выходит за рамки массива. Кол-во шагов: {_steps.Count}");
@@ -214,19 +222,6 @@ namespace Modellic.Services
                 this._steps[this._currentStepIndex].Build();
             });
         }
-
-        #endregion
-
-        #region Private Methods
-
-        /// <summary>
-        /// Проверяет, находится ли текущий индекс шага в допустимых границах.
-        /// </summary>
-        /// <returns>
-        /// <c>true</c> - индекс корректен.
-        /// <c>false</c> - индекс выходит за границы коллекции шагов.
-        /// </returns>
-        private bool IsCurrentIndexValid() => _currentStepIndex >= 0 && _currentStepIndex <= _steps.Count - 1;
 
         #endregion
     }

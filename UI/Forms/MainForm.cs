@@ -57,20 +57,12 @@ namespace Modellic.UI.Forms
             {
                 try
                 {
-                    Cursor.Current = Cursors.WaitCursor;
-                    btnNextStep.Enabled = false;
-
                     await _fixtureService.BuildAsync();
                     _fixtureService.NextStep();
                 }
                 catch (Exception ex)
                 {
                     MessageBox.Show($"Ошибка: {ex.Message}", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-                finally
-                {
-                    Cursor.Current = Cursors.Default;
-                    btnNextStep.Enabled = true;
                 }
             }
         }
@@ -128,11 +120,12 @@ namespace Modellic.UI.Forms
             // Группа Приспособление
             groupFixture.Enabled = _swService.IsConnected;
 
-            string btnNextStepText = _fixtureService.IsStart ? "Начать" : !_fixtureService.IsEnd ? "Продолжить" : "Завершено";
-            btnNextStep.Text = btnNextStepText;
-            btnNextStep.Enabled = !_fixtureService.IsEnd;
+            btnNextStep.Enabled = !_fixtureService.IsCompleted;
+            btnNextStep.Text = _fixtureService.IsCompleted ? "Завершено"
+                                 : _fixtureService.IsLastStep ? "Завершить"
+                                 : _fixtureService.IsStart ? "Начать" : "Продолжить";
 
-            btnAssembly.Enabled = _fixtureService.IsEnd;
+            btnAssembly.Enabled = _fixtureService.IsCompleted;
 
             // Группа Solidworks
             labelConnectionStatus.Text = _swService.ToString();
@@ -143,7 +136,7 @@ namespace Modellic.UI.Forms
 
             _fixtureService.GridView.Update();
         }
-       
+
         #endregion
     }
 }

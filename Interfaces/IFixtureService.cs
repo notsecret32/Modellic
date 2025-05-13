@@ -19,7 +19,9 @@ namespace Modellic.Interfaces
 
         bool IsStart { get; }
 
-        bool IsEnd { get; }
+        bool IsLastStep { get; }
+
+        bool IsCompleted { get; }
 
         bool HasNextStep { get; }
 
