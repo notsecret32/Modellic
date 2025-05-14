@@ -35,6 +35,11 @@ namespace Modellic.Services
         /// </summary>
         private SwConnectionStatus _swConnectionStatus;
 
+        /// <summary>
+        /// Язык приложения.
+        /// </summary>
+        private SwSupportedLanguages _language;
+
         #endregion
 
         #region Private Static Members
@@ -62,6 +67,8 @@ namespace Modellic.Services
                 }
             }
         }
+
+        public SwSupportedLanguages Language => _language;
 
         public bool IsDisconnected => _swConnectionStatus == SwConnectionStatus.Disconnected;
 
@@ -135,6 +142,8 @@ namespace Modellic.Services
 
                     _swApp.Visible = true;
                     _swApp.FrameState = (int)swWindowState_e.swWindowMaximized;
+
+                    _language = SwSupportedLanguagesParser.Parse(_swApp.GetCurrentLanguage());
 
                     ConnectionStatus = SwConnectionStatus.Connected;
                 });

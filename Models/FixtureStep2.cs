@@ -1,5 +1,7 @@
 ﻿using System.ComponentModel;
 using Modellic.Abstracts;
+using Modellic.Enums;
+using Modellic.Helpers;
 
 namespace Modellic.Models
 {
@@ -24,7 +26,7 @@ namespace Modellic.Models
 
         public override void Build()
         {
-            this.Extension.SelectByID2("Front Plane", "PLANE", 0, 0, 0, false, 0, null, 0);
+            SwHelpers.SelectByID2(this.Extension, SwPlanes.Front, "PLANE");
             this.SketchManager.InsertSketch(true);
             this.ActiveDoc.ClearSelection2(true);
 

@@ -14,6 +14,8 @@ namespace Modellic.Interfaces
 
         SwConnectionStatus ConnectionStatus { get; }
 
+        SwSupportedLanguages Language { get; }
+
         bool IsDisconnected { get; }
 
         bool IsDisconnecting { get; }

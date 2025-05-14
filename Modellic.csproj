@@ -103,8 +103,12 @@
     <Compile Include="Enums\FixtureStepBuildStatus.cs" />
     <Compile Include="Enums\FixtureStepFormResult.cs" />
     <Compile Include="Enums\SwConnectionStatus.cs" />
+    <Compile Include="Enums\SwPlanes.cs" />
+    <Compile Include="Enums\SwSupportedLanguages.cs" />
     <Compile Include="Events\CurrentStepChangedEventArgs.cs" />
     <Compile Include="Events\FixtureStepBuildStatusChangedEventArgs.cs" />
+    <Compile Include="Helpers\SwHelpers.cs" />
+    <Compile Include="Helpers\SwLocalizationHelper.cs" />
     <Compile Include="Interfaces\IFixtureService.cs" />
     <Compile Include="Interfaces\IFixtureStep.cs" />
     <Compile Include="Interfaces\IStepsGridViewService.cs" />
