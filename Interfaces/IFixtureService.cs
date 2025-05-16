@@ -39,7 +39,7 @@ namespace Modellic.Interfaces
 
         Task BuildAsync();
 
-        T Find<T>() where T : IFixtureStep;
+        T GetStep<T>() where T : IFixtureStep;
 
         IFixtureStep GetCurrentStep();
 

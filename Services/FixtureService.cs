@@ -108,8 +108,8 @@ namespace Modellic.Services
             _stepsGridViewService = new StepsGridViewService(gridView, this);
             _steps = new List<IFixtureStep>
             {
-                new FixtureStep1(),
-                new FixtureStep2()
+                new FixtureStep1() { FixtureService = this },
+                new FixtureStep2() { FixtureService = this },
             };
         }
 
@@ -157,14 +157,14 @@ namespace Modellic.Services
         }
 
         /// <summary>
-        /// Метод для поиска шага по его типу.
+        /// Метод для получения шага по его типу.
         /// </summary>
         /// <typeparam name="T">Класс, который нужно найти.</typeparam>
         /// <returns>Объект с указанным типом.</returns>
         /// <exception cref="InvalidOperationException">
         /// Выбрасывает ошибку, если указанный тип не соответствует ни одному элементу массива.
         /// </exception>
-        public T Find<T>() where T : IFixtureStep
+        public T GetStep<T>() where T : IFixtureStep
         {
             foreach (var step in _steps)
             {

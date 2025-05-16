@@ -20,6 +20,7 @@ namespace Modellic.UI.Forms
         private void InitializeForm(IFixtureStep step)
         {
             stepProperties.SelectedObject = step ?? throw new ArgumentNullException(nameof(step));
+            this.Text = $"Настройка шага «{step.Title}»";
             Result = FixtureStepFormResult.Cancel;
         }
 

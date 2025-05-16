@@ -24,6 +24,12 @@ namespace Modellic.Abstracts
         public FeatureManager FeatureManager => ActiveDoc?.FeatureManager;
 
         [Browsable(false)]
+        public ISelectionMgr SelectionManager => ActiveDoc?.SelectionManager;
+
+        [Browsable(false)]
+        public IFixtureService FixtureService { get; set; }
+
+        [Browsable(false)]
         public FixtureStepBuildStatus BuildStatus { get; set; } = FixtureStepBuildStatus.NotBuilt;
 
         public abstract string Title { get; }
