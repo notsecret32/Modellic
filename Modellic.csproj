@@ -107,7 +107,7 @@
     <Compile Include="Enums\SwSupportedLanguages.cs" />
     <Compile Include="Events\CurrentStepChangedEventArgs.cs" />
     <Compile Include="Events\FixtureStepBuildStatusChangedEventArgs.cs" />
-    <Compile Include="Helpers\LengthConverter.cs" />
+    <Compile Include="Extensions\DoubleExtension.cs" />
     <Compile Include="Helpers\SwHelpers.cs" />
     <Compile Include="Helpers\SwLocalizationHelper.cs" />
     <Compile Include="Interfaces\IFixtureService.cs" />

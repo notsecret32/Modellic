@@ -1,8 +1,11 @@
 ﻿using Modellic.Enums;
+using Modellic.Extensions;
 using Modellic.Services;
 using SolidWorks.Interop.sldworks;
 using SolidWorks.Interop.swconst;
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Modellic.Helpers
 {
@@ -10,38 +13,7 @@ namespace Modellic.Helpers
     {
         private static readonly SwService _swService = SwService.GetInstance();
 
-        public static bool SelectByID2(
-            ModelDocExtension extension,
-            SwPlanes plane,
-            string type,
-            double x = 0,
-            double y = 0,
-            double z = 0,
-            bool append = false,
-            int mark = 0,
-            Callout callout = null,
-            int selectOption = 0
-        )
-        {
-            var localizedPlane = SwLocalizationHelper.GetLocalizedPlaneName(_swService.Language, plane);
-            return extension.SelectByID2(localizedPlane, type, x, y, z, append, mark, callout, selectOption);
-        }
-
-        public static bool SelectByID2(
-            ModelDocExtension extension,
-            string name,
-            string type,
-            double x = 0,
-            double y = 0,
-            double z = 0,
-            bool append = false,
-            int mark = 0,
-            Callout callout = null,
-            int selectOption = 0
-        )
-        {
-            return extension.SelectByID2(name, type, x, y, z, append, mark, callout, selectOption);
-        }
+        #region Public Methods
 
         /// <summary>
         /// Создает операцию выдавливания (экструзии) из текущего эскиза.
@@ -71,10 +43,6 @@ namespace Modellic.Helpers
         /// <param name="startOffset">Смещение от плоскости эскиза для начала выдавливания.</param>
         /// <param name="reverseStartOffset">True - инвертировать направление начального смещения.</param>
         /// <returns>Созданный объект операции выдавливания.</returns>
-        /// <remarks>
-        /// Для простого выдавливания используйте isSingleEnded=true, укажите endCondition1 и depth1.
-        /// Для двустороннего выдавливания установите isSingleEnded=false и задайте параметры для обеих сторон.
-        /// </remarks>
         public static Feature CreateExtrusion(
             FeatureManager featureManager,
             bool isSingleEnded,
@@ -99,8 +67,7 @@ namespace Modellic.Helpers
             bool autoSelectBodies,
             swStartConditions_e startCondition,
             double startOffset,
-            bool reverseStartOffset
-        )
+            bool reverseStartOffset)
         {
             return featureManager.FeatureExtrusion3(
                 isSingleEnded,
@@ -125,8 +92,13 @@ namespace Modellic.Helpers
                 autoSelectBodies,
                 (int)startCondition,
                 startOffset,
-                reverseStartOffset
-            );
+                reverseStartOffset);
+        }
+
+        public static string GetActiveSketchName(ModelDoc2 modelDoc)
+        {
+            Feature activeSketch = (Feature)modelDoc.GetActiveSketch2();
+            return activeSketch.Name;
         }
 
         /// <summary>
@@ -152,84 +124,66 @@ namespace Modellic.Helpers
         }
 
         /// <summary>
-        /// Переименовывает грань в детали SolidWorks.
+        /// Выбирает объект по имени и типу с возможностью указания координат выбора.
         /// </summary>
-        /// <param name="modelDoc">Документ, в котором нужно переименовать грань.</param>
-        /// <param name="face">Грань для переименования.</param>
-        /// <param name="newName">Новое имя грани.</param>
-        /// <exception cref="ArgumentNullException">Если грань не указана.</exception>
-        /// <exception cref="ArgumentException">Если переданная строка пустая либо содержиит пустые или запрещенные символы.</exception>
-        /// <exception cref="InvalidOperationException">Если операция не удалась.</exception>
-        public static void RenameFace(ModelDoc2 modelDoc, Face2 face, string newName)
+        /// <param name="extension">Расширение документа модели.</param>
+        /// <param name="name">Имя объекта для выбора.</param>
+        /// <param name="type">Тип объекта для выбора.</param>
+        /// <param name="x">X-координата точки выбора.</param>
+        /// <param name="y">Y-координата точки выбора.</param>
+        /// <param name="z">Z-координата точки выбора.</param>
+        /// <param name="append">Добавить к текущему выделению.</param>
+        /// <param name="mark">Метка выбора.</param>
+        /// <param name="callout">Выноска.</param>
+        /// <param name="selectOption">Опции выбора.</param>
+        /// <returns>True, если выбор выполнен успешно.</returns>
+        public static bool SelectByID2(ModelDocExtension extension, string name, string type, double x = 0, double y = 0, double z = 0, bool append = false, int mark = 0, Callout callout = null, int selectOption = 0)
         {
-            if (face == null)
-            {
-                throw new ArgumentNullException(nameof(face), "Грань не может быть null");
-            }
-
-            if (string.IsNullOrWhiteSpace(newName))
-            {
-                throw new ArgumentException("Имя грани не может быть пустым", nameof(newName));
-            }
-
-            try
-            {
-                if (modelDoc == null)
-                {
-                    throw new InvalidOperationException("Нет активного документа");
-                }
-
-                var partDoc = (PartDoc)modelDoc ?? throw new InvalidOperationException("Активный документ не является деталью");
-
-                bool success = partDoc.SetEntityName((Entity)face, newName);
-
-                if (!success)
-                {
-                    throw new InvalidOperationException($"Не удалось установить имя '{newName}' для грани");
-                }
-            }
-            catch (Exception ex)
-            {
-                throw new InvalidOperationException("Ошибка при переименовании грани", ex);
-            }
+            return extension.SelectByID2(name, type, x, y, z, append, mark, callout, selectOption);
         }
 
         /// <summary>
-        /// Переименовывает ребро в детали SolidWorks.
+        /// Выбирает стандартную плоскость по перечислению с локализацией имени.
         /// </summary>
-        /// <param name="modelDoc">Документ, в котором нужно переименовать ребро.</param>
-        /// <param name="edge">Ребро для переименования.</param>
-        /// <param name="newName">Новое имя ребра.</param>
-        /// <exception cref="ArgumentNullException">Если ребро не указано.</exception>
-        /// <exception cref="ArgumentException">Если переданная строка пустая либо содержиит пустые или запрещенные символы.</exception>
-        /// <exception cref="InvalidOperationException">Если операция не удалась.</exception>
-        public static void RenameEdge(ModelDoc2 modelDoc, Edge edge, string newName)
+        /// <param name="extension">Расширение документа модели.</param>
+        /// <param name="plane">Плоскость из перечисления SwPlanes.</param>
+        /// <param name="type">Тип объекта для выбора.</param>
+        /// <param name="x">X-координата точки выбора.</param>
+        /// <param name="y">Y-координата точки выбора.</param>
+        /// <param name="z">Z-координата точки выбора.</param>
+        /// <param name="append">Добавить к текущему выделению.</param>
+        /// <param name="mark">Метка выбора.</param>
+        /// <param name="callout">Выноска.</param>
+        /// <param name="selectOption">Опции выбора.</param>
+        /// <returns>True, если выбор выполнен успешно.</returns>
+        public static bool SelectByID2(ModelDocExtension extension, SwPlanes plane, string type, double x = 0, double y = 0, double z = 0, bool append = false, int mark = 0, Callout callout = null, int selectOption = 0)
         {
-            if (edge == null)
-            {
-                throw new ArgumentNullException(nameof(edge), "Ребро не может быть null");
-            }
-
-            if (string.IsNullOrWhiteSpace(newName))
-            {
-                throw new ArgumentException("Имя ребра не может быть пустым", nameof(newName));
-            }
-
-            try
-            {
-                if (modelDoc == null)
-                    throw new InvalidOperationException("Нет активного документа");
-
-                var partDoc = (PartDoc)modelDoc ?? throw new InvalidOperationException("Активный документ не является деталью");
-
-                bool success = partDoc.SetEntityName((Entity)edge, newName);
-                if (!success)
-                    throw new InvalidOperationException($"Не удалось установить имя '{newName}' для ребра");
-            }
-            catch (Exception ex)
-            {
-                throw new InvalidOperationException("Ошибка при переименовании ребра", ex);
-            }
+            var localizedPlane = SwLocalizationHelper.GetLocalizedPlaneName(_swService.Language, plane);
+            return extension.SelectByID2(localizedPlane, type, x, y, z, append, mark, callout, selectOption);
         }
+
+        /// <summary>
+        /// Обрезает выбранные объекты эскиза.
+        /// </summary>
+        /// <param name="sketchManager">Ссылка на действующий менеджер эскизов.</param>
+        /// <param name="option">Опция обрезки эскиза из перечисления swSketchTrimChoice_e.</param>
+        /// <param name="x">X координата места выбора.</param>
+        /// <param name="y">Y координата места выбора.</param>
+        /// <param name="z">Z координата места выбора.</param>
+        /// <returns>True, если обрезание прошло успешно.</returns>
+        /// <exception cref="ArgumentNullException">Если был передан пустой менеджер эскизов.</exception>
+        /// <exception cref="NullReferenceException">Если нет активного эскиза.</exception>
+        public static bool SketchTrim(SketchManager sketchManager, swSketchTrimChoice_e option, double x = 0, double y = 0, double z = 0)
+        {
+            if (sketchManager == null)
+                throw new ArgumentNullException(nameof(sketchManager), "Не удалось получить менеджер эскизов.");
+
+            if (sketchManager.ActiveSketch == null)
+                throw new NullReferenceException("Этот метод можно использовать только при создании либо редактировании эскиза.");
+
+            return sketchManager.SketchTrim((int)option, x, y, z);
+        }
+
+        #endregion
     }
 }
