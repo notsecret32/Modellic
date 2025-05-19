@@ -1,6 +1,7 @@
 ﻿using Modellic.Enums;
 using Modellic.Services;
 using SolidWorks.Interop.sldworks;
+using SolidWorks.Interop.swconst;
 using System;
 
 namespace Modellic.Helpers
@@ -79,8 +80,8 @@ namespace Modellic.Helpers
             bool isSingleEnded,
             bool flipCutSide,
             bool reverseDirection,
-            int endCondition1,
-            int endCondition2,
+            swEndConditions_e endCondition1,
+            swEndConditions_e endCondition2,
             double depth1,
             double depth2,
             bool enableDraft1,
@@ -96,7 +97,7 @@ namespace Modellic.Helpers
             bool mergeResult,
             bool useFeatureScope,
             bool autoSelectBodies,
-            int startCondition,
+            swStartConditions_e startCondition,
             double startOffset,
             bool reverseStartOffset
         )
@@ -105,8 +106,8 @@ namespace Modellic.Helpers
                 isSingleEnded,
                 flipCutSide,
                 reverseDirection,
-                endCondition1,
-                endCondition2,
+                (int)endCondition1,
+                (int)endCondition2,
                 depth1,
                 depth2,
                 enableDraft1,
@@ -122,7 +123,7 @@ namespace Modellic.Helpers
                 mergeResult,
                 useFeatureScope,
                 autoSelectBodies,
-                startCondition,
+                (int)startCondition,
                 startOffset,
                 reverseStartOffset
             );
