@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using Modellic.Abstracts;
 using Modellic.Enums;
+using Modellic.Extensions;
 using Modellic.Helpers;
 using SolidWorks.Interop.swconst;
 
@@ -144,14 +145,14 @@ namespace Modellic.Models
             double radius = 0;
 
             // Создаем внешнюю окружность
-            radius = LengthConverter.ConvertMillimetersToMeters(Diameter / 2);
+            radius = (Diameter / 2).ToMeters();
             this.ActiveDoc.CreateCircle(
                 0,      0, 0, // Начало
                 radius, 0, 0  // Конец
             );
 
             // Создаем внутреннюю окружность
-            radius = LengthConverter.ConvertMillimetersToMeters(Diameter / 2) - LengthConverter.ConvertMillimetersToMeters(Width);
+            radius = (Diameter / 2 - Width).ToMeters();
             this.ActiveDoc.CreateCircle(
                 0,      0, 0, // Начало
                 radius, 0, 0  // Конец
@@ -161,7 +162,7 @@ namespace Modellic.Models
             this.SketchManager.InsertSketch(true);
 
             // Создаем бобышку
-            double thickness = LengthConverter.ConvertMillimetersToMeters(Thickness);
+            double thickness = Thickness.ToMeters();
             var feature = SwHelpers.CreateExtrusion(
                 this.FeatureManager,
                 true,
