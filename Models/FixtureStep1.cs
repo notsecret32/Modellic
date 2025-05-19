@@ -1,9 +1,8 @@
-﻿using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using Modellic.Abstracts;
 using Modellic.Enums;
 using Modellic.Helpers;
-using SolidWorks.Interop.sldworks;
+using SolidWorks.Interop.swconst;
 
 namespace Modellic.Models
 {
@@ -15,73 +14,106 @@ namespace Modellic.Models
     {
         #region Constants
 
-        /// <summary>
-        /// Стандартное значение внешнего диаметра.
-        /// </summary>
-        const double DEFAULT_OUTER_DIAMENETER = 280;
+        private const double DEFAULT_DIAMETER = 280;
 
-        /// <summary>
-        /// Стандартное значение внутреннего диаметра.
-        /// </summary>
-        const double DEFAULT_INNER_DIAMENETER = 260;
+        private const double DEFAULT_WIDTH = 10;
+
+        private const double DEFAULT_THICKNESS = 12;
+
+        private const double DEFAULT_MOUNT_WIDTH = 27.5;
+
+        private const double DEFAULT_MOUNT_HEIGHT = 24;
+
+        private const int DEFAULT_MOUNT_QUANTITY = 8;
+
+        private const double DEFAULT_HOLE_DIAMETER = 8.5;
+
+        private const double DEFAULT_ROUNDING_RADIUS = 30;
 
         #endregion
 
         #region Private Members
 
-        private readonly string _name = "Внешняя окружность";
-
-        private double _outerDiameter = DEFAULT_OUTER_DIAMENETER;
-
-        private double _innerDiameter = DEFAULT_INNER_DIAMENETER;
+        private readonly string _name = "Внешний диск";
 
         #endregion
 
-        #region Parameters
+        #region Non Browsable
 
         [Browsable(false)]
         public override string Title => _name;
 
-        /// <summary>
-        /// Внешний диаметр.
-        /// </summary>
-        [Category("Размер")]
-        [DisplayName("Внешний диаметр (мм)")]
-        [DefaultValue(DEFAULT_OUTER_DIAMENETER)]
-        public double OuterDiameter
-        {
-            get
-            {
-                return _outerDiameter;
-            }
-            set
-            {
-                _outerDiameter = value;
-            }
-        }
+        #endregion
+
+        #region General Properties
 
         /// <summary>
-        /// Внутренний диаметр.
+        /// Диаметр диска.
         /// </summary>
-        [Category("Размер")]
-        [DisplayName("Внешний диаметр (мм)")]
-        [DefaultValue(DEFAULT_INNER_DIAMENETER)]
-        public double InnerDiameter
-        {
-            get
-            {
-                return _innerDiameter;
-            }
-            set
-            {
-                if (value < 1 || value > _outerDiameter - 1)
-                {
-                    throw new ArgumentOutOfRangeException($"Внутренний диаметр должен быть от 1 до {_outerDiameter - 1}");
-                }
+        [Category("Общее"), Description("Диаметр окружности.")]
+        [DisplayName("Диаметр")]
+        [DefaultValue(DEFAULT_DIAMETER)]
+        public double Diameter { get; set; } = DEFAULT_DIAMETER;
 
-                _innerDiameter = value;
-            }
-        }
+        /// <summary>
+        /// Ширина диска. Вычисляется как диаметр диска - ширина.
+        /// </summary>
+        [Category("Общее"), Description("Ширина диска. Вычисляется как диаметр диска - ширина.")]
+        [DisplayName("Ширина")]
+        [DefaultValue(DEFAULT_WIDTH)]
+        public double Width { get; set; } = DEFAULT_WIDTH;
+
+        /// <summary>
+        /// Толщиина диска.
+        /// </summary>
+        [Category("Общее"), Description("Толщина диска.")]
+        [DisplayName("Толщина")]
+        [DefaultValue(DEFAULT_THICKNESS)]
+        public double Thickness { get; set; } = DEFAULT_THICKNESS;
+
+        #endregion
+
+        #region Mount Properties
+
+        /// <summary>
+        /// Ширина крепления.
+        /// </summary>
+        [Category("Крепление"), Description("Ширина крепления.")]
+        [DisplayName("Ширина креплениия")]
+        [DefaultValue(DEFAULT_MOUNT_WIDTH)]
+        public double MountWidth { get; set; } = DEFAULT_MOUNT_WIDTH;
+
+        /// <summary>
+        /// Высота крепления
+        /// </summary>
+        [Category("Крепление"), Description("Высота крепления.")]
+        [DisplayName("Высота крепления")]
+        [DefaultValue(DEFAULT_MOUNT_HEIGHT)]
+        public double MountHeight { get; set; } = DEFAULT_MOUNT_HEIGHT;
+
+        /// <summary>
+        /// Кол-во крепления. Те крепления, которые находятся сверху и будут мешать верхнему креплению уберутся, но они считаются.
+        /// </summary>
+        [Category("Крепление"), Description("Количество креплений. Это число и число фактический креплений может не совпадать, так как верхние крепления убираются для правильного построения верхней части приспособления.")]
+        [DisplayName("Количество")]
+        [DefaultValue(DEFAULT_MOUNT_QUANTITY)]
+        public int Quantity { get; set; } = DEFAULT_MOUNT_QUANTITY;
+
+        /// <summary>
+        /// Диаметр отверстия.
+        /// </summary>
+        [Category("Крепление"), Description("Диаметр отверстия.")]
+        [DisplayName("Диаметр отверстия")]
+        [DefaultValue(DEFAULT_HOLE_DIAMETER)]
+        public double HoleDiameter { get; set; } = DEFAULT_HOLE_DIAMETER;
+
+        /// <summary>
+        /// Радиус скругления.
+        /// </summary>
+        [Category("Крепление"), Description("Радиус скругления.")]
+        [DisplayName("Радиус скругления")]
+        [DefaultValue(DEFAULT_ROUNDING_RADIUS)]
+        public double RoundingRadius { get; set; } = DEFAULT_ROUNDING_RADIUS;
 
         #endregion
 
@@ -89,45 +121,55 @@ namespace Modellic.Models
 
         public override void Build()
         {
-            // Выбираем фронтальную поверхность
+            // Создаем внешний диск
+            this.CreateDisk();
+        }
+
+        #endregion
+
+        #region Private Methods
+
+        /// <summary>
+        /// Метод для создания внешнего диска.
+        /// </summary>
+        private void CreateDisk()
+        {
+            // Выбираем плоскость
             SwHelpers.SelectByID2(this.Extension, SwPlanes.Front, "PLANE");
 
             // Создаем эскиз
             this.SketchManager.InsertSketch(true);
 
-            // Переименовываем эскиз
-            Feature aciveSketch = (Feature)this.ActiveDoc.GetActiveSketch2();
-            aciveSketch.Name = "Эскиз1";
-
-            // Убираем выделение
-            this.ActiveDoc.ClearSelection2(true);
+            // Объявляем радиус, который будет высчитываться для каждой окружности
+            double radius = 0;
 
             // Создаем внешнюю окружность
+            radius = LengthConverter.ConvertMillimetersToMeters(Diameter / 2);
             this.ActiveDoc.CreateCircle(
-                0, 0, 0, 
-                LengthConverter.ConvertMillimetersToMeters(_outerDiameter / 2), 0, 0
+                0,      0, 0, // Начало
+                radius, 0, 0  // Конец
             );
-            this.ActiveDoc.ClearSelection2(true);
 
             // Создаем внутреннюю окружность
-            var innerRadius = this.SketchManager.CreateCircle(
-                0, 0, 0, 
-                LengthConverter.ConvertMillimetersToMeters(_innerDiameter / 2), 0, 0
+            radius = LengthConverter.ConvertMillimetersToMeters(Diameter / 2) - LengthConverter.ConvertMillimetersToMeters(Width);
+            this.ActiveDoc.CreateCircle(
+                0,      0, 0, // Начало
+                radius, 0, 0  // Конец
             );
-            this.ActiveDoc.ClearSelection2(true);
 
-            // Завершаем эскиз
+            // Выходим из эскиза
             this.SketchManager.InsertSketch(true);
 
-            // Вытягиваем по эскизу
+            // Создаем бобышку
+            double thickness = LengthConverter.ConvertMillimetersToMeters(Thickness);
             var feature = SwHelpers.CreateExtrusion(
                 this.FeatureManager,
                 true,
                 false,
                 true,
+                swEndConditions_e.swEndCondBlind,
                 0,
-                0,
-                LengthConverter.ConvertMillimetersToMeters(12),
+                thickness,
                 0,
                 false,
                 false,
@@ -142,11 +184,11 @@ namespace Modellic.Models
                 true,
                 true,
                 true,
-                0,
+                swStartConditions_e.swStartSketchPlane,
                 0,
                 false
             );
-            SwHelpers.RenameFeature(feature, "Окружность1");
+            SwHelpers.RenameFeature(feature, "ВнешнийДиск");
         }
 
         #endregion
