@@ -116,6 +116,7 @@
     <Compile Include="Interfaces\ISwService.cs" />
     <Compile Include="Models\FixtureStep1.cs" />
     <Compile Include="Models\FixtureStep2.cs" />
+    <Compile Include="Models\FixtureStep3.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\FixtureService.cs" />

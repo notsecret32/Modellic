@@ -110,6 +110,7 @@ namespace Modellic.Services
             {
                 new FixtureStep1() { FixtureService = this },
                 new FixtureStep2() { FixtureService = this },
+                new FixtureStep3() { FixtureService = this },
             };
         }
 
