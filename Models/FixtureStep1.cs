@@ -141,6 +141,9 @@ namespace Modellic.Models
             // Создаем эскиз
             this.SketchManager.InsertSketch(true);
 
+            // Переименовываем активный эскиз
+            SwHelpers.RenameActiveSketch(this.ActiveDoc, "ВнешнДискЭскиз");
+
             // Объявляем радиус, который будет высчитываться для каждой окружности
             double radius = 0;
 
