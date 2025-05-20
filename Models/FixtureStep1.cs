@@ -8,7 +8,7 @@ using SolidWorks.Interop.swconst;
 namespace Modellic.Models
 {
     /// <summary>
-    /// Шаг создания приспособления. Создает самую большую окружность.
+    /// Первый шаг создания приспособления. На этом шаге строиться внутренний диск.
     /// </summary>
     [DefaultProperty("Name")]
     public class FixtureStep1 : FixtureStepBase
@@ -29,7 +29,7 @@ namespace Modellic.Models
 
         private const double DEFAULT_HOLE_DIAMETER = 8.5;
 
-        private const double DEFAULT_ROUNDING_RADIUS = 30;
+        private const double DEFAULT_FILLET_RADIUS = 30;
 
         #endregion
 
@@ -113,8 +113,8 @@ namespace Modellic.Models
         /// </summary>
         [Category("Крепление"), Description("Радиус скругления.")]
         [DisplayName("Радиус скругления")]
-        [DefaultValue(DEFAULT_ROUNDING_RADIUS)]
-        public double RoundingRadius { get; set; } = DEFAULT_ROUNDING_RADIUS;
+        [DefaultValue(DEFAULT_FILLET_RADIUS)]
+        public double FilletRadius { get; set; } = DEFAULT_FILLET_RADIUS;
 
         #endregion
 

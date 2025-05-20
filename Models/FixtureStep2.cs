@@ -9,12 +9,13 @@ using SolidWorks.Interop.swconst;
 
 namespace Modellic.Models
 {
+    /// <summary>
+    /// Второй шаг создания приспособления. На этом шаге строиться внутренний диск.
+    /// </summary>
     [DefaultProperty("Name")]
     public class FixtureStep2 : FixtureStepBase
     {
         #region Constants
-
-        const string STEP_NAME = "Внутренний диск";
 
         const double DEFAULT_DIAMETER = 195.2;
 
@@ -38,10 +39,16 @@ namespace Modellic.Models
 
         #endregion
 
+        #region Private Members
+
+        private readonly string _name = "Внешний диск";
+
+        #endregion
+
         #region Non Browsable
 
         [Browsable(false)]
-        public override string Title => STEP_NAME;
+        public override string Title => _name;
 
         #endregion
 
