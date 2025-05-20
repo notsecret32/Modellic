@@ -123,6 +123,20 @@ namespace Modellic.Helpers
             }
         }
 
+        public static bool RenameActiveSketch(ModelDoc2 modelDoc, string newName)
+        {
+            try
+            {
+                Feature activeSketch = (Feature)modelDoc.GetActiveSketch2();
+                activeSketch.Name = newName;
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
         /// <summary>
         /// Выбирает объект по имени и типу с возможностью указания координат выбора.
         /// </summary>
