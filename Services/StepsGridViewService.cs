@@ -40,7 +40,7 @@ namespace Modellic.Services
             _gridView.Rows.Add(
                 _fixtureService.CurrentStepIndex == _fixtureService.Count ? "➤" : "",
                 "",
-                "Завершение"
+                "Завершено"
             );
         }
 
