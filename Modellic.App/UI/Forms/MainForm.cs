@@ -8,30 +8,56 @@ namespace Modellic.App
 {
     public partial class MainForm : Form
     {
+        #region Private Members
+
         private readonly SwApplicationManager _applicationManager = SwApplicationManager.Instance;
+
+        #endregion
+
+        #region Constructors
 
         public MainForm()
         {
             InitializeComponent();
             InitializeControls();
         }
+        
+        #endregion
+
+        #region Event Handlers
 
         private async void MenuItemConnectToSw_Click(object sender, EventArgs e)
         {
             await HandleConnectToSw();
         }
 
+        #endregion
+
+        #region Helpers
+       
+        private void InitializeControls()
+        {
+            menuItemConnectToSw.Enabled = !_applicationManager.IsConnected;
+            menuItemDisconnectFromSw.Enabled = _applicationManager.IsConnected;
+        }
+
+        private void UpdateControls()
+        {
+            menuItemConnectToSw.Enabled = !_applicationManager.IsConnected;
+            menuItemConnectToSw.CheckState = _applicationManager.IsConnected ? CheckState.Checked : CheckState.Unchecked;
+            menuItemDisconnectFromSw.Enabled = _applicationManager.IsConnected;
+        }
+
         private async Task HandleConnectToSw()
         {
             try
             {
+                // Обновляем состояние UI элементов до подключения
+                menuItemConnectToSw.Enabled = false;
+                Cursor = Cursors.WaitCursor;
+
                 // Подключаемся к SolidWorks
                 await _applicationManager.ConnectAsync();
-
-                // Обновляем состояние UI элементов
-                menuItemConnectToSw.Enabled = false;
-                menuItemConnectToSw.CheckState = CheckState.Checked;
-                menuItemDisconnectFromSw.Enabled = true;
             }
             catch (SolidWorksException ex)
             {
@@ -47,12 +73,16 @@ namespace Modellic.App
                     await HandleConnectToSw();
                 }
             }
-        }
+            finally
+            {
+                // Обновляем состояние UI элементов после попытки подключиться
+                UpdateControls();
 
-        private void InitializeControls()
-        {
-            menuItemConnectToSw.Enabled = !_applicationManager.IsConnected;
-            menuItemDisconnectFromSw.Enabled = _applicationManager.IsConnected;
+                // Возвращаем курсор в дефолтное состояние
+                Cursor = Cursors.Default;
+            }
         }
+        
+        #endregion
     }
 }
