@@ -1,9 +1,9 @@
 ﻿using Modellic.App.Enums;
-using Modellic.App.SolidWorks.Core;
+using Modellic.App.SolidWorks.Documents;
 using Modellic.App.SolidWorks.Managers;
 using SolidWorks.Interop.sldworks;
 
-namespace Modellic.App.SolidWorks.Documents
+namespace Modellic.App.SolidWorks.Core
 {
     /// <summary>
     /// Представляет собой любой тип файла в SolidWorks (Модель, Сборка, Чертеж).
