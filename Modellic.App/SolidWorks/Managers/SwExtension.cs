@@ -1,9 +1,10 @@
 ﻿using Modellic.App.SolidWorks.Core;
+using Modellic.App.SolidWorks.Documents;
 using SolidWorks.Interop.sldworks;
 
-namespace Modellic.App.SolidWorks.Documents
+namespace Modellic.App.SolidWorks.Managers
 {
-    public class SwModelDocExtension : SwSharedObject<ModelDocExtension>
+    public class SwExtension : SwSharedObject<ModelDocExtension>
     {
         #region Public Properties
 
@@ -13,7 +14,7 @@ namespace Modellic.App.SolidWorks.Documents
 
         #region Constructor
 
-        public SwModelDocExtension(ModelDocExtension model, SwModelDoc parent) : base(model)
+        public SwExtension(ModelDocExtension model, SwModelDoc parent) : base(model)
         {
             Parent = parent;
         }

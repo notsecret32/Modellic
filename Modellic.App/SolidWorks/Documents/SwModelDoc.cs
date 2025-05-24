@@ -12,7 +12,7 @@ namespace Modellic.App.SolidWorks.Documents
     {
         #region Public Manager Properties
 
-        public SwModelDocExtension Extension { get; protected set; }
+        public SwExtension Extension { get; protected set; }
 
         public SwSelectionManager SelectionManager { get; protected set; }
 
@@ -70,7 +70,7 @@ namespace Modellic.App.SolidWorks.Documents
             DocumentType = (SwDocumentType)BaseObject.GetType();
 
             // Получаем Extension документа
-            Extension = new SwModelDocExtension(BaseObject.Extension, this);
+            Extension = new SwExtension(BaseObject.Extension, this);
 
             // Получаем SelectionManager документа
             SelectionManager = new SwSelectionManager(BaseObject.SelectionManager);
