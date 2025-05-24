@@ -131,7 +131,6 @@
     <Compile Include="SolidWorks\Core\SwSelectedObject.cs" />
     <Compile Include="SolidWorks\Managers\SwSketchManager.cs" />
     <Compile Include="SolidWorks\Models\SwFeature.cs" />
-    <Compile Include="SolidWorks\Models\SwFeatureExtension.cs" />
     <Compile Include="UI\Forms\MainForm.cs">
       <SubType>Form</SubType>
     </Compile>

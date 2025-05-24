@@ -41,6 +41,24 @@ namespace Modellic.App.SolidWorks.Models
 
         #endregion
 
+        #region Public Static Methods
+
+        public SwFeatureType GetFeatureType()
+        {
+            // Проверяем, что feature не пустой
+            if (FeatureTypeName == null || string.IsNullOrEmpty(FeatureTypeName))
+            {
+                return SwFeatureType.None;
+            }
+
+            return FeatureTypeName switch
+            {
+                _ => SwFeatureType.None,
+            };
+        }
+
+        #endregion
+
         #region Protected Helpers
 
         protected string GetFeatureTypeName()
