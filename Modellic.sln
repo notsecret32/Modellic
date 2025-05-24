@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.12.35707.178 d17.12
+VisualStudioVersion = 17.12.35707.178
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Modellic", "Modellic.csproj", "{860F57F0-1C95-45A4-B4B5-DA6F10F8FE50}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Modellic.App", "Modellic.App\Modellic.App.csproj", "{E2E221ED-7B46-436A-A024-4980A1EF4712}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,8 +17,15 @@ Global
 		{860F57F0-1C95-45A4-B4B5-DA6F10F8FE50}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{860F57F0-1C95-45A4-B4B5-DA6F10F8FE50}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{860F57F0-1C95-45A4-B4B5-DA6F10F8FE50}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E2E221ED-7B46-436A-A024-4980A1EF4712}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E2E221ED-7B46-436A-A024-4980A1EF4712}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E2E221ED-7B46-436A-A024-4980A1EF4712}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E2E221ED-7B46-436A-A024-4980A1EF4712}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {04E9AEF1-3BE0-47D2-8EED-9CFA807BDAE9}
 	EndGlobalSection
 EndGlobal
