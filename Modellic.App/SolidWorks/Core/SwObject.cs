@@ -21,7 +21,8 @@ namespace Modellic.App.SolidWorks.Core
         #region Public Properties
 
         /// <summary>
-        /// COM-объект без типизации.
+        /// Исходный базовый COM-объект.
+        /// ОСТОРОЖНО: при использовании этого свойства освобожнение ресурсов становится ручным.
         /// </summary>
         public object UnsafeObject => _baseObject;
 

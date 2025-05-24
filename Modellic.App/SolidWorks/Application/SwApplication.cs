@@ -1,5 +1,5 @@
 ﻿using Modellic.App.SolidWorks.Core;
-using Modellic.App.SolidWorks.Models;
+using Modellic.App.SolidWorks.Documents;
 using SolidWorks.Interop.sldworks;
 
 namespace Modellic.App.SolidWorks.Application
@@ -8,7 +8,7 @@ namespace Modellic.App.SolidWorks.Application
     {
         #region Protected Members
 
-        protected SwModelDoc mActiveModel;
+        protected SwModelDoc _activeDocument;
 
         #endregion
 
@@ -20,7 +20,7 @@ namespace Modellic.App.SolidWorks.Application
 
         #region Public Properties
 
-        public SwModelDoc ActiveModel => mActiveModel;
+        public SwModelDoc ActiveDocument => _activeDocument;
 
         public bool Disposing { get; private set; }
 
@@ -43,7 +43,7 @@ namespace Modellic.App.SolidWorks.Application
                 Disposing = true;
 
                 // Очищаем текущий документ
-                ActiveModel?.Dispose();
+                ActiveDocument?.Dispose();
 
                 // ПОМЕТКА: Не очищать приложение, SolidWorks делает это сам
                 //base.Dispose();
