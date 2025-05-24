@@ -128,7 +128,7 @@
     <Compile Include="SolidWorks\Documents\SwPartDoc.cs" />
     <Compile Include="SolidWorks\Managers\SwFeatureManager.cs" />
     <Compile Include="SolidWorks\Managers\SwSelectionManager.cs" />
-    <Compile Include="SolidWorks\Managers\SwSelectedObject.cs" />
+    <Compile Include="SolidWorks\Core\SwSelectedObject.cs" />
     <Compile Include="SolidWorks\Managers\SwSketchManager.cs" />
     <Compile Include="SolidWorks\Models\SwFeature.cs" />
     <Compile Include="SolidWorks\Models\SwFeatureExtension.cs" />
