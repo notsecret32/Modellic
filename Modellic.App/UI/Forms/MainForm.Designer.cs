@@ -30,7 +30,7 @@
         {
             this.appMenu = new System.Windows.Forms.MenuStrip();
             this.menuItemFile = new System.Windows.Forms.ToolStripMenuItem();
-            this.menuItemNewFile = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuItemCreateFile = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItemOpenFile = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItemSaveFile = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItemSolidWorks = new System.Windows.Forms.ToolStripMenuItem();
@@ -54,29 +54,29 @@
             // menuItemFile
             // 
             this.menuItemFile.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.menuItemNewFile,
+            this.menuItemCreateFile,
             this.menuItemOpenFile,
             this.menuItemSaveFile});
             this.menuItemFile.Name = "menuItemFile";
             this.menuItemFile.Size = new System.Drawing.Size(48, 20);
             this.menuItemFile.Text = "Файл";
             // 
-            // menuItemNewFile
+            // menuItemCreateFile
             // 
-            this.menuItemNewFile.Name = "menuItemNewFile";
-            this.menuItemNewFile.Size = new System.Drawing.Size(133, 22);
-            this.menuItemNewFile.Text = "Новый";
+            this.menuItemCreateFile.Name = "menuItemCreateFile";
+            this.menuItemCreateFile.Size = new System.Drawing.Size(180, 22);
+            this.menuItemCreateFile.Text = "Создать файл";
             // 
             // menuItemOpenFile
             // 
             this.menuItemOpenFile.Name = "menuItemOpenFile";
-            this.menuItemOpenFile.Size = new System.Drawing.Size(133, 22);
-            this.menuItemOpenFile.Text = "Открыть";
+            this.menuItemOpenFile.Size = new System.Drawing.Size(180, 22);
+            this.menuItemOpenFile.Text = "Открыть файл";
             // 
             // menuItemSaveFile
             // 
             this.menuItemSaveFile.Name = "menuItemSaveFile";
-            this.menuItemSaveFile.Size = new System.Drawing.Size(133, 22);
+            this.menuItemSaveFile.Size = new System.Drawing.Size(180, 22);
             this.menuItemSaveFile.Text = "Сохранить";
             // 
             // menuItemSolidWorks
@@ -121,7 +121,7 @@
 
         private System.Windows.Forms.MenuStrip appMenu;
         private System.Windows.Forms.ToolStripMenuItem menuItemFile;
-        private System.Windows.Forms.ToolStripMenuItem menuItemNewFile;
+        private System.Windows.Forms.ToolStripMenuItem menuItemCreateFile;
         private System.Windows.Forms.ToolStripMenuItem menuItemOpenFile;
         private System.Windows.Forms.ToolStripMenuItem menuItemSaveFile;
         private System.Windows.Forms.ToolStripMenuItem menuItemSolidWorks;
