@@ -120,14 +120,16 @@
     <Compile Include="Exceptions\SolidWorksException.cs" />
     <Compile Include="SolidWorks\Application\SwApplication.cs" />
     <Compile Include="SolidWorks\Application\SwApplicationManager.cs" />
-    <Compile Include="SolidWorks\Core\SharedSwObject.cs" />
+    <Compile Include="SolidWorks\Core\SwSharedObject.cs" />
     <Compile Include="SolidWorks\Core\SwObject.cs" />
     <Compile Include="SolidWorks\Documents\SwAssemblyDoc.cs" />
     <Compile Include="SolidWorks\Documents\SwModelDoc.cs" />
     <Compile Include="SolidWorks\Documents\SwModelDocExtension.cs" />
     <Compile Include="SolidWorks\Documents\SwPartDoc.cs" />
+    <Compile Include="SolidWorks\Managers\SwFeatureManager.cs" />
     <Compile Include="SolidWorks\Managers\SwSelectionManager.cs" />
     <Compile Include="SolidWorks\Managers\SwSelectedObject.cs" />
+    <Compile Include="SolidWorks\Managers\SwSketchManager.cs" />
     <Compile Include="SolidWorks\Models\SwFeature.cs" />
     <Compile Include="SolidWorks\Models\SwFeatureExtension.cs" />
     <Compile Include="UI\Forms\MainForm.cs">

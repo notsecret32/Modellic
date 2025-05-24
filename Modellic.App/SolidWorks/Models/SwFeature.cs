@@ -4,7 +4,7 @@ using SolidWorks.Interop.sldworks;
 
 namespace Modellic.App.SolidWorks.Models
 {
-    public class SwFeature : SharedSwObject<Feature>
+    public class SwFeature : SwSharedObject<Feature>
     {
         #region Protected Members
 

@@ -8,7 +8,7 @@ namespace Modellic.App.SolidWorks.Documents
     /// <summary>
     /// Представляет собой любой тип файла в SolidWorks (Модель, Сборка, Чертеж).
     /// </summary>
-    public class SwModelDoc : SharedSwObject<ModelDoc2>
+    public class SwModelDoc : SwSharedObject<ModelDoc2>
     {
         #region Public Manager Properties
 

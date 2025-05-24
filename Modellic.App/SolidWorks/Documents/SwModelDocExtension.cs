@@ -3,7 +3,7 @@ using SolidWorks.Interop.sldworks;
 
 namespace Modellic.App.SolidWorks.Documents
 {
-    public class SwModelDocExtension : SharedSwObject<ModelDocExtension>
+    public class SwModelDocExtension : SwSharedObject<ModelDocExtension>
     {
         #region Public Properties
 

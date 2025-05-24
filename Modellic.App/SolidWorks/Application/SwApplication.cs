@@ -4,7 +4,7 @@ using SolidWorks.Interop.sldworks;
 
 namespace Modellic.App.SolidWorks.Application
 {
-    public class SwApplication : SharedSwObject<ISldWorks>
+    public class SwApplication : SwSharedObject<ISldWorks>
     {
         #region Protected Members
 
