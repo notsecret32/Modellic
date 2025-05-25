@@ -247,7 +247,9 @@
             this.ClientSize = new System.Drawing.Size(634, 361);
             this.Controls.Add(this.tableLayoutBackground);
             this.Controls.Add(this.appMenu);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.MainMenuStrip = this.appMenu;
+            this.MaximizeBox = false;
             this.Name = "MainForm";
             this.Text = "Modellic";
             this.appMenu.ResumeLayout(false);
