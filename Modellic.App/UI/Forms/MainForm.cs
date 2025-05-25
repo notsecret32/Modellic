@@ -1,8 +1,10 @@
-﻿using Modellic.App.Exceptions;
+﻿using Microsoft.Extensions.Logging;
+using Modellic.App.Exceptions;
 using Modellic.App.SolidWorks.Application;
 using System;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static Modellic.App.Logging.LoggerService;
 
 namespace Modellic.App
 {
@@ -18,16 +20,22 @@ namespace Modellic.App
 
         public MainForm()
         {
+            Logger.LogInformation("Начало инициализации формы");
+
             InitializeComponent();
             InitializeControls();
+
+            Logger.LogInformation("Форма проинициализирована");
         }
-        
+
         #endregion
 
         #region Event Handlers
 
         private async void MenuItemConnectToSw_Click(object sender, EventArgs e)
         {
+            Logger.LogInformation("Попытка подключиться к SolidWorks");
+
             await HandleConnectToSw();
         }
 
@@ -37,15 +45,23 @@ namespace Modellic.App
        
         private void InitializeControls()
         {
+            Logger.LogInformation("Начало инициализации элементов управления");
+
             menuItemConnectToSw.Enabled = !_applicationManager.IsConnected;
             menuItemDisconnectFromSw.Enabled = _applicationManager.IsConnected;
+
+            Logger.LogInformation("Элементы управления проинициализированы");
         }
 
         private void UpdateControls()
         {
+            Logger.LogInformation("Обновлеям элементы управления");
+
             menuItemConnectToSw.Enabled = !_applicationManager.IsConnected;
             menuItemConnectToSw.CheckState = _applicationManager.IsConnected ? CheckState.Checked : CheckState.Unchecked;
             menuItemDisconnectFromSw.Enabled = _applicationManager.IsConnected;
+
+            Logger.LogInformation("Элементы управления обновлены");
         }
 
         private async Task HandleConnectToSw()
@@ -58,9 +74,13 @@ namespace Modellic.App
 
                 // Подключаемся к SolidWorks
                 await _applicationManager.ConnectAsync();
+
+                Logger.LogInformation("Подключение к SolidWorks прошло успешно");
             }
             catch (SolidWorksException ex)
             {
+                Logger.LogError($"Ошибка подключения к SolidWorks. Подробности: {ex.Details.ErrorMessage}");
+
                 var result = MessageBox.Show(
                     ex.Details.ErrorMessage,
                     "Ошибка подключения",

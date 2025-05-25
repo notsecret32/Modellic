@@ -1,6 +1,7 @@
-﻿using Modellic.App.SolidWorks.Core;
-using Modellic.App.SolidWorks.Documents;
+﻿using Microsoft.Extensions.Logging;
+using Modellic.App.SolidWorks.Core;
 using SolidWorks.Interop.sldworks;
+using static Modellic.App.Logging.LoggerService;
 
 namespace Modellic.App.SolidWorks.Application
 {
@@ -28,7 +29,10 @@ namespace Modellic.App.SolidWorks.Application
 
         #region Constructors
 
-        public SwApplication(ISldWorks solidWorks) : base(solidWorks) { }
+        public SwApplication(ISldWorks solidWorks) : base(solidWorks)
+        {
+            Logger.LogInformation($"Создаем экземпляр класса SwApplication (PID: {solidWorks.GetProcessID()})");
+        }
 
         #endregion
 
@@ -36,6 +40,8 @@ namespace Modellic.App.SolidWorks.Application
 
         public override void Dispose()
         {
+            Logger.LogInformation($"Запущено удаление (PID: {BaseObject.GetProcessID()})");
+
             lock (_disposingLock)
             {
 

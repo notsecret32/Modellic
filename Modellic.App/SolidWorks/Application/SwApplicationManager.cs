@@ -1,4 +1,5 @@
-﻿using Modellic.App.Enums;
+﻿using Microsoft.Extensions.Logging;
+using Modellic.App.Enums;
 using Modellic.App.Errors;
 using Modellic.App.Exceptions;
 using SolidWorks.Interop.sldworks;
@@ -6,6 +7,7 @@ using SolidWorks.Interop.swconst;
 using System;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using static Modellic.App.Logging.LoggerService;
 
 namespace Modellic.App.SolidWorks.Application
 {
@@ -37,12 +39,31 @@ namespace Modellic.App.SolidWorks.Application
 
         #endregion
 
+        #region Constructors
+
+        /// <summary>
+        /// Запрещаем создавать новые менеджеры.
+        /// </summary>
+        private SwApplicationManager()
+        {
+            Logger.LogInformation("Запущен конструктор SwApplicationManager");
+        }
+
+        #endregion
+
         #region Public Methods
 
         public async Task<bool> ConnectAsync()
         {
+            Logger.LogInformation("Проверяем статус подключения к SolidWorks");
+
             if (IsConnected)
+            {
+                Logger.LogInformation("Приложение уже подключено к SolidWorks, выходим");
                 return true;
+            }
+
+            Logger.LogInformation("Приложение не подключено к SolidWorks, пробуем подключиться");
 
             try
             {
@@ -53,10 +74,14 @@ namespace Modellic.App.SolidWorks.Application
                         ISldWorks app;
                         try
                         {
+                            Logger.LogInformation("Пробуем получить запущенный SolidWorks");
+
                             app = (ISldWorks)Marshal.GetActiveObject(SOLIDWORKS_PROG_ID);
                         }
                         catch (COMException)
                         {
+                            Logger.LogInformation("SolidWorks не запущен, открываем его");
+
                             app = (ISldWorks)Activator.CreateInstance(Type.GetTypeFromProgID(SOLIDWORKS_PROG_ID));
                         }
 
@@ -73,6 +98,8 @@ namespace Modellic.App.SolidWorks.Application
                     }
                     catch (Exception ex)
                     {
+                        Logger.LogError("Не удалось создать либо подключиться к SolidWorks");
+
                         throw new SolidWorksException(
                             SwObjectErrorManager.CreateError(
                                 "Не удалось создать либо подключиться к SolidWorks.",
@@ -86,9 +113,11 @@ namespace Modellic.App.SolidWorks.Application
             }
             catch (Exception ex)
             {
+                Logger.LogError("Ошибка при подключении к SolidWorks.");
+
                 throw new SolidWorksException(
                     SwObjectErrorManager.CreateError(
-                        "Ошибка при асинхронном подключении к SolidWorks.",
+                        "Ошибка при подключении к SolidWorks.",
                         SwObjectErrorType.SolidWorksApplication,
                         SwObjectErrorCode.SolidWorksApplicationFailedToConnect
                     ),
