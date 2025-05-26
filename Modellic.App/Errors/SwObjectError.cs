@@ -11,18 +11,39 @@ namespace Modellic.App.Errors
     {
         #region Public Properties
 
+        /// <summary>
+        /// Сообщение ошибки.
+        /// </summary>
         public string ErrorMessage { get; set; }
 
+        /// <summary>
+        /// Детали ошибки.
+        /// </summary>
         public string ErrorDetails { get; set; }
 
+        /// <summary>
+        /// Тип ошибки.
+        /// </summary>
         public SwObjectErrorType ErrorType { get; set; }
 
+        /// <summary>
+        /// Код ошибки.
+        /// </summary>
         public SwObjectErrorCode ErrorCode { get; set; }
 
+        /// <summary>
+        /// Фукнция, в которой произошла ошибка.
+        /// </summary>
         public string CallerMemberName { get; set; }
 
+        /// <summary>
+        /// Файл, в котором произошла ошибка.
+        /// </summary>
         public string CallerFilePath { get; set; }
 
+        /// <summary>
+        /// Номер строки в которой произошла ошибка.
+        /// </summary>
         public int CallerLineNumber { get; set; }
 
         #endregion

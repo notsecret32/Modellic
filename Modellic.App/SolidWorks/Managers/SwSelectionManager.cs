@@ -22,6 +22,10 @@ namespace Modellic.App.SolidWorks.Managers
 
         #region Public Methods
 
+        /// <summary>
+        /// Метод для получения выбранных элементов.
+        /// </summary>
+        /// <param name="action">Лямбда, принимающая массив выбранных элементов.</param>
         public void GetSelectedObjects(Action<List<SwSelectedObject>> action)
         {
             var list = new List<SwSelectedObject>();

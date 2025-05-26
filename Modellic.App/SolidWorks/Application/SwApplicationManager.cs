@@ -11,30 +11,54 @@ using static Modellic.App.Logging.LoggerService;
 
 namespace Modellic.App.SolidWorks.Application
 {
+    /// <summary>
+    /// Менеджер по управлению приложением SolidWorks. Предоставляет центролизированное управление активным приложением SolidWorks.
+    /// </summary>
     public class SwApplicationManager : IDisposable
     {
         #region Constants
 
+        /// <summary>
+        /// ID приложения SolidWorks в реестре Windows.
+        /// </summary>
         const string SOLIDWORKS_PROG_ID = "SldWorks.Application";
 
         #endregion
 
         #region Private Members
 
+        /// <summary>
+        /// Текущее приложение SolidWorks.
+        /// </summary>
         private SwApplication _swApp;
 
+        /// <summary>
+        /// Флаг, указывающий очищены ли данные текущего объекта.
+        /// </summary>
         private bool _isDisposed = false;
 
+        /// <summary>
+        /// Объект заглушка для удаления данных в lock.
+        /// </summary>
         private readonly object _disposingLock = new object();
 
         #endregion
 
         #region Public Properties
 
+        /// <summary>
+        /// Статический объект указывающий на единственный экземпляр менеджера приложений
+        /// </summary>
         public static SwApplicationManager Instance { get; } = new SwApplicationManager();
 
+        /// <summary>
+        /// Текущее приложение.
+        /// </summary>
         public SwApplication Application => _swApp;
 
+        /// <summary>
+        /// Флаг, указывающий подключено ли приложение к SolidWorks.
+        /// </summary>
         public bool IsConnected => _swApp != null && !_swApp.Disposing;
 
         #endregion
@@ -53,6 +77,11 @@ namespace Modellic.App.SolidWorks.Application
 
         #region Public Methods
 
+        /// <summary>
+        /// Метод для подключения к приложению SolidWorks. Если SolidWorks не открыт, то приложение откроет его.
+        /// </summary>
+        /// <returns>True - если удалось подключиться.</returns>
+        /// <exception cref="SolidWorksException">При любой непредвиденной ошибке.</exception>
         public async Task<bool> ConnectAsync()
         {
             Logger.LogInformation("Проверяем статус подключения к SolidWorks");
@@ -126,6 +155,10 @@ namespace Modellic.App.SolidWorks.Application
             }
         }
 
+        /// <summary>
+        /// Метод для отключения от SolidWorks.
+        /// </summary>
+        /// <param name="closeApp">Если True - закрыть приложение SolidWorks.</param>
         public void Disconnect(bool closeApp = false)
         {
             if (!IsConnected)

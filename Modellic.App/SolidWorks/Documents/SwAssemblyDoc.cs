@@ -7,7 +7,7 @@ using System;
 namespace Modellic.App.SolidWorks.Documents
 {
     /// <summary>
-    /// Предоставляет доступ ко всем вызовам документа детали из <see cref="Model"/>.
+    /// Представляет собой документ сборки. Предоставляет интерфейс для работы с документом сборки.
     /// </summary>
     public class SwAssemblyDoc
     {

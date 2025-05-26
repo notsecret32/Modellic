@@ -8,12 +8,22 @@ using System;
 
 namespace Modellic.App.SolidWorks.Managers
 {
+    /// <summary>
+    /// Объект представляющий выбранный элемент в приложении SolidWorks.
+    /// Доступ к выбранному объекту происходит через <see cref="SwSelectionManager"/>.
+    /// </summary>
     public class SwSelectedObject : SwObject<object>
     {
         #region Public Properties
 
+        /// <summary>
+        /// Тип выбранного элемента.
+        /// </summary>
         public swSelectType_e ObjectType { get; set; }
 
+        /// <summary>
+        /// Флаг, указывающий является ли этот объект Feature.
+        /// </summary>
         public bool IsFeature => ObjectType == swSelectType_e.swSelDATUMPLANES ||
             ObjectType == swSelectType_e.swSelDATUMAXES ||
             ObjectType == swSelectType_e.swSelDATUMPOINTS ||
@@ -32,12 +42,19 @@ namespace Modellic.App.SolidWorks.Managers
             ObjectType == swSelectType_e.swSelSWIFTANNOTATIONS ||
             ObjectType == swSelectType_e.swSelSWIFTFEATURES;
 
+        /// <summary>
+        /// Флаг, указывающий является ли этот объект плоскостью.
+        /// </summary>
         public bool IsDimension => ObjectType == swSelectType_e.swSelDIMENSIONS;
 
         #endregion
 
         #region Constructors
         
+        /// <summary>
+        /// Создает выбранный элемент.
+        /// </summary>
+        /// <param name="model">Выбранный элемент.</param>
         public SwSelectedObject(object model) : base(model)
         {
 
@@ -47,6 +64,10 @@ namespace Modellic.App.SolidWorks.Managers
 
         #region Type Case
 
+        /// <summary>
+        /// Преобразует объект в тип <see cref="SwFeature"/>.
+        /// </summary>
+        /// <param name="action">Лямбда, принимающая преобразованный объект.</param>
         public void AsFeature(Action<SwFeature> action)
         {
             void CastToFeature()
