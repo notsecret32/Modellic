@@ -1,7 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
-using Modellic.App.Core.Services;
 using Modellic.App.Exceptions;
-using Modellic.App.SolidWorks.Application;
 using Modellic.App.SolidWorks.Documents;
 using System;
 using System.Threading.Tasks;
