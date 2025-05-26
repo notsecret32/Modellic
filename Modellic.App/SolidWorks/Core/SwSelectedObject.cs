@@ -1,12 +1,11 @@
 ﻿using Modellic.App.Enums;
 using Modellic.App.Errors;
-using Modellic.App.SolidWorks.Core;
 using Modellic.App.SolidWorks.Models;
 using SolidWorks.Interop.sldworks;
 using SolidWorks.Interop.swconst;
 using System;
 
-namespace Modellic.App.SolidWorks.Managers
+namespace Modellic.App.SolidWorks.Core
 {
     /// <summary>
     /// Объект представляющий выбранный элемент в приложении SolidWorks.
