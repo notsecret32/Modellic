@@ -19,7 +19,7 @@ namespace Modellic.App
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new MainForm());
+            Application.Run(new UI.Forms.MainForm());
 
 #if DEBUG
             // Закрываем консоль при завершении приложения

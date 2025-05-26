@@ -1,4 +1,4 @@
-﻿namespace Modellic.App
+﻿namespace Modellic.App.UI.Forms
 {
     partial class MainForm
     {
@@ -44,14 +44,11 @@
             this.btnCursorDown = new System.Windows.Forms.Button();
             this.btnCursorUp = new System.Windows.Forms.Button();
             this.tableLayoutBackground = new System.Windows.Forms.TableLayoutPanel();
-            this.stepsGridView1 = new Modellic.UI.Controls.StepsGridView();
-            this.dataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.dataGridViewTextBoxColumn2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.dataGridViewTextBoxColumn3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.stepsGridView = new Modellic.App.UI.Controls.StepsGridView();
             this.appMenu.SuspendLayout();
             this.tableLayoutFixtureControl.SuspendLayout();
             this.tableLayoutBackground.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.stepsGridView1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.stepsGridView)).BeginInit();
             this.SuspendLayout();
             // 
             // appMenu
@@ -221,7 +218,7 @@
             this.tableLayoutBackground.Controls.Add(this.btnCursorUp, 2, 0);
             this.tableLayoutBackground.Controls.Add(this.btnCursorDown, 2, 1);
             this.tableLayoutBackground.Controls.Add(this.tableLayoutFixtureControl, 0, 0);
-            this.tableLayoutBackground.Controls.Add(this.stepsGridView1, 1, 0);
+            this.tableLayoutBackground.Controls.Add(this.stepsGridView, 1, 0);
             this.tableLayoutBackground.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutBackground.Location = new System.Drawing.Point(0, 24);
             this.tableLayoutBackground.Margin = new System.Windows.Forms.Padding(0);
@@ -235,39 +232,18 @@
             this.tableLayoutBackground.Size = new System.Drawing.Size(634, 337);
             this.tableLayoutBackground.TabIndex = 0;
             // 
-            // stepsGridView1
+            // stepsGridView
             // 
-            this.stepsGridView1.AllowUserToAddRows = false;
-            this.stepsGridView1.AllowUserToDeleteRows = false;
-            this.stepsGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.stepsGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.dataGridViewTextBoxColumn1,
-            this.dataGridViewTextBoxColumn2,
-            this.dataGridViewTextBoxColumn3});
-            this.stepsGridView1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.stepsGridView1.Location = new System.Drawing.Point(238, 7);
-            this.stepsGridView1.Margin = new System.Windows.Forms.Padding(4, 1, 4, 1);
-            this.stepsGridView1.Name = "stepsGridView1";
-            this.tableLayoutBackground.SetRowSpan(this.stepsGridView1, 3);
-            this.stepsGridView1.Size = new System.Drawing.Size(334, 323);
-            this.stepsGridView1.TabIndex = 6;
-            // 
-            // dataGridViewTextBoxColumn1
-            // 
-            this.dataGridViewTextBoxColumn1.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
-            this.dataGridViewTextBoxColumn1.Name = "dataGridViewTextBoxColumn1";
-            this.dataGridViewTextBoxColumn1.Width = 175;
-            // 
-            // dataGridViewTextBoxColumn2
-            // 
-            this.dataGridViewTextBoxColumn2.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
-            this.dataGridViewTextBoxColumn2.Name = "dataGridViewTextBoxColumn2";
-            this.dataGridViewTextBoxColumn2.Width = 175;
-            // 
-            // dataGridViewTextBoxColumn3
-            // 
-            this.dataGridViewTextBoxColumn3.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.dataGridViewTextBoxColumn3.Name = "dataGridViewTextBoxColumn3";
+            this.stepsGridView.AllowUserToAddRows = false;
+            this.stepsGridView.AllowUserToDeleteRows = false;
+            this.stepsGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.stepsGridView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.stepsGridView.Location = new System.Drawing.Point(238, 7);
+            this.stepsGridView.Margin = new System.Windows.Forms.Padding(4, 1, 4, 1);
+            this.stepsGridView.Name = "stepsGridView";
+            this.tableLayoutBackground.SetRowSpan(this.stepsGridView, 3);
+            this.stepsGridView.Size = new System.Drawing.Size(334, 323);
+            this.stepsGridView.TabIndex = 6;
             // 
             // MainForm
             // 
@@ -285,7 +261,7 @@
             this.appMenu.PerformLayout();
             this.tableLayoutFixtureControl.ResumeLayout(false);
             this.tableLayoutBackground.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.stepsGridView1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.stepsGridView)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -309,10 +285,7 @@
         private System.Windows.Forms.TableLayoutPanel tableLayoutBackground;
         private System.Windows.Forms.Button btnCursorUp;
         private System.Windows.Forms.Button btnCursorDown;
-        private UI.Controls.StepsGridView stepsGridView1;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn1;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn2;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn3;
+        private UI.Controls.StepsGridView stepsGridView;
     }
 }
 

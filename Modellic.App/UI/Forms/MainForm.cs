@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using Modellic.App.Core.Services;
 using Modellic.App.Exceptions;
 using Modellic.App.SolidWorks.Documents;
 using System;
@@ -6,10 +7,18 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using static Modellic.App.Logging.LoggerService;
 
-namespace Modellic.App
+namespace Modellic.App.UI.Forms
 {
     public partial class MainForm : Form
     {
+        #region Private Readonly Members
+
+        private readonly FixtureManager _fixtureManager;
+
+        private readonly StepsGridViewService _stepsGridViewService;
+
+        #endregion
+
         #region Constructors
 
         public MainForm()
@@ -18,6 +27,15 @@ namespace Modellic.App
 
             // Инициализируем компоненты
             InitializeComponent();
+
+            // Получаем FixtureBuilder
+            FixtureBuilder fixtureBuilder = ModellicEnv.FixtureBuilder;
+
+            // Инициализируем сервис по работе с StepsGridView
+            _stepsGridViewService = new StepsGridViewService(fixtureBuilder, stepsGridView);
+
+            // Инициализируем менеджер сборки приспособления
+            _fixtureManager = new FixtureManager(fixtureBuilder, _stepsGridViewService);
 
             // Инициализируем состояние элементов управления
             InitializeControls();

@@ -129,6 +129,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Core\Models\Fixture\FixtureStep.cs" />
+    <Compile Include="Core\Models\Fixture\FixtureStep4.cs" />
+    <Compile Include="Core\Models\Fixture\FixtureStep3.cs" />
+    <Compile Include="Core\Models\Fixture\FixtureStep2.cs" />
+    <Compile Include="Core\Models\Fixture\FixtureStep1.cs" />
+    <Compile Include="Core\Services\FixtureBuilder.cs" />
+    <Compile Include="Core\Services\FixtureManager.cs" />
+    <Compile Include="Core\Services\StepsGridViewService.cs" />
     <Compile Include="Enums\SwDestroyNotifyType.cs" />
     <Compile Include="Enums\SwDocumentType.cs" />
     <Compile Include="Enums\SwFeatureType.cs" />
