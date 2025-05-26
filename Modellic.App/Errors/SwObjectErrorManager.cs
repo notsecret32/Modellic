@@ -47,11 +47,11 @@ namespace Modellic.App.Errors
             }
         }
 
-        public static T Wrap<T>(Func<T> callback, string message, SwObjectErrorType errorType, SwObjectErrorCode errorCode)
+        public static T Wrap<T>(Func<T> action, string message, SwObjectErrorType errorType, SwObjectErrorCode errorCode)
         {
             try
             {
-                return callback();
+                return action();
             }
             catch (Exception ex)
             {
@@ -64,11 +64,11 @@ namespace Modellic.App.Errors
             }
         }
 
-        public static async Task WrapAsync(Func<Task> callback, string message, SwObjectErrorType errorType, SwObjectErrorCode errorCode)
+        public static async Task WrapAsync(Func<Task> action, string message, SwObjectErrorType errorType, SwObjectErrorCode errorCode)
         {
             try
             {
-                await callback();
+                await action();
             }
             catch (Exception ex)
             {
@@ -81,11 +81,11 @@ namespace Modellic.App.Errors
             }
         }
 
-        public static async Task<T> WrapAsync<T>(Func<Task<T>> callback, string message, SwObjectErrorType errorType, SwObjectErrorCode errorCode)
+        public static async Task<T> WrapAsync<T>(Func<Task<T>> action, string message, SwObjectErrorType errorType, SwObjectErrorCode errorCode)
         {
             try
             {
-                return await callback();
+                return await action();
             }
             catch (Exception ex)
             {
