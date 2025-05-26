@@ -12,14 +12,6 @@ namespace Modellic.App
 {
     public partial class MainForm : Form
     {
-        #region Private Members
-
-        private readonly AssemblyManager _assemblyManager = AssemblyManager.Instance;
-
-        private readonly SwApplicationManager _applicationManager = SwApplicationManager.Instance;
-
-        #endregion
-
         #region Constructors
 
         public MainForm()
@@ -58,11 +50,6 @@ namespace Modellic.App
             await HandleConnectToSw();
         }
 
-        private void BtnStartAssembly_Click(object sender, EventArgs e)
-        {
-            _assemblyManager.Build();
-        }
-
         #endregion
 
         #region Application Event Handlers
@@ -83,7 +70,7 @@ namespace Modellic.App
         {
             Logger.LogInformation("Пробуем подписаться на события приложения SolidWorks");
 
-            if (_applicationManager.Application == null || !_applicationManager.IsConnected)
+            if (ModellicEnv.Application == null || !ModellicEnv.ApplicationManager.IsConnected)
             {
                 Logger.LogInformation("Приложение SolidWorks еще не проинициализировано, пропускаем");
                 return;
@@ -91,7 +78,7 @@ namespace Modellic.App
 
             Logger.LogInformation("Приложение SolidWorks проинициализировано, подписываемся на события");
 
-            _applicationManager.Application.ActiveDocumentChanged += OnActiveDocumentChanged;
+            ModellicEnv.Application.ActiveDocumentChanged += OnActiveDocumentChanged;
         }
 
         /// <summary>
@@ -101,7 +88,7 @@ namespace Modellic.App
         {
             Logger.LogInformation("Пробуем отписаться на события приложения SolidWorks");
 
-            if (_applicationManager.Application == null || !_applicationManager.IsConnected)
+            if (ModellicEnv.Application == null || !ModellicEnv.ApplicationManager.IsConnected)
             {
                 Logger.LogInformation("Приложение SolidWorks еще не проинициализировано, пропускаем");
                 return;
@@ -109,7 +96,7 @@ namespace Modellic.App
 
             Logger.LogInformation("Отписываемся от событий приложения SolidWorks");
 
-            _applicationManager.Application.ActiveDocumentChanged -= OnActiveDocumentChanged;
+            ModellicEnv.Application.ActiveDocumentChanged -= OnActiveDocumentChanged;
         }
 
         #endregion
@@ -120,8 +107,8 @@ namespace Modellic.App
         {
             Logger.LogInformation("Начало инициализации элементов управления");
 
-            menuItemConnectToSw.Enabled = !_applicationManager.IsConnected;
-            menuItemDisconnectFromSw.Enabled = _applicationManager.IsConnected;
+            menuItemConnectToSw.Enabled = !ModellicEnv.ApplicationManager.IsConnected;
+            menuItemDisconnectFromSw.Enabled = ModellicEnv.ApplicationManager.IsConnected;
 
             Logger.LogInformation("Элементы управления проинициализированы");
         }
@@ -130,9 +117,9 @@ namespace Modellic.App
         {
             Logger.LogInformation("Обновлеям элементы управления");
 
-            menuItemConnectToSw.Enabled = !_applicationManager.IsConnected;
-            menuItemConnectToSw.CheckState = _applicationManager.IsConnected ? CheckState.Checked : CheckState.Unchecked;
-            menuItemDisconnectFromSw.Enabled = _applicationManager.IsConnected;
+            menuItemConnectToSw.Enabled = !ModellicEnv.ApplicationManager.IsConnected;
+            menuItemConnectToSw.CheckState = ModellicEnv.ApplicationManager.IsConnected ? CheckState.Checked : CheckState.Unchecked;
+            menuItemDisconnectFromSw.Enabled = ModellicEnv.ApplicationManager.IsConnected;
 
             Logger.LogInformation("Элементы управления обновлены");
         }
@@ -146,7 +133,7 @@ namespace Modellic.App
                 Cursor = Cursors.WaitCursor;
 
                 // Подключаемся к SolidWorks
-                await _applicationManager.ConnectAsync();
+                await ModellicEnv.ApplicationManager.ConnectAsync();
 
                 // Подписываемся на события
                 SubscribeToSwEvents();

@@ -139,6 +139,7 @@
     <Compile Include="Exceptions\SolidWorksException.cs" />
     <Compile Include="Logging\CustomConsoleFormatter.cs" />
     <Compile Include="Logging\LoggerService.cs" />
+    <Compile Include="ModellicEnv.cs" />
     <Compile Include="SolidWorks\Application\SwApplication.cs" />
     <Compile Include="SolidWorks\Application\SwApplicationManager.cs" />
     <Compile Include="SolidWorks\Core\SwSharedObject.cs" />
@@ -189,5 +190,6 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
