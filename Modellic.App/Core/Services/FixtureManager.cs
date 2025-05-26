@@ -9,6 +9,12 @@ namespace Modellic.App.Core.Services
     /// </summary>
     public class FixtureManager
     {
+        #region Private Members
+
+        private int _cursorPosition = 0;
+
+        #endregion
+
         #region Private Readonly Members
 
         /// <summary>
@@ -23,12 +29,21 @@ namespace Modellic.App.Core.Services
 
         #endregion
 
-        #region Public Static Properties
+        #region Public Properties
 
         /// <summary>
-        /// Ссылка на единственный экземпляр класс <see cref="FixtureManager"/>.
+        /// Текущая позиция курсора. Начинается с 0.
         /// </summary>
-        public static FixtureManager Instance;
+        public int CursorPosition => _cursorPosition;
+
+        #endregion
+
+        #region Public Events
+
+        /// <summary>
+        /// Вызывает, когд позиция курсора была изменена.
+        /// </summary>
+        public event Action<int> CursorPositionChanged;
 
         #endregion
 
@@ -50,14 +65,85 @@ namespace Modellic.App.Core.Services
             // Инициализируем сервис по работе с StepsGridView
             _stepsGridViewService = stepsGridViewService;
 
-            // Инициализируем сам StepsGridView
-            _stepsGridViewService.Initialize();
+            // Обновляем сам StepsGridView
+            _stepsGridViewService.Update();
 
             // Устанавливаем ссылку на этот объект
             Instance = this;
 
             Logger.LogInformation("FixtureManager создан");
         }
+
+        #endregion
+
+        #region Cursor Methods
+
+        /// <summary>
+        /// Поднимает курсор вверх. Уменьшает позицию курсора.
+        /// </summary>
+        public void CursorUp()
+        {
+            Logger.LogInformation($"Поднимаем курсор. Текущая позиция курсора: {_cursorPosition}");
+
+            // Проверяем, может ли курсор подниматься вверх
+            if (_cursorPosition <= 0)
+            {
+                Logger.LogWarning("Курсор больше не может идти вверх");
+                return;
+            }
+
+            // Уменьшаем позицию (поднимаемся вверх)
+            _cursorPosition--;
+
+            // Синхронизируем позицию курсора с FixtureBuilder
+            _fixtureBuilder.CursorPosition = _cursorPosition;
+
+            // Обновляем позицию курсора на StepsGridView
+            _stepsGridViewService.Update();
+
+            Logger.LogInformation($"Новая позиция курсора: {_cursorPosition}");
+
+            // Оповещаем подписчиков об изменении позиции курсора
+            CursorPositionChanged?.Invoke(_cursorPosition);
+        }
+
+        /// <summary>
+        /// Опускает курсор вниз. Увеличивает позицию курсора.
+        /// </summary>
+        public void CursorDown()
+        {
+            Logger.LogInformation($"Опускаем курсор. Текущая позиция курсора: {_cursorPosition}");
+
+            // Проверяем, может ли курсор опускаться вниз
+            if (_cursorPosition >= _fixtureBuilder.StepCount - 1)
+            {
+                Logger.LogWarning("Курсор больше не может идти вниз");
+                return;
+            }
+
+            // Увеличиваем позицию (опускаемся вниз)
+            _cursorPosition++;
+
+            // Синхронизируем позицию курсора с FixtureBuilder
+            _fixtureBuilder.CursorPosition = _cursorPosition;
+
+            // Обновляем позицию курсора на StepsGridView
+            _stepsGridViewService.Update();
+
+            Logger.LogInformation($"Новая позиция курсора: {_cursorPosition}");
+
+            // Оповещаем подписчиков об изменении позиции курсора
+            CursorPositionChanged?.Invoke(_cursorPosition);
+        }
+
+        #endregion
+
+        #region Public Static Properties
+
+        /// <summary>
+        /// Ссылка на единственный экземпляр класс <see cref="FixtureManager"/>.
+        /// </summary>
+        public static FixtureManager Instance;
 
         #endregion
     }

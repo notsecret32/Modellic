@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Modellic.App.Core.Models.Fixture;
+using System;
 using System.Collections.Generic;
 using static Modellic.App.Logging.LoggerService;
 
@@ -13,9 +14,9 @@ namespace Modellic.App.Core.Services
         #region Private Members
 
         /// <summary>
-        /// Индекс, указывающий на текущий шаг в массиве.
+        /// Позиция курсора. Начинается с 0.
         /// </summary>
-        private int _currentStepIndex = 0;
+        private int _cursorPosition = 0;
 
         #endregion
 
@@ -31,19 +32,34 @@ namespace Modellic.App.Core.Services
         #region Public Properties
 
         /// <summary>
+        /// Массив со всеми шагами построения приспособления.
+        /// </summary>
+        public List<FixtureStep> FixtureSteps => _steps;
+
+        /// <summary>
         /// Количество шагов.
         /// </summary>
         public int StepCount => _steps.Count;
 
         /// <summary>
-        /// Индекс, указывающий на текущий шаг в массиве.
+        /// Позиция курсора. Начинается с 0.
         /// </summary>
-        public int CurrentStepIndex => _currentStepIndex;
+        public int CursorPosition
+        {
+            get
+            {
+                return _cursorPosition;
+            }
+            set
+            {
+                if (value < 0 || value > _steps.Count - 1)
+                {
+                    throw new InvalidOperationException("Курсор не может выходить за рамки массива.");
+                }
 
-        /// <summary>
-        /// Текущий шаг.
-        /// </summary>
-        public FixtureStep CurrentStep => _steps[CurrentStepIndex];
+                _cursorPosition = value;
+            }
+        }
 
         #endregion
 

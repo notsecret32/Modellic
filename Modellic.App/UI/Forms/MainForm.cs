@@ -66,6 +66,16 @@ namespace Modellic.App.UI.Forms
             await HandleConnectToSw();
         }
 
+        private void BtnCursorUp_Click(object sender, EventArgs e)
+        {
+            _fixtureManager.CursorUp();
+        }
+
+        private void BtnCursorDown_Click(object sender, EventArgs e)
+        {
+            _fixtureManager.CursorDown();
+        }
+
         #endregion
 
         #region Application Event Handlers

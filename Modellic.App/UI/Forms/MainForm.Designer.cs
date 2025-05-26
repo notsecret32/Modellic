@@ -197,6 +197,7 @@
             this.btnCursorDown.TabIndex = 5;
             this.btnCursorDown.Text = "▼";
             this.btnCursorDown.UseVisualStyleBackColor = true;
+            this.btnCursorDown.Click += new System.EventHandler(this.BtnCursorDown_Click);
             // 
             // btnCursorUp
             // 
@@ -208,6 +209,7 @@
             this.btnCursorUp.TabIndex = 4;
             this.btnCursorUp.Text = "▲";
             this.btnCursorUp.UseVisualStyleBackColor = true;
+            this.btnCursorUp.Click += new System.EventHandler(this.BtnCursorUp_Click);
             // 
             // tableLayoutBackground
             // 

@@ -56,30 +56,22 @@ namespace Modellic.App.Core.Services
 
         #region Public Methods
 
-        /// <summary>
-        /// Инициализирует <see cref="UI.Controls.StepsGridView"/> данными сборки приспособления.
-        /// </summary>
-        public void Initialize()
+        public void Update()
         {
-            Logger.LogInformation("Инициализируем StepsGridView");
-
-            if (_isInitialized)
-            {
-                Logger.LogInformation("StepsGridView уже проинициализирован");
-                return;
-            }
+            Logger.LogInformation("Обновляем StepsGridView");
 
             _stepsGridView.Update((gridView, index, count) =>
             {
+                bool isCurrentIndex = _fixtureBuilder.CursorPosition == index;
+                string currentStepTitle = _fixtureBuilder.FixtureSteps[index].Title;
+
                 gridView.Rows.Add(
-                    "➤",
+                    isCurrentIndex ? "➤" : "",
                     index + 1,
-                    _fixtureBuilder.CurrentStep.Title,
+                    currentStepTitle,
                     "Не построено"
                 );
             }, _fixtureBuilder.StepCount);
-
-            _isInitialized = true;
         }
 
         #endregion
