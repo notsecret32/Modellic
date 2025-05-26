@@ -134,6 +134,7 @@
     <Compile Include="Core\Models\Fixture\FixtureStep3.cs" />
     <Compile Include="Core\Models\Fixture\FixtureStep2.cs" />
     <Compile Include="Core\Models\Fixture\FixtureStep1.cs" />
+    <Compile Include="Core\Models\Fixture\FixtureStepStatus.cs" />
     <Compile Include="Core\Services\FixtureBuilder.cs" />
     <Compile Include="Core\Services\FixtureManager.cs" />
     <Compile Include="Core\Services\StepsGridViewService.cs" />

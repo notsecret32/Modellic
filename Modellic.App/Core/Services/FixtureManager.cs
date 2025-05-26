@@ -38,6 +38,15 @@ namespace Modellic.App.Core.Services
 
         #endregion
 
+        #region Public Static Properties
+
+        /// <summary>
+        /// Ссылка на единственный экземпляр класс <see cref="FixtureManager"/>.
+        /// </summary>
+        public static FixtureManager Instance;
+
+        #endregion
+
         #region Public Events
 
         /// <summary>
@@ -138,12 +147,12 @@ namespace Modellic.App.Core.Services
 
         #endregion
 
-        #region Public Static Properties
+        #region Steps Methods
 
-        /// <summary>
-        /// Ссылка на единственный экземпляр класс <see cref="FixtureManager"/>.
-        /// </summary>
-        public static FixtureManager Instance;
+        public void BuildStep()
+        {
+            _fixtureBuilder.BuildStep();
+        }
 
         #endregion
     }

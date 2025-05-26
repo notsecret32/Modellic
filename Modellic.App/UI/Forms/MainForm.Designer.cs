@@ -153,6 +153,7 @@
             this.btnBuildStep.TabIndex = 1;
             this.btnBuildStep.Text = "Построить";
             this.btnBuildStep.UseVisualStyleBackColor = true;
+            this.btnBuildStep.Click += new System.EventHandler(this.BtnBuildStep_Click);
             // 
             // btnChangeStep
             // 

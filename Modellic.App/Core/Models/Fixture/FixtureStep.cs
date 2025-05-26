@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using System;
 using static Modellic.App.Logging.LoggerService;
 
 namespace Modellic.App.Core.Models.Fixture
@@ -6,6 +7,12 @@ namespace Modellic.App.Core.Models.Fixture
     public abstract class FixtureStep
     {
         #region Private Members
+
+        private FixtureStepStatus _status = FixtureStepStatus.NotBuilded;
+
+        #endregion
+
+        #region Protectede Members
 
         protected string _stepName = "Название шага не переопределено";
 
@@ -15,22 +22,82 @@ namespace Modellic.App.Core.Models.Fixture
 
         public abstract string Title { get; }
 
+        public FixtureStepStatus Status
+        {
+            get { return _status; }
+            protected set
+            {
+                if (_status != value)
+                {
+                    _status = value;
+                    StatusChanged?.Invoke(this, _status);
+                }
+            }
+        }
+
+        #endregion
+
+        #region Public Events
+
+        public event Action<FixtureStep, FixtureStepStatus> StatusChanged;
+
+        #endregion
+
+        #region Public Methods
+
+        /// <summary>
+        /// Метод для построения шага. Валидирует параметры и обновляет состояние.
+        /// </summary>
+        public void Build()
+        {
+            // Проверяем валидацию
+            if (!Validate())
+            {
+                Status = FixtureStepStatus.ValidationFailed;
+                Logger.LogWarning($"[{Status}] Шаг \"{Title}\" не прошел валидацию");
+                return;
+            }
+
+            // Если шаг уже строиться, выходим
+            if (Status == FixtureStepStatus.Building)
+                return; 
+
+            try
+            {
+                Status = FixtureStepStatus.Building;
+                Logger.LogInformation($"[{Status}] Начинаем построение шага: \"{Title}\"");
+
+                BuildStep();
+
+                Status = FixtureStepStatus.Builded;
+                Logger.LogInformation($"[{Status}] Шаг \"{Title}\" успешно построен");
+            }
+            catch (Exception ex)
+            {
+                Status = FixtureStepStatus.Error;
+                Logger.LogError(ex, $"[{Status}] Ошибка при построении шага \"{Title}\"");
+                throw; // Пробрасываем исключение дальше
+            }
+        }
+
         #endregion
 
         #region Public Abstract Methods
 
-        public abstract void Build();
+        /// <summary>
+        /// Метод для построения шага.
+        /// </summary>
+        protected abstract void BuildStep();
 
         #endregion
 
         #region Protected Virtual Methods
 
-        protected virtual void Validate()
-        {
-            Logger.LogInformation("Вызван метод Validate()");
-
-            this.Build();
-        }
+        /// <summary>
+        /// Метод для валидации параметров шага.
+        /// </summary>
+        /// <returns>True - Строим шаг; False - Отменяем построение шага.</returns>
+        protected abstract bool Validate();
 
         #endregion
     }

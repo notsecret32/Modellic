@@ -7,9 +7,14 @@ namespace Modellic.App.Core.Models.Fixture
     {
         public override string Title => "Верхнее крепление";
 
-        public override void Build()
+        protected override void BuildStep()
         {
-            Logger.LogInformation($"Собираем FixtureStep под именем {Title}");
+            Logger.LogInformation($"Строим шаг \"{Title}\"");
+        }
+
+        protected override bool Validate()
+        {
+            return true;
         }
     }
 }

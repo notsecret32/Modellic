@@ -66,6 +66,11 @@ namespace Modellic.App.UI.Forms
             await HandleConnectToSw();
         }
 
+        private void BtnBuildStep_Click(object sender, EventArgs e)
+        {
+            _fixtureManager.BuildStep();
+        }
+
         private void BtnCursorUp_Click(object sender, EventArgs e)
         {
             _fixtureManager.CursorUp();

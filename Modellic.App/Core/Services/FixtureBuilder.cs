@@ -89,5 +89,14 @@ namespace Modellic.App.Core.Services
         }
 
         #endregion
+
+        #region Public Methods
+
+        public void BuildStep()
+        {
+            FixtureSteps[CursorPosition].Build();
+        }
+
+        #endregion
     }
 }
