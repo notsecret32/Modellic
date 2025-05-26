@@ -37,14 +37,17 @@
             this.menuItemConnectToSw = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItemDisconnectFromSw = new System.Windows.Forms.ToolStripMenuItem();
             this.tableLayoutFixtureControl = new System.Windows.Forms.TableLayoutPanel();
-            this.btnStartAssembly = new System.Windows.Forms.Button();
-            this.btnClearStep = new System.Windows.Forms.Button();
-            this.btnChangeStep = new System.Windows.Forms.Button();
             this.btnBuildStep = new System.Windows.Forms.Button();
+            this.btnChangeStep = new System.Windows.Forms.Button();
+            this.btnClearStep = new System.Windows.Forms.Button();
+            this.btnStartAssembly = new System.Windows.Forms.Button();
             this.btnCursorDown = new System.Windows.Forms.Button();
             this.btnCursorUp = new System.Windows.Forms.Button();
             this.tableLayoutBackground = new System.Windows.Forms.TableLayoutPanel();
             this.stepsGridView1 = new Modellic.UI.Controls.StepsGridView();
+            this.dataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dataGridViewTextBoxColumn2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dataGridViewTextBoxColumn3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.appMenu.SuspendLayout();
             this.tableLayoutFixtureControl.SuspendLayout();
             this.tableLayoutBackground.SuspendLayout();
@@ -76,19 +79,22 @@
             // menuItemCreateFile
             // 
             this.menuItemCreateFile.Name = "menuItemCreateFile";
-            this.menuItemCreateFile.Size = new System.Drawing.Size(180, 22);
-            this.menuItemCreateFile.Text = "Создать файл";
+            this.menuItemCreateFile.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
+            this.menuItemCreateFile.Size = new System.Drawing.Size(181, 22);
+            this.menuItemCreateFile.Text = "Создать";
             // 
             // menuItemOpenFile
             // 
             this.menuItemOpenFile.Name = "menuItemOpenFile";
-            this.menuItemOpenFile.Size = new System.Drawing.Size(180, 22);
-            this.menuItemOpenFile.Text = "Открыть файл";
+            this.menuItemOpenFile.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
+            this.menuItemOpenFile.Size = new System.Drawing.Size(181, 22);
+            this.menuItemOpenFile.Text = "Открыть";
             // 
             // menuItemSaveFile
             // 
             this.menuItemSaveFile.Name = "menuItemSaveFile";
-            this.menuItemSaveFile.Size = new System.Drawing.Size(180, 22);
+            this.menuItemSaveFile.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
+            this.menuItemSaveFile.Size = new System.Drawing.Size(181, 22);
             this.menuItemSaveFile.Text = "Сохранить";
             // 
             // menuItemSolidWorks
@@ -103,14 +109,16 @@
             // menuItemConnectToSw
             // 
             this.menuItemConnectToSw.Name = "menuItemConnectToSw";
-            this.menuItemConnectToSw.Size = new System.Drawing.Size(180, 22);
+            this.menuItemConnectToSw.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.P)));
+            this.menuItemConnectToSw.Size = new System.Drawing.Size(205, 22);
             this.menuItemConnectToSw.Text = "Подключиться";
             this.menuItemConnectToSw.Click += new System.EventHandler(this.MenuItemConnectToSw_Click);
             // 
             // menuItemDisconnectFromSw
             // 
             this.menuItemDisconnectFromSw.Name = "menuItemDisconnectFromSw";
-            this.menuItemDisconnectFromSw.Size = new System.Drawing.Size(180, 22);
+            this.menuItemDisconnectFromSw.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D)));
+            this.menuItemDisconnectFromSw.Size = new System.Drawing.Size(205, 22);
             this.menuItemDisconnectFromSw.Text = "Отключиться";
             // 
             // tableLayoutFixtureControl
@@ -138,27 +146,16 @@
             this.tableLayoutFixtureControl.Size = new System.Drawing.Size(228, 325);
             this.tableLayoutFixtureControl.TabIndex = 0;
             // 
-            // btnStartAssembly
+            // btnBuildStep
             // 
-            this.btnStartAssembly.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.btnStartAssembly.Location = new System.Drawing.Point(0, 280);
-            this.btnStartAssembly.Margin = new System.Windows.Forms.Padding(0);
-            this.btnStartAssembly.Name = "btnStartAssembly";
-            this.btnStartAssembly.Size = new System.Drawing.Size(228, 45);
-            this.btnStartAssembly.TabIndex = 10;
-            this.btnStartAssembly.Text = "Начать сборку";
-            this.btnStartAssembly.UseVisualStyleBackColor = true;
-            // 
-            // btnClearStep
-            // 
-            this.btnClearStep.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.btnClearStep.Location = new System.Drawing.Point(0, 98);
-            this.btnClearStep.Margin = new System.Windows.Forms.Padding(0);
-            this.btnClearStep.Name = "btnClearStep";
-            this.btnClearStep.Size = new System.Drawing.Size(228, 45);
-            this.btnClearStep.TabIndex = 3;
-            this.btnClearStep.Text = "Очистить";
-            this.btnClearStep.UseVisualStyleBackColor = true;
+            this.btnBuildStep.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnBuildStep.Location = new System.Drawing.Point(0, 0);
+            this.btnBuildStep.Margin = new System.Windows.Forms.Padding(0, 0, 0, 4);
+            this.btnBuildStep.Name = "btnBuildStep";
+            this.btnBuildStep.Size = new System.Drawing.Size(228, 45);
+            this.btnBuildStep.TabIndex = 1;
+            this.btnBuildStep.Text = "Построить";
+            this.btnBuildStep.UseVisualStyleBackColor = true;
             // 
             // btnChangeStep
             // 
@@ -171,24 +168,35 @@
             this.btnChangeStep.Text = "Изменить";
             this.btnChangeStep.UseVisualStyleBackColor = true;
             // 
-            // btnBuildStep
+            // btnClearStep
             // 
-            this.btnBuildStep.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.btnBuildStep.Location = new System.Drawing.Point(0, 0);
-            this.btnBuildStep.Margin = new System.Windows.Forms.Padding(0, 0, 0, 4);
-            this.btnBuildStep.Name = "btnBuildStep";
-            this.btnBuildStep.Size = new System.Drawing.Size(228, 45);
-            this.btnBuildStep.TabIndex = 1;
-            this.btnBuildStep.Text = "Построить";
-            this.btnBuildStep.UseVisualStyleBackColor = true;
+            this.btnClearStep.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnClearStep.Location = new System.Drawing.Point(0, 98);
+            this.btnClearStep.Margin = new System.Windows.Forms.Padding(0);
+            this.btnClearStep.Name = "btnClearStep";
+            this.btnClearStep.Size = new System.Drawing.Size(228, 45);
+            this.btnClearStep.TabIndex = 3;
+            this.btnClearStep.Text = "Очистить";
+            this.btnClearStep.UseVisualStyleBackColor = true;
+            // 
+            // btnStartAssembly
+            // 
+            this.btnStartAssembly.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnStartAssembly.Location = new System.Drawing.Point(0, 280);
+            this.btnStartAssembly.Margin = new System.Windows.Forms.Padding(0);
+            this.btnStartAssembly.Name = "btnStartAssembly";
+            this.btnStartAssembly.Size = new System.Drawing.Size(228, 45);
+            this.btnStartAssembly.TabIndex = 10;
+            this.btnStartAssembly.Text = "Начать сборку";
+            this.btnStartAssembly.UseVisualStyleBackColor = true;
             // 
             // btnCursorDown
             // 
             this.btnCursorDown.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.btnCursorDown.Location = new System.Drawing.Point(577, 56);
+            this.btnCursorDown.Location = new System.Drawing.Point(576, 56);
             this.btnCursorDown.Margin = new System.Windows.Forms.Padding(0);
             this.btnCursorDown.Name = "btnCursorDown";
-            this.btnCursorDown.Size = new System.Drawing.Size(51, 50);
+            this.btnCursorDown.Size = new System.Drawing.Size(52, 50);
             this.btnCursorDown.TabIndex = 5;
             this.btnCursorDown.Text = "▼";
             this.btnCursorDown.UseVisualStyleBackColor = true;
@@ -196,10 +204,10 @@
             // btnCursorUp
             // 
             this.btnCursorUp.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.btnCursorUp.Location = new System.Drawing.Point(577, 6);
+            this.btnCursorUp.Location = new System.Drawing.Point(576, 6);
             this.btnCursorUp.Margin = new System.Windows.Forms.Padding(0, 0, 0, 4);
             this.btnCursorUp.Name = "btnCursorUp";
-            this.btnCursorUp.Size = new System.Drawing.Size(51, 46);
+            this.btnCursorUp.Size = new System.Drawing.Size(52, 46);
             this.btnCursorUp.TabIndex = 4;
             this.btnCursorUp.Text = "▲";
             this.btnCursorUp.UseVisualStyleBackColor = true;
@@ -209,7 +217,7 @@
             this.tableLayoutBackground.ColumnCount = 3;
             this.tableLayoutBackground.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 40F));
             this.tableLayoutBackground.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 60F));
-            this.tableLayoutBackground.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 50F));
+            this.tableLayoutBackground.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 51F));
             this.tableLayoutBackground.Controls.Add(this.btnCursorUp, 2, 0);
             this.tableLayoutBackground.Controls.Add(this.btnCursorDown, 2, 1);
             this.tableLayoutBackground.Controls.Add(this.tableLayoutFixtureControl, 0, 0);
@@ -232,13 +240,34 @@
             this.stepsGridView1.AllowUserToAddRows = false;
             this.stepsGridView1.AllowUserToDeleteRows = false;
             this.stepsGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.stepsGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.dataGridViewTextBoxColumn1,
+            this.dataGridViewTextBoxColumn2,
+            this.dataGridViewTextBoxColumn3});
             this.stepsGridView1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.stepsGridView1.Location = new System.Drawing.Point(238, 7);
             this.stepsGridView1.Margin = new System.Windows.Forms.Padding(4, 1, 4, 1);
             this.stepsGridView1.Name = "stepsGridView1";
             this.tableLayoutBackground.SetRowSpan(this.stepsGridView1, 3);
-            this.stepsGridView1.Size = new System.Drawing.Size(335, 323);
+            this.stepsGridView1.Size = new System.Drawing.Size(334, 323);
             this.stepsGridView1.TabIndex = 6;
+            // 
+            // dataGridViewTextBoxColumn1
+            // 
+            this.dataGridViewTextBoxColumn1.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
+            this.dataGridViewTextBoxColumn1.Name = "dataGridViewTextBoxColumn1";
+            this.dataGridViewTextBoxColumn1.Width = 175;
+            // 
+            // dataGridViewTextBoxColumn2
+            // 
+            this.dataGridViewTextBoxColumn2.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
+            this.dataGridViewTextBoxColumn2.Name = "dataGridViewTextBoxColumn2";
+            this.dataGridViewTextBoxColumn2.Width = 175;
+            // 
+            // dataGridViewTextBoxColumn3
+            // 
+            this.dataGridViewTextBoxColumn3.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.dataGridViewTextBoxColumn3.Name = "dataGridViewTextBoxColumn3";
             // 
             // MainForm
             // 
@@ -281,6 +310,9 @@
         private System.Windows.Forms.Button btnCursorUp;
         private System.Windows.Forms.Button btnCursorDown;
         private UI.Controls.StepsGridView stepsGridView1;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn1;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn2;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn3;
     }
 }
 
