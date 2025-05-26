@@ -129,6 +129,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Enums\SwDestroyNotifyType.cs" />
     <Compile Include="Enums\SwDocumentType.cs" />
     <Compile Include="Enums\SwFeatureType.cs" />
     <Compile Include="Enums\SwObjectErrorCode.cs" />

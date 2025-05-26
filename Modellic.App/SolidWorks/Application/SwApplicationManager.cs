@@ -2,6 +2,7 @@
 using Modellic.App.Enums;
 using Modellic.App.Errors;
 using Modellic.App.Exceptions;
+using Modellic.App.SolidWorks.Core;
 using SolidWorks.Interop.sldworks;
 using SolidWorks.Interop.swconst;
 using System;
@@ -100,18 +101,18 @@ namespace Modellic.App.SolidWorks.Application
                 {
                     try
                     {
-                        ISldWorks app;
+                        SldWorks app;
                         try
                         {
                             Logger.LogInformation("Пробуем получить запущенный SolidWorks");
 
-                            app = (ISldWorks)Marshal.GetActiveObject(SOLIDWORKS_PROG_ID);
+                            app = (SldWorks)Marshal.GetActiveObject(SOLIDWORKS_PROG_ID);
                         }
                         catch (COMException)
                         {
                             Logger.LogInformation("SolidWorks не запущен, открываем его");
 
-                            app = (ISldWorks)Activator.CreateInstance(Type.GetTypeFromProgID(SOLIDWORKS_PROG_ID));
+                            app = (SldWorks)Activator.CreateInstance(Type.GetTypeFromProgID(SOLIDWORKS_PROG_ID));
                         }
 
                         app.Visible = true;

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Modellic.App.Exceptions;
 using Modellic.App.SolidWorks.Application;
+using Modellic.App.SolidWorks.Core;
 using System;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -22,15 +23,30 @@ namespace Modellic.App
         {
             Logger.LogInformation("Начало инициализации формы");
 
+            // Инициализируем компоненты
             InitializeComponent();
+
+            // Инициализируем состояние элементов управления
             InitializeControls();
+
+            // Пробуем подписаться на события сразу
+            SubscribeToSwEvents();
 
             Logger.LogInformation("Форма проинициализирована");
         }
 
         #endregion
 
-        #region Event Handlers
+        #region Destructor
+
+        ~MainForm()
+        {
+            UnsubscribeFromSwEvents();
+        }
+
+        #endregion
+
+        #region Form Event Handlers
 
         private async void MenuItemConnectToSw_Click(object sender, EventArgs e)
         {
@@ -41,8 +57,57 @@ namespace Modellic.App
 
         #endregion
 
-        #region Helpers
-       
+        #region Application Event Handlers
+
+        private void OnActiveDocumentChanged(SwModelDoc newActiveDoc)
+        {
+            Logger.LogInformation($"Новый активный документ: \"{newActiveDoc.Name}\"");
+        }
+
+        #endregion
+
+        #region Application Event Helpers
+
+        /// <summary>
+        /// Метод для подписки к событиям приложения SolidWorks.
+        /// </summary>
+        private void SubscribeToSwEvents()
+        {
+            Logger.LogInformation("Пробуем подписаться на события приложения SolidWorks");
+
+            if (_applicationManager.Application == null || !_applicationManager.IsConnected)
+            {
+                Logger.LogInformation("Приложение SolidWorks еще не проинициализировано, пропускаем");
+                return;
+            }
+
+            Logger.LogInformation("Приложение SolidWorks проинициализировано, подписываемся на события");
+
+            _applicationManager.Application.ActiveDocumentChanged += OnActiveDocumentChanged;
+        }
+
+        /// <summary>
+        /// Метод для отписки от событиий приложения SolidWorks.
+        /// </summary>
+        private void UnsubscribeFromSwEvents()
+        {
+            Logger.LogInformation("Пробуем отписаться на события приложения SolidWorks");
+
+            if (_applicationManager.Application == null || !_applicationManager.IsConnected)
+            {
+                Logger.LogInformation("Приложение SolidWorks еще не проинициализировано, пропускаем");
+                return;
+            }
+
+            Logger.LogInformation("Отписываемся от событий приложения SolidWorks");
+
+            _applicationManager.Application.ActiveDocumentChanged -= OnActiveDocumentChanged;
+        }
+
+        #endregion
+
+        #region Private Methods
+
         private void InitializeControls()
         {
             Logger.LogInformation("Начало инициализации элементов управления");
@@ -75,6 +140,9 @@ namespace Modellic.App
                 // Подключаемся к SolidWorks
                 await _applicationManager.ConnectAsync();
 
+                // Подписываемся на события
+                SubscribeToSwEvents();
+
                 Logger.LogInformation("Подключение к SolidWorks прошло успешно");
             }
             catch (SolidWorksException ex)
@@ -102,7 +170,7 @@ namespace Modellic.App
                 Cursor = Cursors.Default;
             }
         }
-        
+
         #endregion
     }
 }
