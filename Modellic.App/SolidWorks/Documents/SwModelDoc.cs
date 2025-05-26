@@ -1,12 +1,12 @@
 ﻿using Microsoft.Extensions.Logging;
 using Modellic.App.Enums;
-using Modellic.App.SolidWorks.Documents;
+using Modellic.App.SolidWorks.Core;
 using Modellic.App.SolidWorks.Managers;
 using SolidWorks.Interop.sldworks;
 using System;
 using static Modellic.App.Logging.LoggerService;
 
-namespace Modellic.App.SolidWorks.Core
+namespace Modellic.App.SolidWorks.Documents
 {
     /// <summary>
     /// Представляет собой любой тип файла в SolidWorks (Модель, Сборка, Чертеж).

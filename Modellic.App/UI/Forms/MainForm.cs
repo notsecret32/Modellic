@@ -1,7 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
+using Modellic.App.Core.Services;
 using Modellic.App.Exceptions;
 using Modellic.App.SolidWorks.Application;
-using Modellic.App.SolidWorks.Core;
+using Modellic.App.SolidWorks.Documents;
 using System;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -12,6 +13,8 @@ namespace Modellic.App
     public partial class MainForm : Form
     {
         #region Private Members
+
+        private readonly AssemblyManager _assemblyManager = AssemblyManager.Instance;
 
         private readonly SwApplicationManager _applicationManager = SwApplicationManager.Instance;
 
@@ -53,6 +56,11 @@ namespace Modellic.App
             Logger.LogInformation("Попытка подключиться к SolidWorks");
 
             await HandleConnectToSw();
+        }
+
+        private void BtnStartAssembly_Click(object sender, EventArgs e)
+        {
+            _assemblyManager.Build();
         }
 
         #endregion

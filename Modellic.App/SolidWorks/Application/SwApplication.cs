@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Modellic.App.Enums;
 using Modellic.App.SolidWorks.Core;
+using Modellic.App.SolidWorks.Documents;
 using SolidWorks.Interop.sldworks;
 using System;
 using static Modellic.App.Logging.LoggerService;

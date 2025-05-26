@@ -1,4 +1,5 @@
 ﻿using Modellic.App.SolidWorks.Core;
+using Modellic.App.SolidWorks.Documents;
 using SolidWorks.Interop.sldworks;
 
 namespace Modellic.App.SolidWorks.Managers
