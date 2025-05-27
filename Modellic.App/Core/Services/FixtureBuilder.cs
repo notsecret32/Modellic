@@ -2,6 +2,8 @@
 using Modellic.App.Core.Models.Fixture;
 using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using static Modellic.App.Logging.LoggerService;
 
 namespace Modellic.App.Core.Services
@@ -92,9 +94,9 @@ namespace Modellic.App.Core.Services
 
         #region Public Methods
 
-        public void BuildStep()
+        public Task BuildStepAsync(CancellationToken cancellationToken = default)
         {
-            FixtureSteps[CursorPosition].Build();
+            return FixtureSteps[CursorPosition].BuildAsync(cancellationToken);
         }
 
         #endregion

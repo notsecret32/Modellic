@@ -146,6 +146,7 @@
     <Compile Include="Errors\SwObjectError.cs" />
     <Compile Include="Errors\SwObjectErrorManager.cs" />
     <Compile Include="Exceptions\SolidWorksException.cs" />
+    <Compile Include="Extensions\ControlExtensions.cs" />
     <Compile Include="Logging\CustomConsoleFormatter.cs" />
     <Compile Include="Logging\LoggerService.cs" />
     <Compile Include="ModellicEnv.cs" />

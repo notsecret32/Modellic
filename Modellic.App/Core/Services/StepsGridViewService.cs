@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Modellic.App.Core.Models.Fixture;
+using Modellic.App.Extensions;
 using Modellic.App.UI.Controls;
 using System;
 using static Modellic.App.Logging.LoggerService;
@@ -91,7 +92,7 @@ namespace Modellic.App.Core.Services
             return fixtureStepStatus switch
             {
                 FixtureStepStatus.NotBuilded => "Не построен",
-                FixtureStepStatus.Building => "В процессе...",
+                FixtureStepStatus.Building => "В процессе",
                 FixtureStepStatus.Builded => "Построено",
                 FixtureStepStatus.Error => "Ошибка",
                 FixtureStepStatus.ValidationFailed => "Ошибка валидации",
@@ -106,7 +107,7 @@ namespace Modellic.App.Core.Services
         private void OnFixtureStepStatusChanged(FixtureStep step, FixtureStepStatus status)
         {
             // При изменении статуса любого шага обновляем таблицу
-            Update();
+            StepsGridView.SafeInvoke(() => Update());
         }
 
         #endregion

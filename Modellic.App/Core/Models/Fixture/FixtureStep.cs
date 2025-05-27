@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 using static Modellic.App.Logging.LoggerService;
 
 namespace Modellic.App.Core.Models.Fixture
@@ -82,22 +84,44 @@ namespace Modellic.App.Core.Models.Fixture
 
         #endregion
 
-        #region Public Abstract Methods
+        #region Protected Abstract Methods
 
         /// <summary>
         /// Метод для построения шага.
         /// </summary>
         protected abstract void BuildStep();
 
-        #endregion
-
-        #region Protected Virtual Methods
-
         /// <summary>
         /// Метод для валидации параметров шага.
         /// </summary>
         /// <returns>True - Строим шаг; False - Отменяем построение шага.</returns>
         protected abstract bool Validate();
+
+        #endregion
+
+        #region Public Virtual Methods
+
+        public virtual Task BuildAsync(CancellationToken cancellationToken = default)
+        {
+            return Task.Run(() =>
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                Build();
+            }, cancellationToken);
+        }
+
+        #endregion
+
+        #region Protected Virtual Methods
+
+        protected virtual Task BuildStepAsync(CancellationToken cancellationToken = default)
+        {
+            return Task.Run(() =>
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                BuildStep();
+            }, cancellationToken);
+        }
 
         #endregion
     }

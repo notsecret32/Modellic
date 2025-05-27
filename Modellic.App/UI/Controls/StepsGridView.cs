@@ -80,24 +80,28 @@ namespace Modellic.App.UI.Controls
             {
                 Name = "",
                 AutoSizeMode = DataGridViewAutoSizeColumnMode.ColumnHeader,
+                ReadOnly = true,
             };
 
             var stepCountColumn = new DataGridViewTextBoxColumn
             {
                 Name = "№",
                 AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells,
+                ReadOnly = true,
             };
 
             var stepNameColumn = new DataGridViewTextBoxColumn
             {
                 Name = "Название",
                 AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill,
+                ReadOnly = true,
             };
 
             var statusColumn = new DataGridViewTextBoxColumn
             {
                 Name = "Статус",
-                AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells,
+                AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells,
+                ReadOnly = true,
             };
 
             this.Columns.AddRange(cursorColumn, stepCountColumn, stepNameColumn, statusColumn);

@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 using static Modellic.App.Logging.LoggerService;
 
 namespace Modellic.App.Core.Services
@@ -149,9 +151,9 @@ namespace Modellic.App.Core.Services
 
         #region Steps Methods
 
-        public void BuildStep()
+        public Task BuildStepAsync(CancellationToken cancellationToken = default)
         {
-            _fixtureBuilder.BuildStep();
+            return _fixtureBuilder.BuildStepAsync(cancellationToken);
         }
 
         #endregion
