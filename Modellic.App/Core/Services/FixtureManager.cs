@@ -36,7 +36,22 @@ namespace Modellic.App.Core.Services
         /// <summary>
         /// Текущая позиция курсора. Начинается с 0.
         /// </summary>
-        public int CursorPosition => _cursorPosition;
+        public int CursorPosition
+        {
+            get
+            {
+                return _cursorPosition;
+            }
+            set
+            {
+                if (value < 0 || value > _fixtureBuilder.StepCount - 1)
+                {
+                    throw new InvalidOperationException("Курсор не может выходить за рамки массива.");
+                }
+
+                _cursorPosition = value;
+            }
+        }
 
         #endregion
 
@@ -107,7 +122,7 @@ namespace Modellic.App.Core.Services
             _cursorPosition--;
 
             // Синхронизируем позицию курсора с FixtureBuilder
-            _fixtureBuilder.CursorPosition = _cursorPosition;
+            _fixtureBuilder.SetCurrentStepIndex(_cursorPosition);
 
             // Обновляем позицию курсора на StepsGridView
             _stepsGridViewService.Update();
@@ -136,7 +151,7 @@ namespace Modellic.App.Core.Services
             _cursorPosition++;
 
             // Синхронизируем позицию курсора с FixtureBuilder
-            _fixtureBuilder.CursorPosition = _cursorPosition;
+            _fixtureBuilder.SetCurrentStepIndex(_cursorPosition);
 
             // Обновляем позицию курсора на StepsGridView
             _stepsGridViewService.Update();

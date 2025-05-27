@@ -70,7 +70,7 @@ namespace Modellic.App.Core.Services
 
             _stepsGridView.Update((gridView, index, count) =>
             {
-                bool isCurrentIndex = _fixtureBuilder.CursorPosition == index;
+                bool isCurrentIndex = _fixtureBuilder.CurrentStepIndex == index;
                 string currentStepTitle = _fixtureBuilder.FixtureSteps[index].Title;
                 string currentStepStatus = GetFixtureStepStatusText(_fixtureBuilder.FixtureSteps[index].Status);
 

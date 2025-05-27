@@ -2,7 +2,6 @@
 using Modellic.App.Core.Models.Fixture;
 using Modellic.App.Enums;
 using Modellic.App.Exceptions;
-using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -18,9 +17,9 @@ namespace Modellic.App.Core.Services
         #region Private Members
 
         /// <summary>
-        /// Позиция курсора. Начинается с 0.
+        /// Индекс текущего шага на который указывает курсор.
         /// </summary>
-        private int _cursorPosition = 0;
+        private int _currentStepIndex = 0;
 
         /// <summary>
         /// Индекс последнего собранного шага. -1 означает, что ни один шаг еще не построен.
@@ -51,24 +50,9 @@ namespace Modellic.App.Core.Services
         public int StepCount => _steps.Count;
 
         /// <summary>
-        /// Позиция курсора. Начинается с 0.
+        /// Индекс текущего шага на который указывает курсор.
         /// </summary>
-        public int CursorPosition
-        {
-            get
-            {
-                return _cursorPosition;
-            }
-            set
-            {
-                if (value < 0 || value > _steps.Count - 1)
-                {
-                    throw new InvalidOperationException("Курсор не может выходить за рамки массива.");
-                }
-
-                _cursorPosition = value;
-            }
-        }
+        public int CurrentStepIndex => _currentStepIndex;
 
         /// <summary>
         /// Индекс последнего собранного шага. -1 означает, что ни один шаг еще не построен.
@@ -107,6 +91,15 @@ namespace Modellic.App.Core.Services
         #region Public Methods
 
         /// <summary>
+        /// Изменяет индекс текущего шага. Используется для синхронизации позиции курсура.
+        /// </summary>
+        /// <param name="newIndex">Позиция курсора.</param>
+        public void SetCurrentStepIndex(int newIndex)
+        {
+            _currentStepIndex = newIndex;
+        }
+
+        /// <summary>
         /// Строит текущий шаг.
         /// </summary>
         /// <param name="cancellationToken">Уведовление об остановке построения шага.</param>
@@ -116,7 +109,7 @@ namespace Modellic.App.Core.Services
             Logger.LogInformation("Пробуем построить шаг");
 
             // Проверяем, что текущий шаг еще не построен
-            if (_steps[_cursorPosition].Status != FixtureStepStatus.NotBuilded)
+            if (_steps[_currentStepIndex].Status != FixtureStepStatus.NotBuilded)
             {
                 Logger.LogWarning("Этот шаг уже построен");
 
@@ -124,7 +117,7 @@ namespace Modellic.App.Core.Services
             }
 
             // Проверяем, что шаги строятся последовательно
-            if (_cursorPosition != _lastBuiltStepIndex + 1)
+            if (_currentStepIndex != _lastBuiltStepIndex + 1)
             {
                 Logger.LogWarning("Предыдущий шаг не построен");
 
@@ -135,10 +128,10 @@ namespace Modellic.App.Core.Services
             }
 
             // Строим шаг
-            await FixtureSteps[CursorPosition].BuildAsync(cancellationToken);
+            await FixtureSteps[_currentStepIndex].BuildAsync(cancellationToken);
 
             // Обновляем счетчик
-            _lastBuiltStepIndex = _cursorPosition;
+            _lastBuiltStepIndex = _currentStepIndex;
         }
 
         #endregion
