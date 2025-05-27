@@ -118,8 +118,24 @@ namespace Modellic.App.Core.Models.Fixture
         {
             return Task.Run(() =>
             {
+                // Проверяем отмену перед началом
                 cancellationToken.ThrowIfCancellationRequested();
-                BuildStep();
+
+                try
+                {
+                    Build();
+                }
+                catch (OperationCanceledException)
+                {
+                    // Устанавливаем статус при отмене
+                    Status = FixtureStepStatus.Cancel;
+
+                    Logger.LogInformation($"[Отменено] Построение шага \"{Title}\" было отменено");
+
+                    // Пробрасываем исключение дальше
+                    throw; 
+                }
+
             }, cancellationToken);
         }
 

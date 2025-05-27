@@ -2,6 +2,7 @@
 using Modellic.App.Core.Models.Fixture;
 using Modellic.App.Enums;
 using Modellic.App.Exceptions;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -108,6 +109,9 @@ namespace Modellic.App.Core.Services
         {
             Logger.LogInformation("Пробуем построить шаг");
 
+            // Проверяем отмену в начале
+            cancellationToken.ThrowIfCancellationRequested();
+
             // Проверяем, что текущий шаг еще не построен
             if (_steps[_currentStepIndex].Status != FixtureStepStatus.NotBuilded)
             {
@@ -127,11 +131,21 @@ namespace Modellic.App.Core.Services
                 );
             }
 
-            // Строим шаг
-            await FixtureSteps[_currentStepIndex].BuildAsync(cancellationToken);
+            try
+            {
+                // Строим шаг с передачей токена
+                await FixtureSteps[_currentStepIndex].BuildAsync(cancellationToken);
 
-            // Обновляем счетчик
-            _lastBuiltStepIndex = _currentStepIndex;
+                // Обновляем счетчик
+                _lastBuiltStepIndex = _currentStepIndex;
+            }
+            catch (OperationCanceledException)
+            {
+                Logger.LogInformation("Построение шага было отменено");
+
+                // Пробрасываем исключение дальше
+                throw; 
+            }
         }
 
         #endregion

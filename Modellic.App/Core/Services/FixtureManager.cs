@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using Modellic.App.Core.Models.Fixture;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -54,6 +55,11 @@ namespace Modellic.App.Core.Services
                 _cursorPosition = value;
             }
         }
+
+        /// <summary>
+        /// текущий шаг на который указывает курсор.
+        /// </summary>
+        public FixtureStep CurrentStep => _fixtureBuilder.FixtureSteps[CursorPosition];
 
         #endregion
 

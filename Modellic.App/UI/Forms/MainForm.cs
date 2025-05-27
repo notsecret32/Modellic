@@ -1,9 +1,11 @@
 ﻿using Microsoft.Extensions.Logging;
+using Modellic.App.Core.Models.Fixture;
 using Modellic.App.Core.Services;
 using Modellic.App.Enums;
 using Modellic.App.Exceptions;
 using Modellic.App.SolidWorks.Documents;
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using static Modellic.App.Logging.LoggerService;
@@ -12,6 +14,12 @@ namespace Modellic.App.UI.Forms
 {
     public partial class MainForm : Form
     {
+        #region Private Members
+
+        private CancellationTokenSource _buildStepCts;
+
+        #endregion
+
         #region Private Readonly Members
 
         private readonly FixtureManager _fixtureManager;
@@ -69,6 +77,13 @@ namespace Modellic.App.UI.Forms
 
         private async void BtnBuildStep_Click(object sender, EventArgs e)
         {
+            // Если операция уже выполняется - отменяем ее
+            if (_buildStepCts != null)
+            {
+                _buildStepCts.Cancel();
+                return;
+            }
+
             try
             {
                 Logger.LogInformation("Проверяем подключение перед выполнением операции");
@@ -76,17 +91,30 @@ namespace Modellic.App.UI.Forms
                 if (!ModellicEnv.ApplicationManager.IsConnected)
                 {
                     Logger.LogWarning("Приложение не подключено, выбрасываем ошибку");
-
                     throw new InvalidOperationException("Нет подключения к SolidWorks. Подключить?");
                 }
 
-                // Обновляем состояние кнопок
-                UpdateControlsOnBuildStep(true);
-
-                // Строим шаг
-                await _fixtureManager.BuildStepAsync();
-
                 Logger.LogInformation("Приложение подключено, выполняем операцию");
+
+                // Создаем CancellationTokenSource для новой операции
+                _buildStepCts = new CancellationTokenSource();
+
+                if (_fixtureManager.CurrentStep.Status != FixtureStepStatus.Builded)
+                {
+                    Logger.LogInformation("Этот шаг еще не построен, обновляем кнопки");
+
+                    // Обновляем состояние кнопок (включаем режим отмены)
+                    UpdateControlsOnBuildStep(true);
+                }
+
+                // Строим шаг с возможностью отмены
+                await _fixtureManager.BuildStepAsync(_buildStepCts.Token);
+            }
+            catch (OperationCanceledException)
+            {
+                Logger.LogInformation("Построение шага было отменено пользователем");
+
+                MessageBox.Show("Построение шага отменено", "Информация", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (InvalidOperationException ex)
             {
@@ -95,7 +123,8 @@ namespace Modellic.App.UI.Forms
                     await HandleConnectToSw();
                 }
             }
-            catch (FixtureBuilderException ex) when (ex.ErrorCode == FixtureBuilderErrorCode.PreviousStepNotBuilded || ex.ErrorCode == FixtureBuilderErrorCode.AlreadyBuilded)
+            catch (FixtureBuilderException ex) when (ex.ErrorCode == FixtureBuilderErrorCode.PreviousStepNotBuilded ||
+                                                  ex.ErrorCode == FixtureBuilderErrorCode.AlreadyBuilded)
             {
                 MessageBox.Show(ex.Message, "Предупреждение", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
@@ -105,7 +134,11 @@ namespace Modellic.App.UI.Forms
             }
             finally
             {
-                // Возвращаем обратно
+                // Освобождаем CancellationTokenSource
+                _buildStepCts?.Dispose();
+                _buildStepCts = null;
+
+                // Возвращаем UI в исходное состояние
                 UpdateControlsOnBuildStep(false);
             }
         }
@@ -194,22 +227,18 @@ namespace Modellic.App.UI.Forms
             Logger.LogInformation("Элементы управления обновлены");
         }
 
-        private void UpdateControlsOnBuildStep(bool disable)
+        private void UpdateControlsOnBuildStep(bool isBuilding)
         {
             // Обновляем состояние курсора
-            _fixtureManager.FreezeCursor = disable;
+            _fixtureManager.FreezeCursor = isBuilding;
 
-            // btnBuildStep
-            btnBuildStep.Text = !disable ? "Построить" : "Отменить";
+            // Меняем текст и поведение кнопки
+            btnBuildStep.Text = isBuilding ? "Отменить" : "Построить";
 
-            // btnChangeStep
-            btnChangeStep.Enabled = !disable;
-
-            // btnClearStep
-            btnClearStep.Enabled = !disable;
-
-            // btnStartAssembly
-            btnStartAssembly.Enabled = !disable;
+            // Блокируем другие кнопки во время построения
+            btnChangeStep.Enabled = !isBuilding;
+            btnClearStep.Enabled = !isBuilding;
+            btnStartAssembly.Enabled = !isBuilding;
         }
 
         private async Task HandleConnectToSw()
