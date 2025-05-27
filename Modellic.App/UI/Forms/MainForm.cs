@@ -68,7 +68,10 @@ namespace Modellic.App.UI.Forms
 
         private async void BtnBuildStep_Click(object sender, EventArgs e)
         {
-            await _fixtureManager.BuildStepAsync();
+            await WithConnectionCheckAsync(
+                async () => await _fixtureManager.BuildStepAsync(),
+                async (ex) => await HandleConnectToSw()
+            );
         }
 
         private void BtnCursorUp_Click(object sender, EventArgs e)
@@ -153,6 +156,40 @@ namespace Modellic.App.UI.Forms
             menuItemDisconnectFromSw.Enabled = ModellicEnv.ApplicationManager.IsConnected;
 
             Logger.LogInformation("Элементы управления обновлены");
+        }
+
+        /// <summary>
+        /// Выполняет действие с проверкой подключения к SolidWorks.
+        /// </summary>
+        /// <param name="operation">Выполняемая операция.</param>
+        /// <param name="onError">Действие при ошибке (необязательно).</param>
+        private async Task WithConnectionCheckAsync(
+            Func<Task> operation,
+            Func<Exception, Task> onError = null)
+        {
+            try
+            {
+                Logger.LogInformation("Проверяем подключение перед выполнением операции");
+
+                if (!ModellicEnv.ApplicationManager.IsConnected)
+                {
+                    Logger.LogWarning("Приложение не подключено, выбрасываем ошибку");
+
+                    throw new InvalidOperationException("Нет подключения к SolidWorks. Подключить?");
+                }
+
+                Logger.LogInformation("Приложение подключено, выполняем операцию");
+
+                await operation().ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                if (MessageBox.Show(ex.Message, "Ошибка", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                {
+                    if (onError != null)
+                        await onError(ex).ConfigureAwait(false);
+                }
+            }
         }
 
         private async Task HandleConnectToSw()
