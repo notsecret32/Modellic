@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Modellic.App.Core.Models.Fixture;
+using Modellic.App.Enums;
+using Modellic.App.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -19,6 +21,11 @@ namespace Modellic.App.Core.Services
         /// Позиция курсора. Начинается с 0.
         /// </summary>
         private int _cursorPosition = 0;
+
+        /// <summary>
+        /// Индекс последнего собранного шага. -1 означает, что ни один шаг еще не построен.
+        /// </summary>
+        private int _lastBuiltStepIndex = -1;
 
         #endregion
 
@@ -63,6 +70,11 @@ namespace Modellic.App.Core.Services
             }
         }
 
+        /// <summary>
+        /// Индекс последнего собранного шага. -1 означает, что ни один шаг еще не построен.
+        /// </summary>
+        public int LastBuiltStepIndex => _lastBuiltStepIndex;
+
         #endregion
 
         #region Public Static Properties
@@ -94,9 +106,27 @@ namespace Modellic.App.Core.Services
 
         #region Public Methods
 
-        public Task BuildStepAsync(CancellationToken cancellationToken = default)
+        /// <summary>
+        /// Строит текущий шаг.
+        /// </summary>
+        /// <param name="cancellationToken">Уведовление об остановке построения шага.</param>
+        /// <exception cref="FixtureBuilderException">Если курсор указывает на неправильный шаг.</exception>
+        public async Task BuildStepAsync(CancellationToken cancellationToken = default)
         {
-            return FixtureSteps[CursorPosition].BuildAsync(cancellationToken);
+            // Проверяем, что шаги строятся последовательно
+            if (_cursorPosition != _lastBuiltStepIndex + 1)
+            {
+                throw new FixtureBuilderException(
+                    "Предыдущий шаг не построен. Постройте его и повторите попытку.", 
+                    FixtureBuilderErrorCode.PreviousStepNotBuilded
+                );
+            }
+
+            // Строим шаг
+            await FixtureSteps[CursorPosition].BuildAsync(cancellationToken);
+
+            // Обновляем счетчик
+            _lastBuiltStepIndex = _cursorPosition;
         }
 
         #endregion
