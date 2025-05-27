@@ -80,6 +80,10 @@ namespace Modellic.App.UI.Forms
                     throw new InvalidOperationException("Нет подключения к SolidWorks. Подключить?");
                 }
 
+                // Обновляем состояние кнопок
+                UpdateControlsOnBuildStep(true);
+
+                // Строим шаг
                 await _fixtureManager.BuildStepAsync();
 
                 Logger.LogInformation("Приложение подключено, выполняем операцию");
@@ -98,6 +102,11 @@ namespace Modellic.App.UI.Forms
             catch (FixtureBuilderException ex)
             {
                 MessageBox.Show(ex.Message, "Непредвиденная ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                // Возвращаем обратно
+                UpdateControlsOnBuildStep(false);
             }
         }
 
@@ -183,6 +192,24 @@ namespace Modellic.App.UI.Forms
             menuItemDisconnectFromSw.Enabled = ModellicEnv.ApplicationManager.IsConnected;
 
             Logger.LogInformation("Элементы управления обновлены");
+        }
+
+        private void UpdateControlsOnBuildStep(bool disable)
+        {
+            // Обновляем состояние курсора
+            _fixtureManager.FreezeCursor = disable;
+
+            // btnBuildStep
+            btnBuildStep.Text = !disable ? "Построить" : "Отменить";
+
+            // btnChangeStep
+            btnChangeStep.Enabled = !disable;
+
+            // btnClearStep
+            btnClearStep.Enabled = !disable;
+
+            // btnStartAssembly
+            btnStartAssembly.Enabled = !disable;
         }
 
         private async Task HandleConnectToSw()

@@ -33,6 +33,8 @@ namespace Modellic.App.Core.Services
 
         #region Public Properties
 
+        public bool FreezeCursor { get; set; } = false;
+
         /// <summary>
         /// Текущая позиция курсора. Начинается с 0.
         /// </summary>
@@ -111,6 +113,13 @@ namespace Modellic.App.Core.Services
         {
             Logger.LogInformation($"Поднимаем курсор. Текущая позиция курсора: {_cursorPosition}");
 
+            // Проверяем, заморожен ли курсор
+            if (FreezeCursor)
+            {
+                Logger.LogInformation("Курсор заморожен, невозможно переместить");
+                return;
+            }
+
             // Проверяем, может ли курсор подниматься вверх
             if (_cursorPosition <= 0)
             {
@@ -139,6 +148,13 @@ namespace Modellic.App.Core.Services
         public void CursorDown()
         {
             Logger.LogInformation($"Опускаем курсор. Текущая позиция курсора: {_cursorPosition}");
+
+            // Проверяем, заморожен ли курсор
+            if (FreezeCursor)
+            {
+                Logger.LogInformation("Курсор заморожен, невозможно переместить");
+                return;
+            }
 
             // Проверяем, может ли курсор опускаться вниз
             if (_cursorPosition >= _fixtureBuilder.StepCount - 1)
