@@ -91,9 +91,13 @@ namespace Modellic.App.UI.Forms
                     await HandleConnectToSw();
                 }
             }
-            catch (FixtureBuilderException ex) when (ex.ErrorCode == FixtureBuilderErrorCode.PreviousStepNotBuilded)
+            catch (FixtureBuilderException ex) when (ex.ErrorCode == FixtureBuilderErrorCode.PreviousStepNotBuilded || ex.ErrorCode == FixtureBuilderErrorCode.AlreadyBuilded)
             {
                 MessageBox.Show(ex.Message, "Предупреждение", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (FixtureBuilderException ex)
+            {
+                MessageBox.Show(ex.Message, "Непредвиденная ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 

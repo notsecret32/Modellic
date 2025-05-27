@@ -113,9 +113,21 @@ namespace Modellic.App.Core.Services
         /// <exception cref="FixtureBuilderException">Если курсор указывает на неправильный шаг.</exception>
         public async Task BuildStepAsync(CancellationToken cancellationToken = default)
         {
+            Logger.LogInformation("Пробуем построить шаг");
+
+            // Проверяем, что текущий шаг еще не построен
+            if (_steps[_cursorPosition].Status != FixtureStepStatus.NotBuilded)
+            {
+                Logger.LogWarning("Этот шаг уже построен");
+
+                throw new FixtureBuilderException("Этот шаг уже построен.", FixtureBuilderErrorCode.AlreadyBuilded);
+            }
+
             // Проверяем, что шаги строятся последовательно
             if (_cursorPosition != _lastBuiltStepIndex + 1)
             {
+                Logger.LogWarning("Предыдущий шаг не построен");
+
                 throw new FixtureBuilderException(
                     "Предыдущий шаг не построен. Постройте его и повторите попытку.", 
                     FixtureBuilderErrorCode.PreviousStepNotBuilded
