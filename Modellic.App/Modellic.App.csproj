@@ -10,7 +10,7 @@
     <ProjectGuid>{E2E221ED-7B46-436A-A024-4980A1EF4712}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <RootNamespace>Modellic.App</RootNamespace>
-    <AssemblyName>Modellic.App</AssemblyName>
+    <AssemblyName>Modellic</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
