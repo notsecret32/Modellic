@@ -3,6 +3,7 @@ using Modellic.App.Enums;
 using Modellic.App.SolidWorks.Core;
 using Modellic.App.SolidWorks.Managers;
 using SolidWorks.Interop.sldworks;
+using SolidWorks.Interop.swconst;
 using System;
 using static Modellic.App.Logging.LoggerService;
 
@@ -97,7 +98,7 @@ namespace Modellic.App.SolidWorks.Documents
         /// <summary>
         /// Вызывается каждый раз, когда меняется список выбранных элементов.
         /// </summary>
-        public event Action SelectionChanged = () => { };
+        public event Action<swSelectType_e> SelectionChanged = (selectType) => { };
 
         #endregion
 
@@ -109,7 +110,7 @@ namespace Modellic.App.SolidWorks.Documents
         /// <param name="model">Объект документа.</param>
         public SwModelDoc(ModelDoc2 model) : base(model)
         {
-            Logger.LogInformation("Создаем новый документ");
+            Logger.LogInformation($"Создаем новый документ \"{Name}\"");
 
             // Обновляем информацию о текущем документе
             ReloadModelDocData();
@@ -153,12 +154,6 @@ namespace Modellic.App.SolidWorks.Documents
             // Получаем FeatureManager документа
             FeatureManager = new SwFeatureManager(BaseObject.FeatureManager);
 
-            // Получаем текущий документ как Part документ
-            PartDoc = IsPart ? new SwPartDoc((PartDoc)BaseObject) : null;
-
-            // Получаем текущий документ как Assembly документ
-            AssemblyDoc = IsAssembly ? new SwAssemblyDoc((AssemblyDoc)BaseObject) : null;
-
             // Информируем всех подписчиков об изменении документа.
             DocumentInfoChanged();
         }
@@ -172,9 +167,11 @@ namespace Modellic.App.SolidWorks.Documents
             {
                 case SwDocumentType.Part:
                     this.AsPart().DestroyNotify2 += DocumentPreDestroy;
+                    this.AsPart().UserSelectionPreNotify += UserSelectionPreNotify;
                     break;
                 case SwDocumentType.Assembly:
                     this.AsAssembly().DestroyNotify2 += DocumentPreDestroy;
+                    this.AsPart().UserSelectionPreNotify += UserSelectionPreNotify;
                     break;
             }
         }
@@ -201,9 +198,11 @@ namespace Modellic.App.SolidWorks.Documents
             {
                 case SwDocumentType.Part:
                     this.AsPart().DestroyNotify2 -= DocumentPreDestroy;
+                    this.AsPart().UserSelectionPreNotify -= UserSelectionPreNotify;
                     break;
                 case SwDocumentType.Assembly:
                     this.AsAssembly().DestroyNotify2 -= DocumentPreDestroy;
+                    this.AsPart().UserSelectionPreNotify -= UserSelectionPreNotify;
                     break;
             }
         }
@@ -236,21 +235,27 @@ namespace Modellic.App.SolidWorks.Documents
             return 0;
         }
 
+        protected int UserSelectionPreNotify(int selectType)
+        {
+            SelectionChanged((swSelectType_e)selectType);
+
+            return 0;
+        }
+
         #endregion
 
         #region Document Cast
 
         /// <summary>
-        /// Текущий документ как <see cref="PartDoc"/>.
-        /// Перед использованием необходимо проверить через <see cref="IsPart"/>.
+        /// Преобразует текущий документ в SwPartDoc (если это возможно)
         /// </summary>
-        public SwPartDoc PartDoc { get; private set; }
+        public virtual SwPartDoc AsSwPartDoc()
+        {
+            if (!IsPart)
+                throw new InvalidOperationException("Документ не является деталью");
 
-        /// <summary>
-        /// Текущий документ как <see cref="AssemblyDoc"/>.
-        /// Перед использованием необходимо проверить через <see cref="IsAssembly"/>.
-        /// </summary>
-        public SwAssemblyDoc AssemblyDoc { get; private set; }
+            return new SwPartDoc((PartDoc)BaseObject);
+        }
 
         /// <summary>
         /// Преобразует текущий документ в документ типа <see cref="SwDocumentType.Part"/>.

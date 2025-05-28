@@ -54,8 +54,7 @@ namespace Modellic.App.SolidWorks.Documents
             SwObjectErrorManager.Wrap(
                 GetFeatureNameAction,
                 $"Не удалось получить feature по имени {featureName}",
-                SwObjectErrorType.SolidWorksModel,
-                SwObjectErrorCode.SolidWorksModelAssemblyGetFeatureByNameError
+                SwObjectErrorCode.GetFeatureByNameError
             );
         }
 

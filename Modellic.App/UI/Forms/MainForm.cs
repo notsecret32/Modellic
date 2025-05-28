@@ -86,15 +86,19 @@ namespace Modellic.App.UI.Forms
 
             try
             {
-                Logger.LogInformation("Проверяем подключение перед выполнением операции");
-
-                if (!ModellicEnv.ApplicationManager.IsConnected)
+                // Проверяем подключение к SolidWorks
+                if (!IsApplicationConnected())
                 {
-                    Logger.LogWarning("Приложение не подключено, выбрасываем ошибку");
                     throw new InvalidOperationException("Нет подключения к SolidWorks. Подключить?");
                 }
 
-                Logger.LogInformation("Приложение подключено, выполняем операцию");
+                // Проверяем наличие рабочего файла
+                if (!HasWorkingDocument())
+                {
+                    _fixtureManager.CreateWorkingDocument();
+
+                    return;
+                }
 
                 // Создаем CancellationTokenSource для новой операции
                 _buildStepCts = new CancellationTokenSource();
@@ -216,9 +220,41 @@ namespace Modellic.App.UI.Forms
             Logger.LogInformation("Элементы управления проинициализированы");
         }
 
+        private bool IsApplicationConnected()
+        {
+            Logger.LogInformation("Проверка подключения к SolidWorks");
+
+            if (!ModellicEnv.ApplicationManager.IsConnected)
+            {
+                Logger.LogWarning("SolidWorks не подключен");
+
+                return false;
+            }
+
+            Logger.LogInformation("SolidWorks подключен, продолжаем");
+
+            return true;
+        }
+
+        private bool HasWorkingDocument()
+        {
+            Logger.LogInformation("Проверяем наличие рабочего документа");
+
+            if (_fixtureManager.WorkingDocument == null)
+            {
+                Logger.LogWarning("Рабочего документа нет");
+
+                return false;
+            }
+
+            Logger.LogInformation("Рабочий документ есть");
+
+            return true;
+        }
+
         private void UpdateControls()
         {
-            Logger.LogInformation("Обновлеям элементы управления");
+            Logger.LogInformation("Обновляем элементы управления");
 
             menuItemConnectToSw.Enabled = !ModellicEnv.ApplicationManager.IsConnected;
             menuItemConnectToSw.CheckState = ModellicEnv.ApplicationManager.IsConnected ? CheckState.Checked : CheckState.Unchecked;

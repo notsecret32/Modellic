@@ -2,7 +2,7 @@
 using Modellic.App.Enums;
 using Modellic.App.Errors;
 using Modellic.App.Exceptions;
-using Modellic.App.SolidWorks.Core;
+using Modellic.App.SolidWorks.Localization;
 using SolidWorks.Interop.sldworks;
 using SolidWorks.Interop.swconst;
 using System;
@@ -118,6 +118,12 @@ namespace Modellic.App.SolidWorks.Application
                         app.Visible = true;
                         app.FrameState = (int)swWindowState_e.swWindowMaximized;
 
+                        // Устанавливаем язык
+                        SwSupportedLanguage currentLanguage = SwSupportedLanguageParser.Parse(app.GetCurrentLanguage());
+                        LocalizationManager.Language = currentLanguage;
+                        Logger.LogInformation($"Язык: {currentLanguage}");
+
+
                         lock (_disposingLock)
                         {
                             if (_isDisposed) return false;
@@ -133,8 +139,7 @@ namespace Modellic.App.SolidWorks.Application
                         throw new SolidWorksException(
                             SwObjectErrorManager.CreateError(
                                 "Не удалось создать либо подключиться к SolidWorks.",
-                                SwObjectErrorType.SolidWorksApplication,
-                                SwObjectErrorCode.SolidWorksApplicationFailedToConnect
+                                SwObjectErrorCode.ConnectionFailed
                             ),
                             ex
                         );
@@ -148,8 +153,7 @@ namespace Modellic.App.SolidWorks.Application
                 throw new SolidWorksException(
                     SwObjectErrorManager.CreateError(
                         "Ошибка при подключении к SolidWorks.",
-                        SwObjectErrorType.SolidWorksApplication,
-                        SwObjectErrorCode.SolidWorksApplicationFailedToConnect
+                        SwObjectErrorCode.ConnectionFailed
                     ),
                     ex
                 );

@@ -22,11 +22,6 @@ namespace Modellic.App.Errors
         public string ErrorDetails { get; set; }
 
         /// <summary>
-        /// Тип ошибки.
-        /// </summary>
-        public SwObjectErrorType ErrorType { get; set; }
-
-        /// <summary>
         /// Код ошибки.
         /// </summary>
         public SwObjectErrorCode ErrorCode { get; set; }
@@ -61,7 +56,6 @@ namespace Modellic.App.Errors
         {
             ErrorMessage = swObjectError.ErrorMessage;
             ErrorDetails = swObjectError.ErrorDetails;
-            ErrorType = swObjectError.ErrorType;
             ErrorCode = swObjectError.ErrorCode;
             CallerMemberName = swObjectError.CallerMemberName;
             CallerFilePath = swObjectError.CallerFilePath;

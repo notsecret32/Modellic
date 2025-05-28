@@ -1,40 +1,37 @@
-﻿using Modellic.App.Enums;
+﻿using Microsoft.Extensions.Logging;
+using Modellic.App.Enums;
 using Modellic.App.Errors;
 using Modellic.App.SolidWorks.Models;
 using SolidWorks.Interop.sldworks;
 using System;
+using static Modellic.App.Logging.LoggerService;
 
 namespace Modellic.App.SolidWorks.Documents
 {
     /// <summary>
     /// Представляет собой документ модели. Предоставляет интерфейс для работы с документом модели.
     /// </summary>
-    public class SwPartDoc
+    public class SwPartDoc : SwModelDoc
     {
-        #region Protected Members
+        #region Private Members
 
-        /// <summary>
-        /// Документ базовой модели, удаляемый родителем <see cref="SwModelDoc"/>.
-        /// </summary>
-        protected PartDoc _baseObject;
+        private PartDoc _comObject;
 
         #endregion
 
         #region Public Properties
 
-        //// <summary>
-        /// Исходный базовый COM-объект.
-        /// ОСТОРОЖНО: при использовании этого свойства освобожнение ресурсов становится ручным.
-        /// </summary>
-        public PartDoc UnsafeObject => _baseObject;
+        public PartDoc ComObject => _comObject;
 
         #endregion
 
         #region Constructors
 
-        public SwPartDoc(PartDoc partDoc)
+        public SwPartDoc(PartDoc partDoc) : base((ModelDoc2)partDoc) 
         {
-            _baseObject = partDoc;
+            Logger.LogInformation("Создаем файл типа Part");
+
+            _comObject = partDoc;
         }
 
         #endregion
@@ -45,14 +42,13 @@ namespace Modellic.App.SolidWorks.Documents
         {
             SwObjectErrorManager.Wrap(() =>
             {
-                using (var model = new SwFeature((Feature)_baseObject.FeatureByName(featureName)))
+                using (var model = new SwFeature((Feature)ComObject.FeatureByName(featureName)))
                 {
                     action(model);
                 }
             },
             $"Не удалось получить feature по имени {featureName}",
-            SwObjectErrorType.SolidWorksModel,
-            SwObjectErrorCode.SolidWorksModelPartGetFeatureByNameError
+            SwObjectErrorCode.GetFeatureByNameError
             );
         }
 

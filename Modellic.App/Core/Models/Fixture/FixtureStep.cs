@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using Modellic.App.SolidWorks.Documents;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,6 +16,11 @@ namespace Modellic.App.Core.Models.Fixture
         #endregion
 
         #region Protectede Members
+
+        /// <summary>
+        /// Файл в котором строиться шаг.
+        /// </summary>
+        protected SwPartDoc _document;
 
         protected string _stepName = "Название шага не переопределено";
 
@@ -47,6 +53,11 @@ namespace Modellic.App.Core.Models.Fixture
 
         #region Public Methods
 
+        public void AttachToDocument(SwPartDoc partDoc)
+        {
+            _document = partDoc ?? throw new ArgumentNullException(nameof(partDoc), "Ошибка загрузки файла модели");
+        }
+
         /// <summary>
         /// Метод для построения шага. Валидирует параметры и обновляет состояние.
         /// </summary>
@@ -56,7 +67,7 @@ namespace Modellic.App.Core.Models.Fixture
             if (!Validate())
             {
                 Status = FixtureStepStatus.ValidationFailed;
-                Logger.LogWarning($"[{Status}] Шаг \"{Title}\" не прошел валидацию");
+                Logger.LogWarning($"[FixtureStep | {Status}] Шаг \"{Title}\" не прошел валидацию");
                 return;
             }
 
@@ -67,17 +78,17 @@ namespace Modellic.App.Core.Models.Fixture
             try
             {
                 Status = FixtureStepStatus.Building;
-                Logger.LogInformation($"[{Status}] Начинаем построение шага: \"{Title}\"");
+                Logger.LogInformation($"[FixtureStep | {Status}] Начинаем построение шага: \"{Title}\"");
 
                 BuildStep();
 
                 Status = FixtureStepStatus.Builded;
-                Logger.LogInformation($"[{Status}] Шаг \"{Title}\" успешно построен");
+                Logger.LogInformation($"[FixtureStep | {Status}] Шаг \"{Title}\" успешно построен");
             }
             catch (Exception ex)
             {
                 Status = FixtureStepStatus.Error;
-                Logger.LogError(ex, $"[{Status}] Ошибка при построении шага \"{Title}\"");
+                Logger.LogError(ex, $"[FixtureStep | {Status}] Ошибка при построении шага \"{Title}\"");
                 throw; // Пробрасываем исключение дальше
             }
         }
@@ -101,20 +112,7 @@ namespace Modellic.App.Core.Models.Fixture
 
         #region Public Virtual Methods
 
-        public virtual Task BuildAsync(CancellationToken cancellationToken = default)
-        {
-            return Task.Run(() =>
-            {
-                cancellationToken.ThrowIfCancellationRequested();
-                Build();
-            }, cancellationToken);
-        }
-
-        #endregion
-
-        #region Protected Virtual Methods
-
-        protected virtual Task BuildStepAsync(CancellationToken cancellationToken = default)
+        public virtual Task BuildStepAsync(CancellationToken cancellationToken = default)
         {
             return Task.Run(() =>
             {

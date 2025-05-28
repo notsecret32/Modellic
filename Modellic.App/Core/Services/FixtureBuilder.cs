@@ -2,6 +2,7 @@
 using Modellic.App.Core.Models.Fixture;
 using Modellic.App.Enums;
 using Modellic.App.Exceptions;
+using Modellic.App.SolidWorks.Documents;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -26,6 +27,11 @@ namespace Modellic.App.Core.Services
         /// Индекс последнего собранного шага. -1 означает, что ни один шаг еще не построен.
         /// </summary>
         private int _lastBuiltStepIndex = -1;
+
+        /// <summary>
+        /// Рабочий документ в котором строиться приспособление.
+        /// </summary>
+        private SwPartDoc _workingDocument;
 
         #endregion
 
@@ -59,6 +65,11 @@ namespace Modellic.App.Core.Services
         /// Индекс последнего собранного шага. -1 означает, что ни один шаг еще не построен.
         /// </summary>
         public int LastBuiltStepIndex => _lastBuiltStepIndex;
+
+        /// <summary>
+        /// Рабочий документ в котором строиться приспособление.
+        /// </summary>
+        public SwPartDoc WorkingDocument => _workingDocument;
 
         #endregion
 
@@ -112,6 +123,13 @@ namespace Modellic.App.Core.Services
             // Проверяем отмену в начале
             cancellationToken.ThrowIfCancellationRequested();
 
+            if (_workingDocument == null)
+            {
+                Logger.LogWarning("Нет файла в котором будет строиться приспособление");
+
+                throw new InvalidOperationException("Активный документ не установлен");
+            }
+
             // Проверяем, что текущий шаг еще не построен
             if (_steps[_currentStepIndex].Status != FixtureStepStatus.NotBuilded)
             {
@@ -134,7 +152,7 @@ namespace Modellic.App.Core.Services
             try
             {
                 // Строим шаг с передачей токена
-                await FixtureSteps[_currentStepIndex].BuildAsync(cancellationToken);
+                await FixtureSteps[_currentStepIndex].BuildStepAsync(cancellationToken);
 
                 // Обновляем счетчик
                 _lastBuiltStepIndex = _currentStepIndex;
@@ -148,6 +166,16 @@ namespace Modellic.App.Core.Services
             }
         }
 
+        public void SetWorkingDocument(SwPartDoc partDoc)
+        {
+            _workingDocument = partDoc;
+
+            // Прикрепляем документ ко всем шагам
+            foreach (var step in _steps)
+            {
+                step.AttachToDocument(partDoc);
+            }
+        }
         #endregion
     }
 }

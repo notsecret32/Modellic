@@ -1,6 +1,10 @@
-﻿using Modellic.App.SolidWorks.Core;
+﻿using Microsoft.Extensions.Logging;
+using Modellic.App.Enums;
+using Modellic.App.SolidWorks.Core;
 using Modellic.App.SolidWorks.Documents;
+using Modellic.App.SolidWorks.Localization;
 using SolidWorks.Interop.sldworks;
+using static Modellic.App.Logging.LoggerService;
 
 namespace Modellic.App.SolidWorks.Managers
 {
@@ -28,6 +32,19 @@ namespace Modellic.App.SolidWorks.Managers
         public SwExtension(ModelDocExtension model, SwModelDoc parent) : base(model)
         {
             Parent = parent;
+        }
+
+        #endregion
+
+        #region Public Methods
+
+        public bool SelectPlane(SwPlane plane)
+        {
+            string planeName = LocalizationManager.GetPlaneName(plane);
+
+            Logger.LogInformation($"Выбираем плоскость \"{planeName}\"");
+
+            return BaseObject.SelectByID2(planeName, "PLANE", 0, 0, 0, false, 0, null, 0);
         }
 
         #endregion

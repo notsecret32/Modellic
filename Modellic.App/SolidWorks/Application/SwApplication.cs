@@ -66,6 +66,11 @@ namespace Modellic.App.SolidWorks.Application
         {
             Logger.LogInformation($"Создаем экземпляр класса SwApplication (PID: {solidWorks.GetProcessID()})");
 
+            if (solidWorks.IActiveDoc2 != null)
+            {
+                _activeDocument = new SwModelDoc(solidWorks.IActiveDoc2);
+            }
+
             // Подписываемся на события
             SubscribeToEvents();
         }

@@ -143,12 +143,14 @@
     <Compile Include="Enums\SwDocumentType.cs" />
     <Compile Include="Enums\SwFeatureType.cs" />
     <Compile Include="Enums\SwObjectErrorCode.cs" />
-    <Compile Include="Enums\SwObjectErrorType.cs" />
+    <Compile Include="Enums\SwPlane.cs" />
+    <Compile Include="Enums\SwSupportedLanguage.cs" />
     <Compile Include="Errors\SwObjectError.cs" />
     <Compile Include="Errors\SwObjectErrorManager.cs" />
     <Compile Include="Exceptions\FixtureBuilderException.cs" />
     <Compile Include="Exceptions\SolidWorksException.cs" />
     <Compile Include="Extensions\ControlExtensions.cs" />
+    <Compile Include="Extensions\DoubleExtension.cs" />
     <Compile Include="Logging\CustomConsoleFormatter.cs" />
     <Compile Include="Logging\LoggerService.cs" />
     <Compile Include="ModellicEnv.cs" />
@@ -158,6 +160,7 @@
     <Compile Include="SolidWorks\Core\SwObject.cs" />
     <Compile Include="SolidWorks\Documents\SwAssemblyDoc.cs" />
     <Compile Include="SolidWorks\Documents\SwModelDoc.cs" />
+    <Compile Include="SolidWorks\Localization\LocalizationManager.cs" />
     <Compile Include="SolidWorks\Managers\SwExtension.cs" />
     <Compile Include="SolidWorks\Documents\SwPartDoc.cs" />
     <Compile Include="SolidWorks\Managers\SwFeatureManager.cs" />

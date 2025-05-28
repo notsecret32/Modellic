@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Modellic.App.Core.Models.Fixture;
+using Modellic.App.SolidWorks.Documents;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -33,6 +34,8 @@ namespace Modellic.App.Core.Services
         #endregion
 
         #region Public Properties
+
+        public SwPartDoc WorkingDocument => _fixtureBuilder.WorkingDocument;
 
         public bool FreezeCursor { get; set; } = false;
 
@@ -191,6 +194,19 @@ namespace Modellic.App.Core.Services
         public Task BuildStepAsync(CancellationToken cancellationToken = default)
         {
             return _fixtureBuilder.BuildStepAsync(cancellationToken);
+        }
+
+        #endregion
+
+        #region Document Methods
+
+        public void CreateWorkingDocument()
+        {
+            // TODO: Создать новый файл, но сейчас возьмем активный
+            var activeDoc = ModellicEnv.Application.ActiveDocument.AsSwPartDoc() ?? throw new NullReferenceException("Нет активного документа либо ссылка равна null.");
+
+            // Меняем рабочий документ
+            _fixtureBuilder.SetWorkingDocument(activeDoc);
         }
 
         #endregion

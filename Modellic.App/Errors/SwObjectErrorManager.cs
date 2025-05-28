@@ -13,12 +13,11 @@ namespace Modellic.App.Errors
     {
         #region Public Methods
 
-        public static SwObjectError CreateError(string message, SwObjectErrorType errorType, SwObjectErrorCode errorCode, Exception innerException = null)
+        public static SwObjectError CreateError(string message, SwObjectErrorCode errorCode, Exception innerException = null)
         {
             SwObjectError error = new SwObjectError
             {
                 ErrorMessage = message,
-                ErrorType = errorType,
                 ErrorCode = errorCode
             };
 
@@ -30,7 +29,7 @@ namespace Modellic.App.Errors
             return error;
         }
 
-        public static void Wrap(Action action, string message, SwObjectErrorType errorType, SwObjectErrorCode errorCode)
+        public static void Wrap(Action action, string message, SwObjectErrorCode errorCode)
         {
             try
             {
@@ -39,7 +38,7 @@ namespace Modellic.App.Errors
             catch (Exception ex)
             {
                 SolidWorksException error = new SolidWorksException(
-                    SwObjectErrorManager.CreateError(message, errorType, errorCode),
+                    SwObjectErrorManager.CreateError(message, errorCode),
                     ex
                 );
 
@@ -47,7 +46,7 @@ namespace Modellic.App.Errors
             }
         }
 
-        public static T Wrap<T>(Func<T> action, string message, SwObjectErrorType errorType, SwObjectErrorCode errorCode)
+        public static T Wrap<T>(Func<T> action, string message, SwObjectErrorCode errorCode)
         {
             try
             {
@@ -56,7 +55,7 @@ namespace Modellic.App.Errors
             catch (Exception ex)
             {
                 SolidWorksException error = new SolidWorksException(
-                    SwObjectErrorManager.CreateError(message, errorType, errorCode),
+                    SwObjectErrorManager.CreateError(message, errorCode),
                     ex
                 );
 
@@ -64,7 +63,7 @@ namespace Modellic.App.Errors
             }
         }
 
-        public static async Task WrapAsync(Func<Task> action, string message, SwObjectErrorType errorType, SwObjectErrorCode errorCode)
+        public static async Task WrapAsync(Func<Task> action, string message, SwObjectErrorCode errorCode)
         {
             try
             {
@@ -73,7 +72,7 @@ namespace Modellic.App.Errors
             catch (Exception ex)
             {
                 SolidWorksException error = new SolidWorksException(
-                    SwObjectErrorManager.CreateError(message, errorType, errorCode),
+                    SwObjectErrorManager.CreateError(message, errorCode),
                     ex
                 );
 
@@ -81,7 +80,7 @@ namespace Modellic.App.Errors
             }
         }
 
-        public static async Task<T> WrapAsync<T>(Func<Task<T>> action, string message, SwObjectErrorType errorType, SwObjectErrorCode errorCode)
+        public static async Task<T> WrapAsync<T>(Func<Task<T>> action, string message, SwObjectErrorCode errorCode)
         {
             try
             {
@@ -90,7 +89,7 @@ namespace Modellic.App.Errors
             catch (Exception ex)
             {
                 SolidWorksException error = new SolidWorksException(
-                    SwObjectErrorManager.CreateError(message, errorType, errorCode),
+                    SwObjectErrorManager.CreateError(message, errorCode),
                     ex
                 );
 

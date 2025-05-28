@@ -80,8 +80,7 @@ namespace Modellic.App.SolidWorks.Core
             SwObjectErrorManager.Wrap(
                 CastToFeature,
                 "Не удалось преобразовать выбранный элемент в Feature",
-                SwObjectErrorType.SolidWorksModel,
-                SwObjectErrorCode.SolidWorksModelSelectedObjectCastError
+                SwObjectErrorCode.SelectedObjectCaseFailed
             );
         }
 
