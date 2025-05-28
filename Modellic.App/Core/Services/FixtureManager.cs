@@ -1,9 +1,13 @@
 ﻿using Microsoft.Extensions.Logging;
 using Modellic.App.Core.Models.Fixture;
+using Modellic.App.Exceptions;
+using Modellic.App.Extensions;
 using Modellic.App.SolidWorks.Documents;
+using Modellic.App.UI.Controls;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using static Modellic.App.Logging.LoggerService;
 
 namespace Modellic.App.Core.Services
@@ -19,7 +23,7 @@ namespace Modellic.App.Core.Services
 
         #endregion
 
-        #region Private Readonly Members
+        #region Service Instances
 
         /// <summary>
         /// Сборщик приспособления.
@@ -27,15 +31,13 @@ namespace Modellic.App.Core.Services
         private readonly FixtureBuilder _fixtureBuilder;
 
         /// <summary>
-        /// Сервис по управлению StepsGridView.
+        /// Опциональный сервис по управлению StepsGridView. Может быть null.
         /// </summary>
-        private readonly StepsGridViewService _stepsGridViewService;
+        private readonly StepsGridViewService _stepsGridViewService = null;
 
         #endregion
 
         #region Public Properties
-
-        public SwPartDoc WorkingDocument => _fixtureBuilder.WorkingDocument;
 
         public bool FreezeCursor { get; set; } = false;
 
@@ -66,66 +68,57 @@ namespace Modellic.App.Core.Services
 
         #endregion
 
-        #region Public Static Properties
-
-        /// <summary>
-        /// Ссылка на единственный экземпляр класс <see cref="FixtureManager"/>.
-        /// </summary>
-        public static FixtureManager Instance;
-
-        #endregion
-
         #region Public Events
 
         /// <summary>
         /// Вызывает, когд позиция курсора была изменена.
         /// </summary>
-        public event Action<int> CursorPositionChanged;
+        public event Action<FixtureStep, int> CursorPositionChanged;
+
+        public event Action<FixtureStep, FixtureStepStatus> FixtureStepStatusChanged;
 
         #endregion
 
         #region Constructors
 
-        public FixtureManager(FixtureBuilder fixtureBuilder, StepsGridViewService stepsGridViewService)
+        public FixtureManager(StepsGridView gridView = null)
         {
-            // Проверяем, есть ли объект этого класса
-            if (Instance != null)
-            {
-                Logger.LogCritical("Замечена попытка создать новый экземпляр");
-
-                throw new Exception("Замечена попытка создать новый экземпляр");
-            }
+            Logger.LogInformation("Создаем FixtureManager");
 
             // Инициализируем сборщик приспособления
-            _fixtureBuilder = fixtureBuilder;
+            _fixtureBuilder = new FixtureBuilder();
 
-            // Инициализируем сервис по работе с StepsGridView
-            _stepsGridViewService = stepsGridViewService;
+            // Подписываемся на изменение статуса построения шага
+            _fixtureBuilder.FixtureStepStatusChanged += OnFixtureStepStatusChanged;
+
+            // Если передан StepsGridView, создаем сервис для его управления
+            if (gridView != null)
+            {
+                _stepsGridViewService = new StepsGridViewService(gridView);
+            }
 
             // Обновляем сам StepsGridView
-            _stepsGridViewService.Update();
-
-            // Устанавливаем ссылку на этот объект
-            Instance = this;
+            _stepsGridViewService?.Update(_fixtureBuilder.FixtureSteps, CursorPosition);
 
             Logger.LogInformation("FixtureManager создан");
         }
 
         #endregion
 
-        #region Cursor Methods
+        #region Public Methods
 
         /// <summary>
         /// Поднимает курсор вверх. Уменьшает позицию курсора.
         /// </summary>
         public void CursorUp()
         {
-            Logger.LogInformation($"Поднимаем курсор. Текущая позиция курсора: {_cursorPosition}");
+            // Запоминаем текущее положение курсора для логов
+            int previousState = _cursorPosition;
 
             // Проверяем, заморожен ли курсор
             if (FreezeCursor)
             {
-                Logger.LogInformation("Курсор заморожен, невозможно переместить");
+                Logger.LogInformation("Курсор заморожен, перемещение запрещено");
                 return;
             }
 
@@ -139,16 +132,13 @@ namespace Modellic.App.Core.Services
             // Уменьшаем позицию (поднимаемся вверх)
             _cursorPosition--;
 
-            // Синхронизируем позицию курсора с FixtureBuilder
-            _fixtureBuilder.SetCurrentStepIndex(_cursorPosition);
-
             // Обновляем позицию курсора на StepsGridView
-            _stepsGridViewService.Update();
+            _stepsGridViewService?.Update(_fixtureBuilder.FixtureSteps, CursorPosition);
 
-            Logger.LogInformation($"Новая позиция курсора: {_cursorPosition}");
+            Logger.LogInformation($"Курсор поднят [{previousState} => {_cursorPosition}]");
 
             // Оповещаем подписчиков об изменении позиции курсора
-            CursorPositionChanged?.Invoke(_cursorPosition);
+            CursorPositionChanged?.Invoke(_fixtureBuilder.FixtureSteps[_cursorPosition], _cursorPosition);
         }
 
         /// <summary>
@@ -156,12 +146,13 @@ namespace Modellic.App.Core.Services
         /// </summary>
         public void CursorDown()
         {
-            Logger.LogInformation($"Опускаем курсор. Текущая позиция курсора: {_cursorPosition}");
+            // Запоминаем текущее положение курсора для логов
+            int previousState = _cursorPosition;
 
             // Проверяем, заморожен ли курсор
             if (FreezeCursor)
             {
-                Logger.LogInformation("Курсор заморожен, невозможно переместить");
+                Logger.LogInformation("Курсор заморожен, перемещение запрещено");
                 return;
             }
 
@@ -175,38 +166,72 @@ namespace Modellic.App.Core.Services
             // Увеличиваем позицию (опускаемся вниз)
             _cursorPosition++;
 
-            // Синхронизируем позицию курсора с FixtureBuilder
-            _fixtureBuilder.SetCurrentStepIndex(_cursorPosition);
-
             // Обновляем позицию курсора на StepsGridView
-            _stepsGridViewService.Update();
+            _stepsGridViewService?.Update(_fixtureBuilder.FixtureSteps, CursorPosition);
 
-            Logger.LogInformation($"Новая позиция курсора: {_cursorPosition}");
+            Logger.LogInformation($"Курсор опущен [{previousState} => {_cursorPosition}]");
 
             // Оповещаем подписчиков об изменении позиции курсора
-            CursorPositionChanged?.Invoke(_cursorPosition);
+            CursorPositionChanged?.Invoke(_fixtureBuilder.FixtureSteps[_cursorPosition], _cursorPosition);
+        }
+
+        /// <summary>
+        /// Прикрепляет документ в котором будет строиться приспособление.
+        /// </summary>
+        /// <param name="document">Документ в котором будет строиться приспособление.</param>
+        public void AttachDocument(SwModelDoc document)
+        {
+            if (!document.IsPart)
+            {
+                throw new Exception("Это не документ сборки");
+            }
+
+            _fixtureBuilder.AttachDocument(document.AsPartDoc());
         }
 
         #endregion
 
-        #region Steps Methods
+        #region Public Async Methods
 
-        public Task BuildStepAsync(CancellationToken cancellationToken = default)
+        /// <summary>
+        /// Строит шаг на который указывает курсор.
+        /// </summary>
+        /// <param name="cancellationToken">Токен для отмены построения шага.</param>
+        /// <exception cref="FixtureBuilderException">Если какое-то из условий не удовлетворено.</exception>
+        public async Task BuildStepAsync(CancellationToken cancellationToken = default)
         {
-            return _fixtureBuilder.BuildStepAsync(cancellationToken);
+            try
+            {
+                Logger.LogInformation($"Пробуем построить шаг {CursorPosition + 1}");
+
+                // Строим шаг
+                await _fixtureBuilder.BuildStepAsync(CursorPosition, cancellationToken);
+
+                // Передвигаем курсор вниз
+                CursorDown();
+            }
+            catch (FixtureBuilderException ex)
+            {
+                Logger.LogWarning($"При попытке построить шаг произошла ошибка. Подробности: {ex.Message}");
+
+                throw ex;
+            }
         }
 
         #endregion
 
-        #region Document Methods
+        #region Private Event Handlers
 
-        public void CreateWorkingDocument()
+        private void OnFixtureStepStatusChanged(FixtureStep step, FixtureStepStatus status)
         {
-            // TODO: Создать новый файл, но сейчас возьмем активный
-            var activeDoc = ModellicEnv.Application.ActiveDocument.AsSwPartDoc() ?? throw new NullReferenceException("Нет активного документа либо ссылка равна null.");
+            if (_stepsGridViewService?.StepsGridView is Control gridView)
+            {
+                gridView.SafeInvoke(() =>
+                    _stepsGridViewService.Update(_fixtureBuilder.FixtureSteps, CursorPosition)
+                );
+            }
 
-            // Меняем рабочий документ
-            _fixtureBuilder.SetWorkingDocument(activeDoc);
+            FixtureStepStatusChanged?.Invoke(step, status);
         }
 
         #endregion

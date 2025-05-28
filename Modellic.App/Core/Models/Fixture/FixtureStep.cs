@@ -11,6 +11,9 @@ namespace Modellic.App.Core.Models.Fixture
     {
         #region Private Members
 
+        /// <summary>
+        /// Статус построения шага. Подробнее в <see cref="FixtureStepStatus"/>.
+        /// </summary>
         private FixtureStepStatus _status = FixtureStepStatus.NotBuilded;
 
         #endregion
@@ -18,22 +21,26 @@ namespace Modellic.App.Core.Models.Fixture
         #region Protectede Members
 
         /// <summary>
-        /// Файл в котором строиться шаг.
+        /// Название шага.
         /// </summary>
-        protected SwPartDoc _document;
-
         protected string _stepName = "Название шага не переопределено";
 
         #endregion
 
         #region Public Properties
 
+        /// <summary>
+        /// Название шага.
+        /// </summary>
         public abstract string Title { get; }
 
+        /// <summary>
+        /// Статус построения шага. Подробнее в <see cref="FixtureStepStatus"/>.
+        /// </summary>
         public FixtureStepStatus Status
         {
             get { return _status; }
-            protected set
+            private set
             {
                 if (_status != value)
                 {
@@ -43,31 +50,51 @@ namespace Modellic.App.Core.Models.Fixture
             }
         }
 
+        /// <summary>
+        /// Файл в котором строится шаг приспособления.
+        /// </summary>
+        public SwPartDoc Document { get; set; } = null;
+
         #endregion
 
         #region Public Events
 
+        /// <summary>
+        /// Событие, вызывается каждый раз при изменении статуса постройки шага.
+        /// </summary>
         public event Action<FixtureStep, FixtureStepStatus> StatusChanged;
 
         #endregion
 
-        #region Public Methods
+        #region Constructor
 
-        public void AttachToDocument(SwPartDoc partDoc)
+        public FixtureStep(SwPartDoc partDoc = null)
         {
-            _document = partDoc ?? throw new ArgumentNullException(nameof(partDoc), "Ошибка загрузки файла модели");
+            Document = partDoc;
         }
+
+        #endregion
+
+        #region Public Methods
 
         /// <summary>
         /// Метод для построения шага. Валидирует параметры и обновляет состояние.
         /// </summary>
         public void Build()
         {
+            // Проверяем наличие файла
+            if (Document == null)
+            {
+                Status = FixtureStepStatus.Error;
+                Logger.LogWarning($"[FixtureStep] Ссылка на документ равна null");
+                throw new Exception("Нет файла для построения приспособления.");
+            }
+
             // Проверяем валидацию
             if (!Validate())
             {
                 Status = FixtureStepStatus.ValidationFailed;
-                Logger.LogWarning($"[FixtureStep | {Status}] Шаг \"{Title}\" не прошел валидацию");
+                Logger.LogWarning($"[FixtureStep] Шаг \"{Title}\" не прошел валидацию");
                 return;
             }
 
@@ -78,18 +105,18 @@ namespace Modellic.App.Core.Models.Fixture
             try
             {
                 Status = FixtureStepStatus.Building;
-                Logger.LogInformation($"[FixtureStep | {Status}] Начинаем построение шага: \"{Title}\"");
+                Logger.LogInformation($"[FixtureStep] Начинаем построение шага: \"{Title}\"");
 
                 BuildStep();
 
                 Status = FixtureStepStatus.Builded;
-                Logger.LogInformation($"[FixtureStep | {Status}] Шаг \"{Title}\" успешно построен");
+                Logger.LogInformation($"[FixtureStep] Шаг \"{Title}\" успешно построен");
             }
             catch (Exception ex)
             {
                 Status = FixtureStepStatus.Error;
-                Logger.LogError(ex, $"[FixtureStep | {Status}] Ошибка при построении шага \"{Title}\"");
-                throw; // Пробрасываем исключение дальше
+                Logger.LogError(ex, $"[FixtureStep] Ошибка при построении шага \"{Title}\"");
+                throw ex; // Пробрасываем исключение дальше
             }
         }
 

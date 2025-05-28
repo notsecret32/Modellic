@@ -19,19 +19,9 @@ namespace Modellic.App.Core.Services
         #region Private Members
 
         /// <summary>
-        /// Индекс текущего шага на который указывает курсор.
-        /// </summary>
-        private int _currentStepIndex = 0;
-
-        /// <summary>
         /// Индекс последнего собранного шага. -1 означает, что ни один шаг еще не построен.
         /// </summary>
         private int _lastBuiltStepIndex = -1;
-
-        /// <summary>
-        /// Рабочий документ в котором строиться приспособление.
-        /// </summary>
-        private SwPartDoc _workingDocument;
 
         #endregion
 
@@ -57,35 +47,27 @@ namespace Modellic.App.Core.Services
         public int StepCount => _steps.Count;
 
         /// <summary>
-        /// Индекс текущего шага на который указывает курсор.
-        /// </summary>
-        public int CurrentStepIndex => _currentStepIndex;
-
-        /// <summary>
         /// Индекс последнего собранного шага. -1 означает, что ни один шаг еще не построен.
         /// </summary>
         public int LastBuiltStepIndex => _lastBuiltStepIndex;
 
-        /// <summary>
-        /// Рабочий документ в котором строиться приспособление.
-        /// </summary>
-        public SwPartDoc WorkingDocument => _workingDocument;
-
         #endregion
 
-        #region Public Static Properties
+        #region Public Events
 
         /// <summary>
-        /// Ссылка на единственный экземпляр класс <see cref="FixtureBuilder"/>.
+        /// Событие, вызывается каждый раз, когда изменяется статус построения шага.
         /// </summary>
-        public static FixtureBuilder Instance => new FixtureBuilder();
+        public event Action<FixtureStep, FixtureStepStatus> FixtureStepStatusChanged;
 
         #endregion
 
         #region Constructors
 
-        private FixtureBuilder()
+        public FixtureBuilder()
         {
+            Logger.LogInformation("Создаем FixtureBuilder");
+
             // Инициализируем шаги сборки
             _steps = new List<FixtureStep>()
             {
@@ -95,56 +77,68 @@ namespace Modellic.App.Core.Services
                 new FixtureStep4(),
             };
 
-            Logger.LogInformation($"FixtureBuilder создан (Кол-во шагов: {_steps.Count})");
+            foreach (FixtureStep step in _steps)
+            {
+                step.StatusChanged += OnFixtureStepStatusChanged;
+            }
+
+            Logger.LogInformation($"FixtureBuilder создан ({_steps.Count} шага)");
         }
 
         #endregion
 
         #region Public Methods
 
-        /// <summary>
-        /// Изменяет индекс текущего шага. Используется для синхронизации позиции курсура.
-        /// </summary>
-        /// <param name="newIndex">Позиция курсора.</param>
-        public void SetCurrentStepIndex(int newIndex)
+        public void AttachDocument(SwPartDoc document)
         {
-            _currentStepIndex = newIndex;
+            foreach (FixtureStep step in _steps)
+            {
+                step.Document = document;
+            }
         }
 
+        public FixtureStep GetStepByIndex(int index)
+        {
+            return _steps[index];
+        }
+
+        #endregion
+
+        #region Public Async Methods
+
         /// <summary>
-        /// Строит текущий шаг.
+        /// <para>Строит текущий шаг на который указывает курсор.</para>
+        /// <para>Шаг не может быть построен в следующий случаях:</para>
+        /// <list type="bullet">
+        /// <item>Если предыдущий шаг, относительно курсора, не построен;</item>
+        /// <item>Если текущий шаг, на который указывает курсор, уже построен;</item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken">Уведовление об остановке построения шага.</param>
-        /// <exception cref="FixtureBuilderException">Если курсор указывает на неправильный шаг.</exception>
-        public async Task BuildStepAsync(CancellationToken cancellationToken = default)
+        /// <exception cref="FixtureBuilderException">Если какое-то из условий не удовлетворено.</exception>
+        public async Task BuildStepAsync(int cursorPosition, CancellationToken cancellationToken = default)
         {
-            Logger.LogInformation("Пробуем построить шаг");
-
             // Проверяем отмену в начале
             cancellationToken.ThrowIfCancellationRequested();
 
-            if (_workingDocument == null)
+            // Проверяем, что выбранный шаг еще не построен
+            if (_steps[cursorPosition].Status == FixtureStepStatus.Builded)
             {
-                Logger.LogWarning("Нет файла в котором будет строиться приспособление");
+                Logger.LogWarning("Выбранный шаг уже построен");
 
-                throw new InvalidOperationException("Активный документ не установлен");
+                throw new FixtureBuilderException(
+                    "Выбранный шаг уже построен, выберите другой.",
+                    FixtureBuilderErrorCode.AlreadyBuilded
+                );
             }
 
-            // Проверяем, что текущий шаг еще не построен
-            if (_steps[_currentStepIndex].Status != FixtureStepStatus.NotBuilded)
-            {
-                Logger.LogWarning("Этот шаг уже построен");
-
-                throw new FixtureBuilderException("Этот шаг уже построен.", FixtureBuilderErrorCode.AlreadyBuilded);
-            }
-
-            // Проверяем, что шаги строятся последовательно
-            if (_currentStepIndex != _lastBuiltStepIndex + 1)
+            // Проверяем, что предыдущий шаг был построен
+            if (cursorPosition != _lastBuiltStepIndex + 1)
             {
                 Logger.LogWarning("Предыдущий шаг не построен");
 
                 throw new FixtureBuilderException(
-                    "Предыдущий шаг не построен. Постройте его и повторите попытку.", 
+                    "Предыдущий шаг не построен. Постройте его и повторите попытку.",
                     FixtureBuilderErrorCode.PreviousStepNotBuilded
                 );
             }
@@ -152,30 +146,29 @@ namespace Modellic.App.Core.Services
             try
             {
                 // Строим шаг с передачей токена
-                await FixtureSteps[_currentStepIndex].BuildStepAsync(cancellationToken);
+                await FixtureSteps[cursorPosition].BuildStepAsync(cancellationToken);
 
                 // Обновляем счетчик
-                _lastBuiltStepIndex = _currentStepIndex;
+                _lastBuiltStepIndex = cursorPosition;
             }
-            catch (OperationCanceledException)
+            catch (OperationCanceledException ex)
             {
                 Logger.LogInformation("Построение шага было отменено");
 
                 // Пробрасываем исключение дальше
-                throw; 
+                throw ex;
             }
         }
 
-        public void SetWorkingDocument(SwPartDoc partDoc)
+        #endregion
+
+        #region Private Event Handlers
+
+        private void OnFixtureStepStatusChanged(FixtureStep step, FixtureStepStatus status)
         {
-            _workingDocument = partDoc;
-
-            // Прикрепляем документ ко всем шагам
-            foreach (var step in _steps)
-            {
-                step.AttachToDocument(partDoc);
-            }
+            FixtureStepStatusChanged?.Invoke(step, status);
         }
+
         #endregion
     }
 }

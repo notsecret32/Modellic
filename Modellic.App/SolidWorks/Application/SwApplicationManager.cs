@@ -38,29 +38,37 @@ namespace Modellic.App.SolidWorks.Application
         /// </summary>
         private bool _isDisposed = false;
 
+        #endregion
+
+        #region Private Readonly Members
+
         /// <summary>
         /// Объект заглушка для удаления данных в lock.
         /// </summary>
         private readonly object _disposingLock = new object();
-
+      
         #endregion
 
         #region Public Properties
 
         /// <summary>
-        /// Статический объект указывающий на единственный экземпляр менеджера приложений
-        /// </summary>
-        public static SwApplicationManager Instance { get; } = new SwApplicationManager();
-
-        /// <summary>
         /// Текущее приложение.
         /// </summary>
-        public SwApplication Application => _swApp;
+        public SwApplication SwApp => _swApp;
 
         /// <summary>
         /// Флаг, указывающий подключено ли приложение к SolidWorks.
         /// </summary>
-        public bool IsConnected => _swApp != null && !_swApp.Disposing;
+        public bool IsConnected => _swApp != null && !_swApp._isDisposing;
+
+        #endregion
+
+        #region Public Static Properties
+
+        /// <summary>
+        /// Статический объект указывающий на единственный экземпляр менеджера приложений
+        /// </summary>
+        public static SwApplicationManager Instance { get; } = new SwApplicationManager();
 
         #endregion
 
@@ -71,7 +79,7 @@ namespace Modellic.App.SolidWorks.Application
         /// </summary>
         private SwApplicationManager()
         {
-            Logger.LogInformation("Запущен конструктор SwApplicationManager");
+            Logger.LogInformation("SwApplicationManager создан");
         }
 
         #endregion
@@ -85,15 +93,12 @@ namespace Modellic.App.SolidWorks.Application
         /// <exception cref="SolidWorksException">При любой непредвиденной ошибке.</exception>
         public async Task<bool> ConnectAsync()
         {
-            Logger.LogInformation("Проверяем статус подключения к SolidWorks");
-
             if (IsConnected)
             {
-                Logger.LogInformation("Приложение уже подключено к SolidWorks, выходим");
+                Logger.LogInformation("SolidWorks уже подключен");
+
                 return true;
             }
-
-            Logger.LogInformation("Приложение не подключено к SolidWorks, пробуем подключиться");
 
             try
             {
@@ -101,41 +106,38 @@ namespace Modellic.App.SolidWorks.Application
                 {
                     try
                     {
-                        SldWorks app;
-                        try
-                        {
-                            Logger.LogInformation("Пробуем получить запущенный SolidWorks");
+                        // Получаем объект приложения SolidWorks
+                        var swApp = GetOrCreateSwApp();
 
-                            app = (SldWorks)Marshal.GetActiveObject(SOLIDWORKS_PROG_ID);
-                        }
-                        catch (COMException)
-                        {
-                            Logger.LogInformation("SolidWorks не запущен, открываем его");
+                        // Настраиваем его
+                        swApp.Visible = true;
+                        swApp.FrameState = (int)swWindowState_e.swWindowMaximized;
 
-                            app = (SldWorks)Activator.CreateInstance(Type.GetTypeFromProgID(SOLIDWORKS_PROG_ID));
-                        }
+                        // Получаем текущий язык
+                        var currentLanguage = SwSupportedLanguageParser.Parse(swApp.GetCurrentLanguage());
 
-                        app.Visible = true;
-                        app.FrameState = (int)swWindowState_e.swWindowMaximized;
-
-                        // Устанавливаем язык
-                        SwSupportedLanguage currentLanguage = SwSupportedLanguageParser.Parse(app.GetCurrentLanguage());
+                        // Обновляем язык в локализаторе
                         LocalizationManager.Language = currentLanguage;
-                        Logger.LogInformation($"Язык: {currentLanguage}");
 
+                        Logger.LogInformation(
+                            $"Параметры SOLIDWORKS:" +
+                            $"\n- Номер версии: {swApp.RevisionNumber()}" +
+                            $"\n- Язык={currentLanguage}" +
+                            $"\n- WindowState={(swWindowState_e)swApp.FrameState}" +
+                            $"\n- Тип лицензии: {(swLicenseType_e)swApp.GetCurrentLicenseType()}" +
+                            $"\n- Путь до файла: {swApp.GetExecutablePath()}"
+                        );
 
                         lock (_disposingLock)
                         {
                             if (_isDisposed) return false;
-                            _swApp = new SwApplication(app);
+                            this._swApp = new SwApplication(swApp);
                         }
 
                         return true;
                     }
                     catch (Exception ex)
                     {
-                        Logger.LogError("Не удалось создать либо подключиться к SolidWorks");
-
                         throw new SolidWorksException(
                             SwObjectErrorManager.CreateError(
                                 "Не удалось создать либо подключиться к SolidWorks.",
@@ -148,8 +150,6 @@ namespace Modellic.App.SolidWorks.Application
             }
             catch (Exception ex)
             {
-                Logger.LogError("Ошибка при подключении к SolidWorks.");
-
                 throw new SolidWorksException(
                     SwObjectErrorManager.CreateError(
                         "Ошибка при подключении к SolidWorks.",
@@ -166,25 +166,38 @@ namespace Modellic.App.SolidWorks.Application
         /// <param name="closeApp">Если True - закрыть приложение SolidWorks.</param>
         public void Disconnect(bool closeApp = false)
         {
-            if (!IsConnected)
-                return;
+            if (!IsConnected) return;
 
             lock (_disposingLock)
             {
-                if (closeApp && _swApp.UnsafeObject != null)
+                try
                 {
-                    try
-                    {
-                        _swApp.UnsafeObject.ExitApp();
-                    }
-                    catch (COMException)
-                    {
-                        // Игнорируем ошибки при закрытии
-                    }
+                    if (closeApp) _swApp.UnsafeObject?.ExitApp();
                 }
+                catch (COMException) { }
 
-                _swApp.Dispose();
+                _swApp?.Dispose();
                 _swApp = null;
+            }
+        }
+
+        #endregion
+
+        #region Private Methods
+
+        private SldWorks GetOrCreateSwApp()
+        {
+            try
+            {
+                Logger.LogInformation("Пробуем получить приложение SolidWorks");
+
+                return (SldWorks)Marshal.GetActiveObject(SOLIDWORKS_PROG_ID);
+            }
+            catch (COMException)
+            {
+                Logger.LogInformation("SolidWorks не открыт, открываем его");
+
+                return (SldWorks)Activator.CreateInstance(Type.GetTypeFromProgID(SOLIDWORKS_PROG_ID));
             }
         }
 
@@ -194,27 +207,14 @@ namespace Modellic.App.SolidWorks.Application
 
         public void Dispose()
         {
-            Dispose(true);
+            if (_isDisposed) return;
+
+            Disconnect(false);
+            _isDisposed = true;
             GC.SuppressFinalize(this);
         }
 
-        protected virtual void Dispose(bool disposing)
-        {
-            if (_isDisposed)
-                return;
-
-            if (disposing)
-            {
-                Disconnect(false);
-            }
-
-            _isDisposed = true;
-        }
-
-        ~SwApplicationManager()
-        {
-            Dispose(false);
-        }
+        ~SwApplicationManager() => Dispose();
 
         #endregion
     }

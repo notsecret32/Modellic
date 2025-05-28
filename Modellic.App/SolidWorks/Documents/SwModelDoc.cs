@@ -110,7 +110,7 @@ namespace Modellic.App.SolidWorks.Documents
         /// <param name="model">Объект документа.</param>
         public SwModelDoc(ModelDoc2 model) : base(model)
         {
-            Logger.LogInformation($"Создаем новый документ \"{Name}\"");
+            Logger.LogInformation($"Создаем обертку над документом \"{Name}\"");
 
             // Обновляем информацию о текущем документе
             ReloadModelDocData();
@@ -247,10 +247,12 @@ namespace Modellic.App.SolidWorks.Documents
         #region Document Cast
 
         /// <summary>
-        /// Преобразует текущий документ в SwPartDoc (если это возможно)
+        /// Преобразует текущий документ в <see cref="SwPartDoc"/> (если это возможно).
         /// </summary>
-        public virtual SwPartDoc AsSwPartDoc()
+        public virtual SwPartDoc AsPartDoc()
         {
+            Logger.LogInformation("Преобразовываем SwModelDoc в SwPartDoc");
+
             if (!IsPart)
                 throw new InvalidOperationException("Документ не является деталью");
 

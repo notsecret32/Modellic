@@ -1,11 +1,9 @@
 ﻿using Microsoft.Extensions.Logging;
 using Modellic.App.Core.Models.Fixture;
 using Modellic.App.Core.Services;
-using Modellic.App.Enums;
 using Modellic.App.Exceptions;
-using Modellic.App.SolidWorks.Documents;
+using Modellic.App.Extensions;
 using System;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using static Modellic.App.Logging.LoggerService;
@@ -14,17 +12,9 @@ namespace Modellic.App.UI.Forms
 {
     public partial class MainForm : Form
     {
-        #region Private Members
-
-        private CancellationTokenSource _buildStepCts;
-
-        #endregion
-
         #region Private Readonly Members
 
         private readonly FixtureManager _fixtureManager;
-
-        private readonly StepsGridViewService _stepsGridViewService;
 
         #endregion
 
@@ -37,31 +27,17 @@ namespace Modellic.App.UI.Forms
             // Инициализируем компоненты
             InitializeComponent();
 
-            // Получаем FixtureBuilder
-            FixtureBuilder fixtureBuilder = ModellicEnv.FixtureBuilder;
-
-            // Инициализируем сервис по работе с StepsGridView
-            _stepsGridViewService = new StepsGridViewService(fixtureBuilder, stepsGridView);
-
             // Инициализируем менеджер сборки приспособления
-            _fixtureManager = new FixtureManager(fixtureBuilder, _stepsGridViewService);
+            _fixtureManager = new FixtureManager(stepsGridView);
+
+            // Подписываемся на событие
+            _fixtureManager.CursorPositionChanged += OnCursorPositionChanged;
+            _fixtureManager.FixtureStepStatusChanged += OnFixtureStepStatusChanged;
 
             // Инициализируем состояние элементов управления
             InitializeControls();
 
-            // Пробуем подписаться на события сразу
-            SubscribeToSwEvents();
-
             Logger.LogInformation("Форма проинициализирована");
-        }
-
-        #endregion
-
-        #region Destructor
-
-        ~MainForm()
-        {
-            UnsubscribeFromSwEvents();
         }
 
         #endregion
@@ -70,54 +46,31 @@ namespace Modellic.App.UI.Forms
 
         private async void MenuItemConnectToSw_Click(object sender, EventArgs e)
         {
-            Logger.LogInformation("Попытка подключиться к SolidWorks");
-
             await HandleConnectToSw();
         }
 
         private async void BtnBuildStep_Click(object sender, EventArgs e)
         {
-            // Если операция уже выполняется - отменяем ее
-            if (_buildStepCts != null)
-            {
-                _buildStepCts.Cancel();
-                return;
-            }
-
             try
             {
-                // Проверяем подключение к SolidWorks
                 if (!IsApplicationConnected())
                 {
                     throw new InvalidOperationException("Нет подключения к SolidWorks. Подключить?");
                 }
 
                 // Проверяем наличие рабочего файла
-                if (!HasWorkingDocument())
+                if (!HasActiveDocument())
                 {
-                    _fixtureManager.CreateWorkingDocument();
-
                     return;
                 }
 
-                // Создаем CancellationTokenSource для новой операции
-                _buildStepCts = new CancellationTokenSource();
+                UpdateButtonsState(FixtureStepStatus.Building);
 
-                if (_fixtureManager.CurrentStep.Status != FixtureStepStatus.Builded)
-                {
-                    Logger.LogInformation("Этот шаг еще не построен, обновляем кнопки");
-
-                    // Обновляем состояние кнопок (включаем режим отмены)
-                    UpdateControlsOnBuildStep(true);
-                }
-
-                // Строим шаг с возможностью отмены
-                await _fixtureManager.BuildStepAsync(_buildStepCts.Token);
+                await _fixtureManager.BuildStepAsync();
             }
             catch (OperationCanceledException)
             {
                 Logger.LogInformation("Построение шага было отменено пользователем");
-
                 MessageBox.Show("Построение шага отменено", "Информация", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (InvalidOperationException ex)
@@ -127,23 +80,9 @@ namespace Modellic.App.UI.Forms
                     await HandleConnectToSw();
                 }
             }
-            catch (FixtureBuilderException ex) when (ex.ErrorCode == FixtureBuilderErrorCode.PreviousStepNotBuilded ||
-                                                  ex.ErrorCode == FixtureBuilderErrorCode.AlreadyBuilded)
-            {
-                MessageBox.Show(ex.Message, "Предупреждение", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
             catch (FixtureBuilderException ex)
             {
                 MessageBox.Show(ex.Message, "Непредвиденная ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-            finally
-            {
-                // Освобождаем CancellationTokenSource
-                _buildStepCts?.Dispose();
-                _buildStepCts = null;
-
-                // Возвращаем UI в исходное состояние
-                UpdateControlsOnBuildStep(false);
             }
         }
 
@@ -159,128 +98,124 @@ namespace Modellic.App.UI.Forms
 
         #endregion
 
-        #region Application Event Handlers
+        #region Private Event Handlers
 
-        private void OnActiveDocumentChanged(SwModelDoc newActiveDoc)
+        private void OnCursorPositionChanged(FixtureStep step, int cursorPosition)
         {
-            Logger.LogInformation($"Новый активный документ: \"{newActiveDoc.Name}\"");
+            UpdateButtonsState(step.Status);
         }
 
-        #endregion
-
-        #region Application Event Helpers
-
-        /// <summary>
-        /// Метод для подписки к событиям приложения SolidWorks.
-        /// </summary>
-        private void SubscribeToSwEvents()
+        private void OnFixtureStepStatusChanged(FixtureStep step, FixtureStepStatus status)
         {
-            Logger.LogInformation("Пробуем подписаться на события приложения SolidWorks");
-
-            if (ModellicEnv.Application == null || !ModellicEnv.ApplicationManager.IsConnected)
-            {
-                Logger.LogInformation("Приложение SolidWorks еще не проинициализировано, пропускаем");
-                return;
-            }
-
-            Logger.LogInformation("Приложение SolidWorks проинициализировано, подписываемся на события");
-
-            ModellicEnv.Application.ActiveDocumentChanged += OnActiveDocumentChanged;
-        }
-
-        /// <summary>
-        /// Метод для отписки от событиий приложения SolidWorks.
-        /// </summary>
-        private void UnsubscribeFromSwEvents()
-        {
-            Logger.LogInformation("Пробуем отписаться на события приложения SolidWorks");
-
-            if (ModellicEnv.Application == null || !ModellicEnv.ApplicationManager.IsConnected)
-            {
-                Logger.LogInformation("Приложение SolidWorks еще не проинициализировано, пропускаем");
-                return;
-            }
-
-            Logger.LogInformation("Отписываемся от событий приложения SolidWorks");
-
-            ModellicEnv.Application.ActiveDocumentChanged -= OnActiveDocumentChanged;
+            UpdateButtonsState(status);
         }
 
         #endregion
 
         #region Private Methods
 
+        private void AttachDocumentToFixtureManager()
+        {
+            if (HasActiveDocument())
+            {
+                var activeDocument = ModellicEnv.Application.ActiveDocument;
+                _fixtureManager.AttachDocument(activeDocument);
+            }
+        }
+
+        private string GetBuildStepButtonText(FixtureStepStatus status) => status switch
+        {
+            FixtureStepStatus.NotBuilded => "Построить",
+            FixtureStepStatus.Building => "В процессе",
+            FixtureStepStatus.Builded => "Построено",
+            FixtureStepStatus.Cancel => "Перестроить",
+            FixtureStepStatus.Error => "Перестроить",
+            FixtureStepStatus.ValidationFailed => "Перестроить",
+            _ => throw new InvalidOperationException("Необработанный случай")
+        };
+
         private void InitializeControls()
         {
-            Logger.LogInformation("Начало инициализации элементов управления");
+            Logger.LogInformation("Инициализация элементов управления");
 
             menuItemConnectToSw.Enabled = !ModellicEnv.ApplicationManager.IsConnected;
             menuItemDisconnectFromSw.Enabled = ModellicEnv.ApplicationManager.IsConnected;
+
+            // Инициализация состояния кнопок при старте
+            btnBuildStep.Enabled = false;
+            btnChangeStep.Enabled = false;
+            btnClearStep.Enabled = false;
 
             Logger.LogInformation("Элементы управления проинициализированы");
         }
 
         private bool IsApplicationConnected()
         {
-            Logger.LogInformation("Проверка подключения к SolidWorks");
-
-            if (!ModellicEnv.ApplicationManager.IsConnected)
-            {
-                Logger.LogWarning("SolidWorks не подключен");
-
-                return false;
-            }
-
-            Logger.LogInformation("SolidWorks подключен, продолжаем");
-
-            return true;
+            bool isConnected = ModellicEnv.ApplicationManager.IsConnected;
+            Logger.LogInformation($"SolidWorks {(isConnected ? "подключен" : "не подключен")}");
+            return isConnected;
         }
 
-        private bool HasWorkingDocument()
+        private bool HasActiveDocument()
         {
-            Logger.LogInformation("Проверяем наличие рабочего документа");
+            bool hasDoc = ModellicEnv.Application.ActiveDocument != null;
+            Logger.LogInformation($"{(hasDoc ? "Есть активный документ" : "Нет активного документа")}");
+            return hasDoc;
+        }
 
-            if (_fixtureManager.WorkingDocument == null)
+        private void UpdateButtonsState(FixtureStepStatus status)
+        {
+            this.SafeInvoke(() =>
             {
-                Logger.LogWarning("Рабочего документа нет");
+                Logger.LogInformation($"Обновляем кнопки, когда статус = {status}");
 
-                return false;
-            }
+                if (status == FixtureStepStatus.Building)
+                {
+                    btnBuildStep.Enabled = false;
+                    btnChangeStep.Enabled = false;
+                    btnClearStep.Enabled = false;
+                    btnBuildStep.Text = "В процессе";
+                    return;
+                }
 
-            Logger.LogInformation("Рабочий документ есть");
+                bool isBuilt = status == FixtureStepStatus.Builded;
 
-            return true;
+                btnBuildStep.Enabled = !isBuilt;
+                btnChangeStep.Enabled = isBuilt;
+                btnClearStep.Enabled = isBuilt;
+
+                btnBuildStep.Text = GetBuildStepButtonText(status);
+            });
         }
 
         private void UpdateControls()
         {
-            Logger.LogInformation("Обновляем элементы управления");
+            this.SafeInvoke(() =>
+            {
+                Logger.LogInformation("Обновляем элементы управления");
 
-            menuItemConnectToSw.Enabled = !ModellicEnv.ApplicationManager.IsConnected;
-            menuItemConnectToSw.CheckState = ModellicEnv.ApplicationManager.IsConnected ? CheckState.Checked : CheckState.Unchecked;
-            menuItemDisconnectFromSw.Enabled = ModellicEnv.ApplicationManager.IsConnected;
+                bool isConnected = ModellicEnv.ApplicationManager.IsConnected;
 
-            Logger.LogInformation("Элементы управления обновлены");
+                menuItemConnectToSw.Enabled = !isConnected;
+                menuItemConnectToSw.CheckState = isConnected ? CheckState.Checked : CheckState.Unchecked;
+                menuItemDisconnectFromSw.Enabled = isConnected;
+
+                UpdateButtonsState(_fixtureManager.CurrentStep.Status);
+
+                Logger.LogInformation("Элементы управления обновлены");
+            });
         }
 
-        private void UpdateControlsOnBuildStep(bool isBuilding)
-        {
-            // Обновляем состояние курсора
-            _fixtureManager.FreezeCursor = isBuilding;
+        #endregion
 
-            // Меняем текст и поведение кнопки
-            btnBuildStep.Text = isBuilding ? "Отменить" : "Построить";
-
-            // Блокируем другие кнопки во время построения
-            btnChangeStep.Enabled = !isBuilding;
-            btnClearStep.Enabled = !isBuilding;
-            btnStartAssembly.Enabled = !isBuilding;
-        }
+        #region Private Async Methods
 
         private async Task HandleConnectToSw()
         {
             try
             {
+                Logger.LogInformation("Пробуем подключиться к SolidWorks");
+
                 // Обновляем состояние UI элементов до подключения
                 menuItemConnectToSw.Enabled = false;
                 Cursor = Cursors.WaitCursor;
@@ -288,10 +223,10 @@ namespace Modellic.App.UI.Forms
                 // Подключаемся к SolidWorks
                 await ModellicEnv.ApplicationManager.ConnectAsync();
 
-                // Подписываемся на события
-                SubscribeToSwEvents();
+                Logger.LogInformation("Подключено успешно");
 
-                Logger.LogInformation("Подключение к SolidWorks прошло успешно");
+                // Передаем активный документ
+                AttachDocumentToFixtureManager();
             }
             catch (SolidWorksException ex)
             {

@@ -33,10 +33,10 @@ namespace Modellic.App.Core.Models.Fixture
             Logger.LogInformation($"[FixtureStep1] Создаем диск");
 
             // Выбираем плоскость
-            _document.Extension.SelectPlane(SwPlane.Front);
+            Document.Extension.SelectPlane(SwPlane.Front);
 
             // Создаем эскиз
-            _document.SketchManager.CreateSketch(() =>
+            Document.SketchManager.CreateSketch(() =>
             {
                 // TODO: Перенести в свойства
                 const double diameter = 280;
@@ -47,7 +47,7 @@ namespace Modellic.App.Core.Models.Fixture
                 Logger.LogInformation($"[FixtureStep1] Радиус внешней окружности = {radius}");
 
                 // Создаем внешнюю окружность
-                _document.SketchManager.CreateCircle(
+                Document.SketchManager.CreateCircle(
                     0,       0, 0,
                     radius , 0, 0
                 );
@@ -57,7 +57,7 @@ namespace Modellic.App.Core.Models.Fixture
                 Logger.LogInformation($"[FixtureStep1] Радиус внутренней окружности = {radius}");
 
                 // Создаем внутреннюю окружность
-                _document.SketchManager.CreateCircle(
+                Document.SketchManager.CreateCircle(
                     0, 0, 0, // Начало
                     radius, 0, 0  // Конец
                 );
