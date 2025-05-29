@@ -1,8 +1,11 @@
 ﻿using Microsoft.Extensions.Logging;
+using Modellic.App.Enums;
 using Modellic.App.SolidWorks.Core;
 using Modellic.App.SolidWorks.Documents;
 using SolidWorks.Interop.sldworks;
+using SolidWorks.Interop.swconst;
 using System;
+using System.Threading.Tasks;
 using static Modellic.App.Logging.LoggerService;
 
 namespace Modellic.App.SolidWorks.Application
@@ -77,6 +80,34 @@ namespace Modellic.App.SolidWorks.Application
 
                 ActiveDocument = new SwModelDoc(sldWorks.IActiveDoc2);
             }
+        }
+
+        #endregion
+
+        #region Public Methods 
+
+        public async Task<(SwModelDoc Document, swFileLoadError_e Error, swFileLoadWarning_e Warning)> OpenDocumentAsync(string fileName, SwDocumentType documentType)
+        {
+            return await Task.Run(() =>
+            {
+                int tempErrors = 0;
+                int tempWarnings = 0;
+
+                var openedDocument = BaseObject.OpenDoc6(
+                    fileName,
+                    (int)documentType,
+                    (int)swOpenDocOptions_e.swOpenDocOptions_Silent,
+                    "",
+                    ref tempErrors,
+                    ref tempWarnings
+                );
+
+                return (
+                    Document: openedDocument != null ? new SwModelDoc(openedDocument) : null,
+                    Error: (swFileLoadError_e)tempErrors,
+                    Warning: (swFileLoadWarning_e)tempWarnings
+                );
+            });
         }
 
         #endregion

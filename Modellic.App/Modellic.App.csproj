@@ -135,10 +135,15 @@
     <Compile Include="Core\Models\Fixture\FixtureStep2.cs" />
     <Compile Include="Core\Models\Fixture\FixtureStep1.cs" />
     <Compile Include="Core\Models\Fixture\FixtureStepStatus.cs" />
+    <Compile Include="Core\Services\AssemblyManager.cs" />
     <Compile Include="Core\Services\FixtureBuilder.cs" />
     <Compile Include="Core\Services\FixtureManager.cs" />
+    <Compile Include="Core\Services\ResourceManager.cs" />
     <Compile Include="Core\Services\StepsGridViewService.cs" />
+    <Compile Include="Enums\AssemblyExampleType.cs" />
     <Compile Include="Enums\FixtureBuilderErrorCode.cs" />
+    <Compile Include="Enums\PartExampleType.cs" />
+    <Compile Include="Enums\ResourceManagerErrorCode.cs" />
     <Compile Include="Enums\SwDestroyNotifyType.cs" />
     <Compile Include="Enums\SwDocumentType.cs" />
     <Compile Include="Enums\SwFeatureType.cs" />
@@ -148,6 +153,7 @@
     <Compile Include="Errors\SwObjectError.cs" />
     <Compile Include="Errors\SwObjectErrorManager.cs" />
     <Compile Include="Exceptions\FixtureBuilderException.cs" />
+    <Compile Include="Exceptions\ResourceManagerException.cs" />
     <Compile Include="Exceptions\SolidWorksException.cs" />
     <Compile Include="Extensions\ControlExtensions.cs" />
     <Compile Include="Extensions\DoubleExtension.cs" />
@@ -201,10 +207,28 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Content Include="Resources\Examples\Assemblies\AssemblyExample.SLDASM">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Examples\Parts\FixtureExample.SLDPRT">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Examples\Parts\PartExample.SLDPRT">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Examples\Parts\PlatformExample.SLDPRT">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Examples\Assemblies\StopExample.SLDASM">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Resources\UserData\Assemblies\" />
+    <Folder Include="Resources\UserData\Fixtures\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -1,5 +1,4 @@
-﻿using Modellic.App.Core.Services;
-using Modellic.App.SolidWorks.Application;
+﻿using Modellic.App.SolidWorks.Application;
 
 namespace Modellic.App
 {

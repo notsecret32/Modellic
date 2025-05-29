@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Modellic.App.Core.Models.Fixture;
 using Modellic.App.Core.Services;
+using Modellic.App.Enums;
 using Modellic.App.Exceptions;
 using Modellic.App.Extensions;
 using System;
@@ -95,6 +96,65 @@ namespace Modellic.App.UI.Forms
         {
             _fixtureManager.CursorDown();
         }
+
+        private async void MenuItemOpenPartExample_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (!IsApplicationConnected())
+                {
+                    if (MessageBox.Show("Приложение не подключено к SolidWorks. Подключиться?", "Предупреждение", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
+                    {
+                        return;
+                    }
+
+                    await HandleConnectToSw();
+                }
+
+                var menuItem = (ToolStripMenuItem)sender;
+                var exampleName = GetPartExampleTypeByTag((string)menuItem.Tag);
+                var fullPathToExample = ResourceManager.GetPartExampleFullPath(exampleName);
+
+                Logger.LogInformation($"Пробуем открыть пример: {fullPathToExample}");
+
+                var (_, Error, Warning) = await ModellicEnv.Application.OpenDocumentAsync(fullPathToExample, SwDocumentType.Part);
+
+                Logger.LogInformation($"Операция завершена (Ошибка: {Error}; Предупреждение: {Warning})");
+            }
+            catch (ResourceManagerException ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+
+        private async void MenuItemOpenAssemblyExample_Click(object sender, EventArgs e)
+        {
+            try { 
+                if (!IsApplicationConnected())
+                {
+                    if (MessageBox.Show("Приложение не подключено к SolidWorks. Подключиться?", "Предупреждение", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
+                    {
+                        return;
+                    }
+
+                    await HandleConnectToSw();
+                }
+
+                var menuItem = (ToolStripMenuItem)sender;
+                var exampleName = GetAssemblyExampleTypeByTag((string)menuItem.Tag);
+                var fullPathToExample = ResourceManager.GetAssemblyExampleFullPath(exampleName);
+
+                Logger.LogInformation($"Пробуем открыть пример: {fullPathToExample}");
+
+                var (_, Error, Warning) = await ModellicEnv.Application.OpenDocumentAsync(fullPathToExample, SwDocumentType.Assembly);
+
+                Logger.LogInformation($"Операция завершена (Ошибка: {Error}; Предупреждение: {Warning})");
+            }
+            catch (ResourceManagerException ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+}
 
         #endregion
 
@@ -204,6 +264,27 @@ namespace Modellic.App.UI.Forms
 
                 Logger.LogInformation("Элементы управления обновлены");
             });
+        }
+
+        private PartExampleType GetPartExampleTypeByTag(string tag)
+        {
+            return tag switch
+            {
+                "PartExample" => PartExampleType.Part,
+                "FixtureExample" => PartExampleType.Fixture,
+                "PlatformExample" => PartExampleType.Platform,
+                _ => throw new ResourceManagerException($"Необработанный тэг {tag} примера детали.", ResourceManagerErrorCode.InvalidPartTag)
+            };
+        }
+
+        private AssemblyExampleType GetAssemblyExampleTypeByTag(string tag)
+        {
+            return tag switch
+            {
+                "StopExample" => AssemblyExampleType.Stop,
+                "AssemblyExample" => AssemblyExampleType.Assembly,
+                _ => throw new ResourceManagerException($"Необработанный тэг {tag} примера сборки.", ResourceManagerErrorCode.InvalidAssemblyTag)
+            };
         }
 
         #endregion
