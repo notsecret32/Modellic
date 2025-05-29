@@ -13,9 +13,9 @@ namespace Modellic.App.UI.Forms
 {
     public partial class MainForm : Form
     {
-        #region Private Readonly Members
+        #region Private Members
 
-        private readonly FixtureManager _fixtureManager;
+        private FixtureManager _fixtureManager;
 
         #endregion
 
@@ -28,12 +28,8 @@ namespace Modellic.App.UI.Forms
             // Инициализируем компоненты
             InitializeComponent();
 
-            // Инициализируем менеджер сборки приспособления
-            _fixtureManager = new FixtureManager(stepsGridView);
-
-            // Подписываемся на событие
-            _fixtureManager.CursorPositionChanged += OnCursorPositionChanged;
-            _fixtureManager.FixtureStepStatusChanged += OnFixtureStepStatusChanged;
+            // Инициализируем сервисы
+            InitializeServices();
 
             // Инициализируем состояние элементов управления
             InitializeControls();
@@ -45,153 +41,61 @@ namespace Modellic.App.UI.Forms
 
         #region Form Event Handlers
 
-        private async void MenuItemConnectToSw_Click(object sender, EventArgs e)
-        {
-            await HandleConnectToSw();
-        }
+        private void BtnCursorUp_Click(object sender, EventArgs e) => _fixtureManager.CursorUp();
 
-        private async void BtnBuildStep_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                if (!IsApplicationConnected())
-                {
-                    throw new InvalidOperationException("Нет подключения к SolidWorks. Подключить?");
-                }
-
-                // Проверяем наличие рабочего файла
-                if (!HasActiveDocument())
-                {
-                    return;
-                }
-
-                UpdateButtonsState(FixtureStepStatus.Building);
-
-                await _fixtureManager.BuildStepAsync();
-            }
-            catch (OperationCanceledException)
-            {
-                Logger.LogInformation("Построение шага было отменено пользователем");
-                MessageBox.Show("Построение шага отменено", "Информация", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
-            catch (InvalidOperationException ex)
-            {
-                if (MessageBox.Show(ex.Message, "Ошибка", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-                {
-                    await HandleConnectToSw();
-                }
-            }
-            catch (FixtureBuilderException ex)
-            {
-                MessageBox.Show(ex.Message, "Непредвиденная ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        private void BtnCursorUp_Click(object sender, EventArgs e)
-        {
-            _fixtureManager.CursorUp();
-        }
-
-        private void BtnCursorDown_Click(object sender, EventArgs e)
-        {
-            _fixtureManager.CursorDown();
-        }
-
-        private async void MenuItemOpenPartExample_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                if (!IsApplicationConnected())
-                {
-                    if (MessageBox.Show("Приложение не подключено к SolidWorks. Подключиться?", "Предупреждение", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
-                    {
-                        return;
-                    }
-
-                    await HandleConnectToSw();
-                }
-
-                var menuItem = (ToolStripMenuItem)sender;
-                var exampleName = GetPartExampleTypeByTag((string)menuItem.Tag);
-                var fullPathToExample = ResourceManager.GetPartExampleFullPath(exampleName);
-
-                Logger.LogInformation($"Пробуем открыть пример: {fullPathToExample}");
-
-                var (_, Error, Warning) = await ModellicEnv.Application.OpenDocumentAsync(fullPathToExample, SwDocumentType.Part);
-
-                Logger.LogInformation($"Операция завершена (Ошибка: {Error}; Предупреждение: {Warning})");
-            }
-            catch (ResourceManagerException ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
-        }
-
-        private async void MenuItemOpenAssemblyExample_Click(object sender, EventArgs e)
-        {
-            try { 
-                if (!IsApplicationConnected())
-                {
-                    if (MessageBox.Show("Приложение не подключено к SolidWorks. Подключиться?", "Предупреждение", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
-                    {
-                        return;
-                    }
-
-                    await HandleConnectToSw();
-                }
-
-                var menuItem = (ToolStripMenuItem)sender;
-                var exampleName = GetAssemblyExampleTypeByTag((string)menuItem.Tag);
-                var fullPathToExample = ResourceManager.GetAssemblyExampleFullPath(exampleName);
-
-                Logger.LogInformation($"Пробуем открыть пример: {fullPathToExample}");
-
-                var (_, Error, Warning) = await ModellicEnv.Application.OpenDocumentAsync(fullPathToExample, SwDocumentType.Assembly);
-
-                Logger.LogInformation($"Операция завершена (Ошибка: {Error}; Предупреждение: {Warning})");
-            }
-            catch (ResourceManagerException ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
-}
+        private void BtnCursorDown_Click(object sender, EventArgs e) => _fixtureManager.CursorDown();
 
         #endregion
 
-        #region Private Event Handlers
+        #region Async Form Event Handlers
 
-        private void OnCursorPositionChanged(FixtureStep step, int cursorPosition)
-        {
-            UpdateButtonsState(step.Status);
-        }
+        private async void BtnBuildStep_Click(object sender, EventArgs e) => await BuildStepAsync();
 
-        private void OnFixtureStepStatusChanged(FixtureStep step, FixtureStepStatus status)
-        {
-            UpdateButtonsState(status);
-        }
+        private async void MenuItemConnectToSw_Click(object sender, EventArgs e) => await HandleSwConnectionAsync();
+
+        private async void MenuItemOpenAssemblyExample_Click(object sender, EventArgs e) 
+            => await OpenExampleAsync((ToolStripMenuItem)sender, isAssembly: true);
+        private async void MenuItemOpenPartExample_Click(object sender, EventArgs e)
+             => await OpenExampleAsync((ToolStripMenuItem)sender, isAssembly: false);
 
         #endregion
 
         #region Private Methods
 
-        private void AttachDocumentToFixtureManager()
+        private bool AskRetry(string message) 
+            => MessageBox.Show(message, "Подтверждение", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes;
+
+        private void AttachActiveDocument()
         {
-            if (HasActiveDocument())
+            if (ModellicEnv.Application.ActiveDocument != null)
             {
-                var activeDocument = ModellicEnv.Application.ActiveDocument;
-                _fixtureManager.AttachDocument(activeDocument);
+                _fixtureManager.AttachDocument(ModellicEnv.Application.ActiveDocument);
             }
         }
 
-        private string GetBuildStepButtonText(FixtureStepStatus status) => status switch
+        private AssemblyExampleType GetAssemblyExampleType(string tag) => tag switch
+        {
+            "StopExample" => AssemblyExampleType.Stop,
+            "AssemblyExample" => AssemblyExampleType.Assembly,
+            _ => throw new ResourceManagerException($"Неизвестный тег: {tag}",
+                ResourceManagerErrorCode.InvalidAssemblyTag)
+        };
+
+        private string GetButtonText(FixtureStepStatus status) => status switch
         {
             FixtureStepStatus.NotBuilded => "Построить",
             FixtureStepStatus.Building => "В процессе",
             FixtureStepStatus.Builded => "Построено",
-            FixtureStepStatus.Cancel => "Перестроить",
-            FixtureStepStatus.Error => "Перестроить",
-            FixtureStepStatus.ValidationFailed => "Перестроить",
-            _ => throw new InvalidOperationException("Необработанный случай")
+            _ => "Перестроить" // Для Cancel, Error, ValidationFailed
+        };
+
+        private PartExampleType GetPartExampleType(string tag) => tag switch
+        {
+            "PartExample" => PartExampleType.Part,
+            "FixtureExample" => PartExampleType.Fixture,
+            "PlatformExample" => PartExampleType.Platform,
+            _ => throw new ResourceManagerException($"Неизвестный тег: {tag}",
+                ResourceManagerErrorCode.InvalidPartTag)
         };
 
         private void InitializeControls()
@@ -209,130 +113,156 @@ namespace Modellic.App.UI.Forms
             Logger.LogInformation("Элементы управления проинициализированы");
         }
 
-        private bool IsApplicationConnected()
+        private void InitializeServices()
         {
-            bool isConnected = ModellicEnv.ApplicationManager.IsConnected;
-            Logger.LogInformation($"SolidWorks {(isConnected ? "подключен" : "не подключен")}");
-            return isConnected;
+            _fixtureManager = new FixtureManager(stepsGridView);
+            _fixtureManager.CursorPositionChanged += OnCursorPositionChanged;
+            _fixtureManager.FixtureStepStatusChanged += OnFixtureStepStatusChanged;
         }
 
-        private bool HasActiveDocument()
+        private void SetUiState(bool isConnecting)
         {
-            bool hasDoc = ModellicEnv.Application.ActiveDocument != null;
-            Logger.LogInformation($"{(hasDoc ? "Есть активный документ" : "Нет активного документа")}");
-            return hasDoc;
+            this.SafeInvoke(() =>
+            {
+                menuItemConnectToSw.Enabled = !isConnecting && !ModellicEnv.ApplicationManager.IsConnected;
+                Cursor = isConnecting ? Cursors.WaitCursor : Cursors.Default;
+            });
         }
+
+        private void ShowErrorMessage(string title, string message)
+            => MessageBox.Show(message, title, MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+        private void ShowInfoMessage(string message)
+            => MessageBox.Show(message, "Информация", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
         private void UpdateButtonsState(FixtureStepStatus status)
         {
             this.SafeInvoke(() =>
             {
-                Logger.LogInformation($"Обновляем кнопки, когда статус = {status}");
+                var isBuilding = status == FixtureStepStatus.Building;
+                var isBuilt = status == FixtureStepStatus.Builded;
 
-                if (status == FixtureStepStatus.Building)
-                {
-                    btnBuildStep.Enabled = false;
-                    btnChangeStep.Enabled = false;
-                    btnClearStep.Enabled = false;
-                    btnBuildStep.Text = "В процессе";
-                    return;
-                }
-
-                bool isBuilt = status == FixtureStepStatus.Builded;
-
-                btnBuildStep.Enabled = !isBuilt;
+                btnBuildStep.Enabled = !isBuilding && !isBuilt;
                 btnChangeStep.Enabled = isBuilt;
                 btnClearStep.Enabled = isBuilt;
-
-                btnBuildStep.Text = GetBuildStepButtonText(status);
+                btnBuildStep.Text = GetButtonText(status);
             });
         }
 
-        private void UpdateControls()
+        private void VerifyActiveDocument()
         {
-            this.SafeInvoke(() =>
+            if (ModellicEnv.Application.ActiveDocument == null)
             {
-                Logger.LogInformation("Обновляем элементы управления");
-
-                bool isConnected = ModellicEnv.ApplicationManager.IsConnected;
-
-                menuItemConnectToSw.Enabled = !isConnected;
-                menuItemConnectToSw.CheckState = isConnected ? CheckState.Checked : CheckState.Unchecked;
-                menuItemDisconnectFromSw.Enabled = isConnected;
-
-                UpdateButtonsState(_fixtureManager.CurrentStep.Status);
-
-                Logger.LogInformation("Элементы управления обновлены");
-            });
-        }
-
-        private PartExampleType GetPartExampleTypeByTag(string tag)
-        {
-            return tag switch
-            {
-                "PartExample" => PartExampleType.Part,
-                "FixtureExample" => PartExampleType.Fixture,
-                "PlatformExample" => PartExampleType.Platform,
-                _ => throw new ResourceManagerException($"Необработанный тэг {tag} примера детали.", ResourceManagerErrorCode.InvalidPartTag)
-            };
-        }
-
-        private AssemblyExampleType GetAssemblyExampleTypeByTag(string tag)
-        {
-            return tag switch
-            {
-                "StopExample" => AssemblyExampleType.Stop,
-                "AssemblyExample" => AssemblyExampleType.Assembly,
-                _ => throw new ResourceManagerException($"Необработанный тэг {tag} примера сборки.", ResourceManagerErrorCode.InvalidAssemblyTag)
-            };
+                throw new InvalidOperationException("Нет активного документа");
+            }
         }
 
         #endregion
 
         #region Private Async Methods
 
-        private async Task HandleConnectToSw()
+        private async Task BuildStepAsync()
         {
             try
             {
-                Logger.LogInformation("Пробуем подключиться к SolidWorks");
+                await VerifySwConnectionAsync();
+                VerifyActiveDocument();
 
-                // Обновляем состояние UI элементов до подключения
-                menuItemConnectToSw.Enabled = false;
-                Cursor = Cursors.WaitCursor;
+                UpdateButtonsState(FixtureStepStatus.Building);
+                await _fixtureManager.BuildStepAsync();
+            }
+            catch (OperationCanceledException)
+            {
+                ShowInfoMessage("Построение шага отменено");
+            }
+            catch (InvalidOperationException ex) when (AskRetry(ex.Message))
+            {
+                await HandleSwConnectionAsync();
+            }
+            catch (FixtureBuilderException ex)
+            {
+                ShowErrorMessage("Непредвиденная ошибка", ex.Message);
+            }
+        }
 
-                // Подключаемся к SolidWorks
+        private async Task HandleSwConnectionAsync()
+        {
+            try
+            {
+                SetUiState(isConnecting: true);
+
                 await ModellicEnv.ApplicationManager.ConnectAsync();
+                AttachActiveDocument();
 
-                Logger.LogInformation("Подключено успешно");
-
-                // Передаем активный документ
-                AttachDocumentToFixtureManager();
+                Logger.LogInformation("Подключение к SolidWorks успешно");
             }
             catch (SolidWorksException ex)
             {
-                Logger.LogError($"Ошибка подключения к SolidWorks. Подробности: {ex.Details.ErrorMessage}");
+                Logger.LogError($"Ошибка подключения: {ex.Details.ErrorMessage}");
 
-                var result = MessageBox.Show(
-                    ex.Details.ErrorMessage,
-                    "Ошибка подключения",
-                    MessageBoxButtons.YesNo,
-                    MessageBoxIcon.Question
-                );
-
-                if (result == DialogResult.Yes)
-                {
-                    await HandleConnectToSw();
-                }
+                if (AskRetry(ex.Details.ErrorMessage))
+                    await HandleSwConnectionAsync();
             }
             finally
             {
-                // Обновляем состояние UI элементов после попытки подключиться
-                UpdateControls();
-
-                // Возвращаем курсор в дефолтное состояние
-                Cursor = Cursors.Default;
+                SetUiState(isConnecting: false);
             }
+        }
+
+        private async Task OpenExampleAsync(ToolStripMenuItem menuItem, bool isAssembly)
+        {
+            try
+            {
+                await VerifySwConnectionAsync();
+
+                string fullPath;
+
+                if (isAssembly)
+                {
+                    var type = GetAssemblyExampleType(menuItem.Tag.ToString());
+                    fullPath = ResourceManager.GetAssemblyExampleFullPath(type);
+                }
+                else
+                {
+                    var type = GetPartExampleType(menuItem.Tag.ToString());
+                    fullPath = ResourceManager.GetPartExampleFullPath(type);
+                }
+
+                Logger.LogInformation($"Открытие примера: {fullPath}");
+
+                var (_, Error, Warning) = await ModellicEnv.Application.OpenDocumentAsync(
+                    fullPath,
+                    isAssembly ? SwDocumentType.Assembly : SwDocumentType.Part);
+
+                Logger.LogInformation($"Результат: Ошибка={Error}, Предупреждение={Warning}");
+            }
+            catch (ResourceManagerException ex)
+            {
+                ShowErrorMessage("Ошибка ресурсов", ex.Message);
+            }
+        }
+
+        private async Task VerifySwConnectionAsync()
+        {
+            if (!ModellicEnv.ApplicationManager.IsConnected &&
+                AskRetry("Нет подключения к SolidWorks. Подключиться?"))
+            {
+                await HandleSwConnectionAsync();
+            }
+        }
+
+        #endregion
+
+        #region Event Callbacks
+
+        private void OnCursorPositionChanged(FixtureStep step, int cursorPosition)
+        {
+            UpdateButtonsState(step.Status);
+        }
+
+        private void OnFixtureStepStatusChanged(FixtureStep step, FixtureStepStatus status)
+        {
+            UpdateButtonsState(status);
         }
 
         #endregion
