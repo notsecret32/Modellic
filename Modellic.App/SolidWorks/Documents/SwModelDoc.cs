@@ -171,7 +171,7 @@ namespace Modellic.App.SolidWorks.Documents
                     break;
                 case SwDocumentType.Assembly:
                     this.AsAssembly().DestroyNotify2 += DocumentPreDestroy;
-                    this.AsPart().UserSelectionPreNotify += UserSelectionPreNotify;
+                    this.AsAssembly().UserSelectionPreNotify += UserSelectionPreNotify;
                     break;
             }
         }
@@ -202,7 +202,7 @@ namespace Modellic.App.SolidWorks.Documents
                     break;
                 case SwDocumentType.Assembly:
                     this.AsAssembly().DestroyNotify2 -= DocumentPreDestroy;
-                    this.AsPart().UserSelectionPreNotify -= UserSelectionPreNotify;
+                    this.AsAssembly().UserSelectionPreNotify -= UserSelectionPreNotify;
                     break;
             }
         }
@@ -245,19 +245,6 @@ namespace Modellic.App.SolidWorks.Documents
         #endregion
 
         #region Document Cast
-
-        /// <summary>
-        /// Преобразует текущий документ в <see cref="SwPartDoc"/> (если это возможно).
-        /// </summary>
-        public virtual SwPartDoc AsPartDoc()
-        {
-            Logger.LogInformation("Преобразовываем SwModelDoc в SwPartDoc");
-
-            if (!IsPart)
-                throw new InvalidOperationException("Документ не является деталью");
-
-            return new SwPartDoc((PartDoc)BaseObject);
-        }
 
         /// <summary>
         /// Преобразует текущий документ в документ типа <see cref="SwDocumentType.Part"/>.

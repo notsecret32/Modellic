@@ -47,6 +47,8 @@ namespace Modellic.App.UI.Forms
 
         private void BtnCursorDown_Click(object sender, EventArgs e) => _fixtureManager.CursorDown();
 
+        private void OpenAssemblyManager_Click(object sender, EventArgs e) => CreateAssemblyManagerForm();
+
         #endregion
 
         #region Async Form Event Handlers
@@ -66,6 +68,17 @@ namespace Modellic.App.UI.Forms
 
         private DialogResult AskYesNo(string message)
             => MessageBox.Show(message, "Подтверждение", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+        private async void CreateAssemblyManagerForm()
+        {
+            if (!await EnsureSwConnectionAsync())
+            {
+                return;
+            }
+
+            AssemblyManagerForm assemblyManagerForm = new AssemblyManagerForm();
+            assemblyManagerForm.Show();
+        }
 
         private AssemblyExampleType GetAssemblyExampleType(string tag) => tag switch
         {
@@ -203,7 +216,7 @@ namespace Modellic.App.UI.Forms
 
                     Logger.LogInformation("FixtureManager не имеет рабочего файла, создадим его");
 
-                    var createdDocument = await ModellicEnv.Application.CreatePartDocument();
+                    var createdDocument = await ModellicEnv.Application.CreatePartDocumentAsync();
 
                     Logger.LogInformation($"Создан документ модели \"{createdDocument.Name}\"");
 

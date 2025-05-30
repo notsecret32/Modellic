@@ -56,7 +56,7 @@ namespace Modellic.App.SolidWorks.Application
 
         #region Public Methods 
 
-        public async Task<SwPartDoc> CreatePartDocument()
+        public async Task<SwPartDoc> CreatePartDocumentAsync()
         {
             return await SwObjectErrorManager.WrapAsync(() =>
             {
@@ -77,6 +77,27 @@ namespace Modellic.App.SolidWorks.Application
             },
             "Не удалось создать новый документ модели",
             SwObjectErrorCode.PartDocumentCreationFailed);
+        }
+
+        public async Task<SwAssemblyDoc> CreateAssemblyDocumentAsync()
+        {
+            return await Task.Run(() =>
+            {
+                string assemblyTemplateName = ResourceManager.GetTemplateFullPath(DocumentTemplate.EmptyAssembly);
+
+                Logger.LogInformation($"Путь до шаблона модели: {assemblyTemplateName}");
+
+                AssemblyDoc createdDocument = (AssemblyDoc)BaseObject.NewDocument(assemblyTemplateName, (int)swDwgPaperSizes_e.swDwgPaperAsize, 0.0, 0.0);
+
+                if (createdDocument == null)
+                {
+                    Logger.LogInformation("Не удалось создать документ сборки");
+
+                    throw new Exception("Не удалось создать документ сборки: возвращен null");
+                }
+
+                return new SwAssemblyDoc(createdDocument);
+            });
         }
 
         public async Task<(SwModelDoc Document, swFileLoadError_e Error, swFileLoadWarning_e Warning)> OpenDocumentAsync(string fileName, SwDocumentType documentType)

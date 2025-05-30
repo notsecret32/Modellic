@@ -80,26 +80,7 @@ namespace Modellic.App.Core.Services
 
         #region Public Statuc Methods
 
-        public static string GetPartExampleFullPath(PartExampleType partExample)
-        {
-            string partExampleFileName = GetPartExampleFileName(partExample);
-            return Path.Combine(PartExamplesDirectory, partExampleFileName);
-        }
-
-        public static string GetAssemblyExampleFullPath(AssemblyExampleType assemblyExample)
-        {
-            string assemblyExampleFileName = GetAssemblyExampleFileName(assemblyExample);
-            return Path.Combine(AssemblyExamplesDirectory, assemblyExampleFileName);
-        }
-
-        public static string GetTemplateFullPath(DocumentTemplate template) 
-            => Path.Combine(TemplatesDirectory, GetTemplateFileName(template));
-
-        #endregion
-
-        #region Private Static Methods
-
-        private static string GetPartExampleFileName(PartExampleType partExample)
+        public static string GetPartExampleFileName(PartExampleType partExample)
         {
             return partExample switch
             {
@@ -110,7 +91,13 @@ namespace Modellic.App.Core.Services
             };
         }
 
-        private static string GetAssemblyExampleFileName(AssemblyExampleType assemblyExample)
+        public static string GetPartExampleFullPath(PartExampleType partExample)
+        {
+            string partExampleFileName = GetPartExampleFileName(partExample);
+            return Path.Combine(PartExamplesDirectory, partExampleFileName);
+        }
+
+        public static string GetAssemblyExampleFileName(AssemblyExampleType assemblyExample)
         {
             return assemblyExample switch
             {
@@ -120,7 +107,13 @@ namespace Modellic.App.Core.Services
             };
         }
 
-        private static string GetTemplateFileName(DocumentTemplate template)
+        public static string GetAssemblyExampleFullPath(AssemblyExampleType assemblyExample)
+        {
+            string assemblyExampleFileName = GetAssemblyExampleFileName(assemblyExample);
+            return Path.Combine(AssemblyExamplesDirectory, assemblyExampleFileName);
+        }
+
+        public static string GetTemplateFileName(DocumentTemplate template)
         {
             return template switch
             {
@@ -129,6 +122,13 @@ namespace Modellic.App.Core.Services
                 _ => throw new ResourceManagerException($"Шаблона {template} не существует.", ResourceManagerErrorCode.InvalidTemplateName)
             };
         }
+
+        public static string GetTemplateFullPath(DocumentTemplate template) 
+            => Path.Combine(TemplatesDirectory, GetTemplateFileName(template));
+
+        #endregion
+
+        #region Private Static Methods
 
         /// <summary>
         /// Проверяет наличие папки, если есть, то возвращает полный путь до нее, иначе выбрасывает ошибку.

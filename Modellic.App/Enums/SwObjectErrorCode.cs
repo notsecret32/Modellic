@@ -21,6 +21,11 @@
         /// </summary>
         PartDocumentCreationFailed = 2000,
 
+        /// <summary>
+        /// Возникает при неудачной попытке создать документ сборки.
+        /// </summary>
+        AssemblyDocumentCreationFailed = 2001,
+
         #endregion
 
         #region Document (3,000)
