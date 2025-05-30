@@ -15,6 +15,8 @@ namespace Modellic.App.UI.Forms
     {
         #region Private Members
 
+        private bool _isCreatingDocument;
+
         private FixtureManager _fixtureManager;
 
         #endregion
@@ -53,7 +55,7 @@ namespace Modellic.App.UI.Forms
 
         private async void MenuItemConnectToSw_Click(object sender, EventArgs e) => await HandleSwConnectionAsync();
 
-        private async void MenuItemOpenAssemblyExample_Click(object sender, EventArgs e) 
+        private async void MenuItemOpenAssemblyExample_Click(object sender, EventArgs e)
             => await OpenExampleAsync((ToolStripMenuItem)sender, isAssembly: true);
         private async void MenuItemOpenPartExample_Click(object sender, EventArgs e)
              => await OpenExampleAsync((ToolStripMenuItem)sender, isAssembly: false);
@@ -62,16 +64,8 @@ namespace Modellic.App.UI.Forms
 
         #region Private Methods
 
-        private bool AskRetry(string message) 
-            => MessageBox.Show(message, "Подтверждение", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes;
-
-        private void AttachActiveDocument()
-        {
-            if (ModellicEnv.Application.ActiveDocument != null)
-            {
-                _fixtureManager.AttachDocument(ModellicEnv.Application.ActiveDocument);
-            }
-        }
+        private DialogResult AskYesNo(string message)
+            => MessageBox.Show(message, "Подтверждение", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
         private AssemblyExampleType GetAssemblyExampleType(string tag) => tag switch
         {
@@ -86,7 +80,7 @@ namespace Modellic.App.UI.Forms
             FixtureStepStatus.NotBuilded => "Построить",
             FixtureStepStatus.Building => "В процессе",
             FixtureStepStatus.Builded => "Построено",
-            _ => "Перестроить" // Для Cancel, Error, ValidationFailed
+            _ => "Перестроить"
         };
 
         private PartExampleType GetPartExampleType(string tag) => tag switch
@@ -102,13 +96,17 @@ namespace Modellic.App.UI.Forms
         {
             Logger.LogInformation("Инициализация элементов управления");
 
-            menuItemConnectToSw.Enabled = !ModellicEnv.ApplicationManager.IsConnected;
-            menuItemDisconnectFromSw.Enabled = ModellicEnv.ApplicationManager.IsConnected;
+            // Кнопка построения шага активна при старте
+            btnBuildStep.Enabled = true;
+            btnBuildStep.Text = "Построить";
 
-            // Инициализация состояния кнопок при старте
-            btnBuildStep.Enabled = false;
+            // Остальные кнопки неактивны
             btnChangeStep.Enabled = false;
             btnClearStep.Enabled = false;
+
+            // Состояние меню подключения
+            menuItemConnectToSw.Enabled = !ModellicEnv.ApplicationManager.IsConnected;
+            menuItemDisconnectFromSw.Enabled = ModellicEnv.ApplicationManager.IsConnected;
 
             Logger.LogInformation("Элементы управления проинициализированы");
         }
@@ -120,16 +118,31 @@ namespace Modellic.App.UI.Forms
             _fixtureManager.FixtureStepStatusChanged += OnFixtureStepStatusChanged;
         }
 
-        private void SetUiState(bool isConnecting)
+        private void SetUiState(bool isBusy, string busyText = null)
         {
             this.SafeInvoke(() =>
             {
-                menuItemConnectToSw.Enabled = !isConnecting && !ModellicEnv.ApplicationManager.IsConnected;
-                Cursor = isConnecting ? Cursors.WaitCursor : Cursors.Default;
+                if (isBusy)
+                {
+                    btnBuildStep.Enabled = false;
+                    btnChangeStep.Enabled = false;
+                    btnClearStep.Enabled = false;
+
+                    if (!string.IsNullOrEmpty(busyText))
+                    {
+                        btnBuildStep.Text = busyText;
+                    }
+                }
+                else
+                {
+                    UpdateButtonsState(_fixtureManager.CurrentStep?.Status ?? FixtureStepStatus.NotBuilded);
+                }
+
+                Cursor = isBusy ? Cursors.WaitCursor : Cursors.Default;
             });
         }
 
-        private void ShowErrorMessage(string title, string message)
+        private void ShowErrorMessage(string message, string title = "Непредвиденная ошибка")
             => MessageBox.Show(message, title, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
         private void ShowInfoMessage(string message)
@@ -141,20 +154,14 @@ namespace Modellic.App.UI.Forms
             {
                 var isBuilding = status == FixtureStepStatus.Building;
                 var isBuilt = status == FixtureStepStatus.Builded;
+                var canBuild = !isBuilding && !isBuilt && !_isCreatingDocument;
 
-                btnBuildStep.Enabled = !isBuilding && !isBuilt;
-                btnChangeStep.Enabled = isBuilt;
-                btnClearStep.Enabled = isBuilt;
+                btnBuildStep.Enabled = canBuild;
                 btnBuildStep.Text = GetButtonText(status);
-            });
-        }
 
-        private void VerifyActiveDocument()
-        {
-            if (ModellicEnv.Application.ActiveDocument == null)
-            {
-                throw new InvalidOperationException("Нет активного документа");
-            }
+                btnChangeStep.Enabled = isBuilt && !_isCreatingDocument;
+                btnClearStep.Enabled = isBuilt && !_isCreatingDocument;
+            });
         }
 
         #endregion
@@ -165,34 +172,74 @@ namespace Modellic.App.UI.Forms
         {
             try
             {
-                await VerifySwConnectionAsync();
-                VerifyActiveDocument();
+                if (!await EnsureSwConnectionAsync())
+                {
+                    return;
+                }
 
-                UpdateButtonsState(FixtureStepStatus.Building);
+                if (!_fixtureManager.HasWorkingDocument)
+                {
+                    _isCreatingDocument = true;
+                    SetUiState(isBusy: true, "Создание файла...");
+
+                    Logger.LogInformation("FixtureManager не имеет рабочего файла, создадим его");
+
+                    var createdDocument = await ModellicEnv.Application.CreatePartDocument();
+
+                    Logger.LogInformation($"Создан документ модели \"{createdDocument.Name}\"");
+
+                    _fixtureManager.WorkingDocument = createdDocument;
+                    _isCreatingDocument = false;
+                }
+
+                SetUiState(true);
+
                 await _fixtureManager.BuildStepAsync();
             }
             catch (OperationCanceledException)
             {
                 ShowInfoMessage("Построение шага отменено");
             }
-            catch (InvalidOperationException ex) when (AskRetry(ex.Message))
+            catch (InvalidOperationException ex) when (AskYesNo(ex.Message) == DialogResult.Yes)
             {
                 await HandleSwConnectionAsync();
             }
             catch (FixtureBuilderException ex)
             {
-                ShowErrorMessage("Непредвиденная ошибка", ex.Message);
+                ShowErrorMessage(ex.Message);
             }
+            catch (SolidWorksException ex)
+            {
+                ShowErrorMessage(ex.Message);
+            }
+            finally
+            {
+                SetUiState(false);
+                _isCreatingDocument = false;
+            }
+        }
+
+        private async Task<bool> EnsureSwConnectionAsync()
+        {
+            if (VerifySwConnection()) return true;
+
+            if (AskYesNo("Нет подключения к SolidWorks. Подключиться?") == DialogResult.Yes)
+            {
+                await HandleSwConnectionAsync();
+                return VerifySwConnection();
+            }
+
+            Logger.LogInformation("Пользователь отказался подключаться к SolidWorks");
+            return false;
         }
 
         private async Task HandleSwConnectionAsync()
         {
             try
             {
-                SetUiState(isConnecting: true);
+                SetUiState(true);
 
                 await ModellicEnv.ApplicationManager.ConnectAsync();
-                AttachActiveDocument();
 
                 Logger.LogInformation("Подключение к SolidWorks успешно");
             }
@@ -200,12 +247,12 @@ namespace Modellic.App.UI.Forms
             {
                 Logger.LogError($"Ошибка подключения: {ex.Details.ErrorMessage}");
 
-                if (AskRetry(ex.Details.ErrorMessage))
+                if (AskYesNo(ex.Details.ErrorMessage) == DialogResult.Yes)
                     await HandleSwConnectionAsync();
             }
             finally
             {
-                SetUiState(isConnecting: false);
+                SetUiState(false);
             }
         }
 
@@ -213,7 +260,12 @@ namespace Modellic.App.UI.Forms
         {
             try
             {
-                await VerifySwConnectionAsync();
+                SetUiState(true);
+
+                if (!await EnsureSwConnectionAsync())
+                {
+                    return;
+                }
 
                 string fullPath;
 
@@ -240,16 +292,14 @@ namespace Modellic.App.UI.Forms
             {
                 ShowErrorMessage("Ошибка ресурсов", ex.Message);
             }
+            finally
+            {
+                SetUiState(false);
+            }
+
         }
 
-        private async Task VerifySwConnectionAsync()
-        {
-            if (!ModellicEnv.ApplicationManager.IsConnected &&
-                AskRetry("Нет подключения к SolidWorks. Подключиться?"))
-            {
-                await HandleSwConnectionAsync();
-            }
-        }
+        private bool VerifySwConnection() => ModellicEnv.ApplicationManager.IsConnected;
 
         #endregion
 

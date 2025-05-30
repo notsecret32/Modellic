@@ -21,6 +21,8 @@ namespace Modellic.App.Core.Services
 
         private int _cursorPosition = 0;
 
+        private SwPartDoc _workingDocument = default;
+
         #endregion
 
         #region Service Instances
@@ -38,6 +40,24 @@ namespace Modellic.App.Core.Services
         #endregion
 
         #region Public Properties
+
+        public bool HasWorkingDocument => WorkingDocument != null;
+
+        public SwPartDoc WorkingDocument 
+        {
+            get { return _workingDocument; }
+            set 
+            {
+                if (value != _workingDocument)
+                {
+                    _workingDocument = value;
+
+                    Logger.LogInformation($"Изменился рабочий документ на \"{_workingDocument.Name}\"");
+
+                    WorkingDocumentChanged?.Invoke(_workingDocument);
+                }
+            } 
+        }
 
         public bool FreezeCursor { get; set; } = false;
 
@@ -70,6 +90,8 @@ namespace Modellic.App.Core.Services
 
         #region Public Events
 
+        public event Action<SwPartDoc> WorkingDocumentChanged;
+
         /// <summary>
         /// Вызывает, когд позиция курсора была изменена.
         /// </summary>
@@ -84,6 +106,9 @@ namespace Modellic.App.Core.Services
         public FixtureManager(StepsGridView gridView = null)
         {
             Logger.LogInformation("Создаем FixtureManager");
+
+            // Подписываемся на изменение рабочего документа
+            WorkingDocumentChanged += OnWorkingDocumentChanged;
 
             // Инициализируем сборщик приспособления
             _fixtureBuilder = new FixtureBuilder();
@@ -175,20 +200,6 @@ namespace Modellic.App.Core.Services
             CursorPositionChanged?.Invoke(_fixtureBuilder.FixtureSteps[_cursorPosition], _cursorPosition);
         }
 
-        /// <summary>
-        /// Прикрепляет документ в котором будет строиться приспособление.
-        /// </summary>
-        /// <param name="document">Документ в котором будет строиться приспособление.</param>
-        public void AttachDocument(SwModelDoc document)
-        {
-            if (!document.IsPart)
-            {
-                throw new Exception("Это не документ сборки");
-            }
-
-            _fixtureBuilder.AttachDocument(document.AsPartDoc());
-        }
-
         #endregion
 
         #region Public Async Methods
@@ -232,6 +243,11 @@ namespace Modellic.App.Core.Services
             }
 
             FixtureStepStatusChanged?.Invoke(step, status);
+        }
+
+        private void OnWorkingDocumentChanged(SwPartDoc document)
+        {
+            _fixtureBuilder.AttachDocument(document);
         }
 
         #endregion

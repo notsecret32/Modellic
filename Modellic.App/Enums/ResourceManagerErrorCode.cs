@@ -30,6 +30,11 @@ namespace Modellic.App.Enums
         /// <summary>
         /// Такого примера сборки не существует.
         /// </summary>
-        InvalidAssemblyExample
+        InvalidAssemblyExample,
+
+        /// <summary>
+        /// Неправильное название шаблона документа.
+        /// </summary>
+        InvalidTemplateName
     }
 }

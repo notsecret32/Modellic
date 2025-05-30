@@ -16,6 +16,11 @@
 
         #region File Open / Save (2,000)
 
+        /// <summary>
+        /// Возникает при неудачной попытке создать документ модели.
+        /// </summary>
+        PartDocumentCreationFailed = 2000,
+
         #endregion
 
         #region Document (3,000)

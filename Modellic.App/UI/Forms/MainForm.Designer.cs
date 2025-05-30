@@ -36,6 +36,16 @@
             this.menuItemSolidWorks = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItemConnectToSw = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItemDisconnectFromSw = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuItemAssembly = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuItemAssemblyManager = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.menuItemPartExamples = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuItemPartExample = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuItemPlatformExample = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuItemFixtureExample = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuItemAssemblyExamples = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuItemStopExample = new System.Windows.Forms.ToolStripMenuItem();
+            this.финальнаяСборкаToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tableLayoutFixtureControl = new System.Windows.Forms.TableLayoutPanel();
             this.btnBuildStep = new System.Windows.Forms.Button();
             this.btnChangeStep = new System.Windows.Forms.Button();
@@ -45,16 +55,6 @@
             this.btnCursorUp = new System.Windows.Forms.Button();
             this.tableLayoutBackground = new System.Windows.Forms.TableLayoutPanel();
             this.stepsGridView = new Modellic.App.UI.Controls.StepsGridView();
-            this.menuItemAssembly = new System.Windows.Forms.ToolStripMenuItem();
-            this.menuItemAssemblyExamples = new System.Windows.Forms.ToolStripMenuItem();
-            this.финальнаяСборкаToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.menuItemAssemblyManager = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this.menuItemPartExamples = new System.Windows.Forms.ToolStripMenuItem();
-            this.menuItemPartExample = new System.Windows.Forms.ToolStripMenuItem();
-            this.menuItemPlatformExample = new System.Windows.Forms.ToolStripMenuItem();
-            this.menuItemFixtureExample = new System.Windows.Forms.ToolStripMenuItem();
-            this.menuItemStopExample = new System.Windows.Forms.ToolStripMenuItem();
             this.appMenu.SuspendLayout();
             this.tableLayoutFixtureControl.SuspendLayout();
             this.tableLayoutBackground.SuspendLayout();
@@ -128,6 +128,87 @@
             this.menuItemDisconnectFromSw.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D)));
             this.menuItemDisconnectFromSw.Size = new System.Drawing.Size(205, 22);
             this.menuItemDisconnectFromSw.Text = "Отключиться";
+            // 
+            // menuItemAssembly
+            // 
+            this.menuItemAssembly.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.menuItemAssemblyManager,
+            this.toolStripSeparator1,
+            this.menuItemPartExamples,
+            this.menuItemAssemblyExamples});
+            this.menuItemAssembly.Name = "menuItemAssembly";
+            this.menuItemAssembly.Size = new System.Drawing.Size(86, 20);
+            this.menuItemAssembly.Text = "Построение";
+            // 
+            // menuItemAssemblyManager
+            // 
+            this.menuItemAssemblyManager.Name = "menuItemAssemblyManager";
+            this.menuItemAssemblyManager.Size = new System.Drawing.Size(175, 22);
+            this.menuItemAssemblyManager.Text = "Менеджер сборки";
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(172, 6);
+            // 
+            // menuItemPartExamples
+            // 
+            this.menuItemPartExamples.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.menuItemPartExample,
+            this.menuItemPlatformExample,
+            this.menuItemFixtureExample});
+            this.menuItemPartExamples.Name = "menuItemPartExamples";
+            this.menuItemPartExamples.Size = new System.Drawing.Size(175, 22);
+            this.menuItemPartExamples.Text = "Пример моделей";
+            // 
+            // menuItemPartExample
+            // 
+            this.menuItemPartExample.Name = "menuItemPartExample";
+            this.menuItemPartExample.Size = new System.Drawing.Size(170, 22);
+            this.menuItemPartExample.Tag = "PartExample";
+            this.menuItemPartExample.Text = "Деталь";
+            this.menuItemPartExample.Click += new System.EventHandler(this.MenuItemOpenPartExample_Click);
+            // 
+            // menuItemPlatformExample
+            // 
+            this.menuItemPlatformExample.Name = "menuItemPlatformExample";
+            this.menuItemPlatformExample.Size = new System.Drawing.Size(170, 22);
+            this.menuItemPlatformExample.Tag = "PlatformExample";
+            this.menuItemPlatformExample.Text = "Платформа";
+            this.menuItemPlatformExample.Click += new System.EventHandler(this.MenuItemOpenPartExample_Click);
+            // 
+            // menuItemFixtureExample
+            // 
+            this.menuItemFixtureExample.Name = "menuItemFixtureExample";
+            this.menuItemFixtureExample.Size = new System.Drawing.Size(170, 22);
+            this.menuItemFixtureExample.Tag = "FixtureExample";
+            this.menuItemFixtureExample.Text = "Приспособление";
+            this.menuItemFixtureExample.Click += new System.EventHandler(this.MenuItemOpenPartExample_Click);
+            // 
+            // menuItemAssemblyExamples
+            // 
+            this.menuItemAssemblyExamples.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.menuItemStopExample,
+            this.финальнаяСборкаToolStripMenuItem});
+            this.menuItemAssemblyExamples.Name = "menuItemAssemblyExamples";
+            this.menuItemAssemblyExamples.Size = new System.Drawing.Size(175, 22);
+            this.menuItemAssemblyExamples.Text = "Пример сборок";
+            // 
+            // menuItemStopExample
+            // 
+            this.menuItemStopExample.Name = "menuItemStopExample";
+            this.menuItemStopExample.Size = new System.Drawing.Size(177, 22);
+            this.menuItemStopExample.Tag = "StopExample";
+            this.menuItemStopExample.Text = "Упор";
+            this.menuItemStopExample.Click += new System.EventHandler(this.MenuItemOpenAssemblyExample_Click);
+            // 
+            // финальнаяСборкаToolStripMenuItem
+            // 
+            this.финальнаяСборкаToolStripMenuItem.Name = "финальнаяСборкаToolStripMenuItem";
+            this.финальнаяСборкаToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
+            this.финальнаяСборкаToolStripMenuItem.Tag = "AssemblyExample";
+            this.финальнаяСборкаToolStripMenuItem.Text = "Финальная сборка";
+            this.финальнаяСборкаToolStripMenuItem.Click += new System.EventHandler(this.MenuItemOpenAssemblyExample_Click);
             // 
             // tableLayoutFixtureControl
             // 
@@ -258,87 +339,6 @@
             this.tableLayoutBackground.SetRowSpan(this.stepsGridView, 3);
             this.stepsGridView.Size = new System.Drawing.Size(334, 323);
             this.stepsGridView.TabIndex = 6;
-            // 
-            // menuItemAssembly
-            // 
-            this.menuItemAssembly.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.menuItemAssemblyManager,
-            this.toolStripSeparator1,
-            this.menuItemPartExamples,
-            this.menuItemAssemblyExamples});
-            this.menuItemAssembly.Name = "menuItemAssembly";
-            this.menuItemAssembly.Size = new System.Drawing.Size(86, 20);
-            this.menuItemAssembly.Text = "Построение";
-            // 
-            // menuItemAssemblyExamples
-            // 
-            this.menuItemAssemblyExamples.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.menuItemStopExample,
-            this.финальнаяСборкаToolStripMenuItem});
-            this.menuItemAssemblyExamples.Name = "menuItemAssemblyExamples";
-            this.menuItemAssemblyExamples.Size = new System.Drawing.Size(180, 22);
-            this.menuItemAssemblyExamples.Text = "Пример сборок";
-            // 
-            // финальнаяСборкаToolStripMenuItem
-            // 
-            this.финальнаяСборкаToolStripMenuItem.Name = "финальнаяСборкаToolStripMenuItem";
-            this.финальнаяСборкаToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.финальнаяСборкаToolStripMenuItem.Tag = "AssemblyExample";
-            this.финальнаяСборкаToolStripMenuItem.Text = "Финальная сборка";
-            this.финальнаяСборкаToolStripMenuItem.Click += new System.EventHandler(this.MenuItemOpenAssemblyExample_Click);
-            // 
-            // menuItemAssemblyManager
-            // 
-            this.menuItemAssemblyManager.Name = "menuItemAssemblyManager";
-            this.menuItemAssemblyManager.Size = new System.Drawing.Size(180, 22);
-            this.menuItemAssemblyManager.Text = "Менеджер сборки";
-            // 
-            // toolStripSeparator1
-            // 
-            this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(177, 6);
-            // 
-            // menuItemPartExamples
-            // 
-            this.menuItemPartExamples.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.menuItemPartExample,
-            this.menuItemPlatformExample,
-            this.menuItemFixtureExample});
-            this.menuItemPartExamples.Name = "menuItemPartExamples";
-            this.menuItemPartExamples.Size = new System.Drawing.Size(180, 22);
-            this.menuItemPartExamples.Text = "Пример моделей";
-            // 
-            // menuItemPartExample
-            // 
-            this.menuItemPartExample.Name = "menuItemPartExample";
-            this.menuItemPartExample.Size = new System.Drawing.Size(180, 22);
-            this.menuItemPartExample.Tag = "PartExample";
-            this.menuItemPartExample.Text = "Деталь";
-            this.menuItemPartExample.Click += new System.EventHandler(this.MenuItemOpenPartExample_Click);
-            // 
-            // menuItemPlatformExample
-            // 
-            this.menuItemPlatformExample.Name = "menuItemPlatformExample";
-            this.menuItemPlatformExample.Size = new System.Drawing.Size(180, 22);
-            this.menuItemPlatformExample.Tag = "PlatformExample";
-            this.menuItemPlatformExample.Text = "Платформа";
-            this.menuItemPlatformExample.Click += new System.EventHandler(this.MenuItemOpenPartExample_Click);
-            // 
-            // menuItemFixtureExample
-            // 
-            this.menuItemFixtureExample.Name = "menuItemFixtureExample";
-            this.menuItemFixtureExample.Size = new System.Drawing.Size(180, 22);
-            this.menuItemFixtureExample.Tag = "FixtureExample";
-            this.menuItemFixtureExample.Text = "Приспособление";
-            this.menuItemFixtureExample.Click += new System.EventHandler(this.MenuItemOpenPartExample_Click);
-            // 
-            // menuItemStopExample
-            // 
-            this.menuItemStopExample.Name = "menuItemStopExample";
-            this.menuItemStopExample.Size = new System.Drawing.Size(180, 22);
-            this.menuItemStopExample.Tag = "StopExample";
-            this.menuItemStopExample.Text = "Упор";
-            this.menuItemStopExample.Click += new System.EventHandler(this.MenuItemOpenAssemblyExample_Click);
             // 
             // MainForm
             // 

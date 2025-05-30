@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
+using Modellic.App.Core.Services;
 using Modellic.App.Enums;
+using Modellic.App.Errors;
 using Modellic.App.SolidWorks.Core;
 using Modellic.App.SolidWorks.Documents;
 using SolidWorks.Interop.sldworks;
@@ -21,11 +23,6 @@ namespace Modellic.App.SolidWorks.Application
         /// Флаг, указывающий на то, что идет процесс освобождения ресурсов.
         /// </summary>
         public bool _isDisposing = false;
-        
-        /// <summary>
-        /// Активный документ.
-        /// </summary>
-        private SwModelDoc _activeDocument;
 
         #endregion
 
@@ -35,26 +32,6 @@ namespace Modellic.App.SolidWorks.Application
         /// Объект заглушка для удаления данных объекта в lock.
         /// </summary>
         private readonly object _disposingLock = new object();
-
-        #endregion
-
-        #region Public Properties
-
-        /// <summary>
-        /// Активный документ. Может быть null если нет открытого документа.
-        /// </summary>
-        public SwModelDoc ActiveDocument
-        {
-            get { return _activeDocument; }
-            private set
-            {
-                if (_activeDocument != value)
-                {
-                    _activeDocument = value;
-                    ActiveDocumentChanged?.Invoke(_activeDocument);
-                }
-            }
-        }
 
         #endregion
 
@@ -73,18 +50,34 @@ namespace Modellic.App.SolidWorks.Application
         public SwApplication(SldWorks sldWorks) : base(sldWorks)
         {
             Logger.LogInformation($"Создаем SwApplication (PID: {sldWorks.GetProcessID()})");
-
-            if (sldWorks.IActiveDoc2 != null)
-            {
-                Logger.LogInformation($"SolidWorks имеет активный документ \"{sldWorks.IActiveDoc2.GetTitle()}\"");
-
-                ActiveDocument = new SwModelDoc(sldWorks.IActiveDoc2);
-            }
         }
 
         #endregion
 
         #region Public Methods 
+
+        public async Task<SwPartDoc> CreatePartDocument()
+        {
+            return await SwObjectErrorManager.WrapAsync(() =>
+            {
+                string partTemplateName = ResourceManager.GetTemplateFullPath(DocumentTemplate.EmptyPart);
+
+                Logger.LogInformation($"Путь до шаблона модели: {partTemplateName}");
+
+                PartDoc createdDocument = (PartDoc)BaseObject.NewDocument(partTemplateName, (int)swDwgPaperSizes_e.swDwgPaperAsize, 0.0, 0.0);
+
+                if (createdDocument == null)
+                {
+                    Logger.LogInformation("Не удалось создать документ модели");
+
+                    throw new Exception("Не удалось создать документ модели: возвращен null");
+                }
+
+                return Task.FromResult(new SwPartDoc(createdDocument));
+            },
+            "Не удалось создать новый документ модели",
+            SwObjectErrorCode.PartDocumentCreationFailed);
+        }
 
         public async Task<(SwModelDoc Document, swFileLoadError_e Error, swFileLoadWarning_e Warning)> OpenDocumentAsync(string fileName, SwDocumentType documentType)
         {
@@ -127,7 +120,7 @@ namespace Modellic.App.SolidWorks.Application
                 _isDisposing = true;
 
                 // Очищаем текущий документ
-                ActiveDocument?.Dispose();
+                //ActiveDocument?.Dispose();
 
                 // ПОМЕТКА: Не очищать приложение, SolidWorks делает это сам
                 //base.Dispose();

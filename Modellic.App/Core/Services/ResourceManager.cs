@@ -37,6 +37,11 @@ namespace Modellic.App.Core.Services
         public static string AssemblyExamplesDirectory => IsDirectoryExists(Path.Combine(ExamplesDirectory, "Assemblies"));
 
         /// <summary>
+        /// Путь до папки с шаблонами файлов.
+        /// </summary>
+        public static string TemplatesDirectory => IsDirectoryExists(Path.Combine(ResourceDirectory, "Templates"));
+
+        /// <summary>
         /// Путь до папки с данными пользователя.
         /// </summary>
         public static string UserDataDirectory => GetOrCreateDirectory(Path.Combine(ResourceDirectory, "UserData"));
@@ -87,6 +92,9 @@ namespace Modellic.App.Core.Services
             return Path.Combine(AssemblyExamplesDirectory, assemblyExampleFileName);
         }
 
+        public static string GetTemplateFullPath(DocumentTemplate template) 
+            => Path.Combine(TemplatesDirectory, GetTemplateFileName(template));
+
         #endregion
 
         #region Private Static Methods
@@ -109,6 +117,16 @@ namespace Modellic.App.Core.Services
                 AssemblyExampleType.Stop => "StopExample.SLDASM",
                 AssemblyExampleType.Assembly => "AssemblyExample.SLDASM",
                 _ => throw new ResourceManagerException("Такого примера не существует.", ResourceManagerErrorCode.InvalidAssemblyExample)
+            };
+        }
+
+        private static string GetTemplateFileName(DocumentTemplate template)
+        {
+            return template switch
+            {
+                DocumentTemplate.EmptyPart => "EmptyPart.prtdot",
+                DocumentTemplate.EmptyAssembly => "EmptyAssembly.asmdot",
+                _ => throw new ResourceManagerException($"Шаблона {template} не существует.", ResourceManagerErrorCode.InvalidTemplateName)
             };
         }
 

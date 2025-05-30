@@ -141,6 +141,7 @@
     <Compile Include="Core\Services\ResourceManager.cs" />
     <Compile Include="Core\Services\StepsGridViewService.cs" />
     <Compile Include="Enums\AssemblyExampleType.cs" />
+    <Compile Include="Enums\DocumentTemplate.cs" />
     <Compile Include="Enums\FixtureBuilderErrorCode.cs" />
     <Compile Include="Enums\PartExampleType.cs" />
     <Compile Include="Enums\ResourceManagerErrorCode.cs" />
@@ -220,6 +221,12 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\Examples\Assemblies\StopExample.SLDASM">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Templates\EmptyAssembly.asmdot">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Templates\EmptyPart.prtdot">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
