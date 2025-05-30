@@ -108,6 +108,9 @@ namespace Modellic.App.UI.Forms
             menuItemConnectToSw.Enabled = !ModellicEnv.ApplicationManager.IsConnected;
             menuItemDisconnectFromSw.Enabled = ModellicEnv.ApplicationManager.IsConnected;
 
+            // Обновляем состояние меню подключения
+            UpdateConnectionMenuState();
+
             Logger.LogInformation("Элементы управления проинициализированы");
         }
 
@@ -148,6 +151,8 @@ namespace Modellic.App.UI.Forms
         private void ShowInfoMessage(string message)
             => MessageBox.Show(message, "Информация", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
+        private bool VerifySwConnection() => ModellicEnv.ApplicationManager.IsConnected;
+
         private void UpdateButtonsState(FixtureStepStatus status)
         {
             this.SafeInvoke(() =>
@@ -161,6 +166,20 @@ namespace Modellic.App.UI.Forms
 
                 btnChangeStep.Enabled = isBuilt && !_isCreatingDocument;
                 btnClearStep.Enabled = isBuilt && !_isCreatingDocument;
+            });
+        }
+
+        private void UpdateConnectionMenuState()
+        {
+            this.SafeInvoke(() =>
+            {
+                bool isConnected = ModellicEnv.ApplicationManager.IsConnected;
+
+                menuItemConnectToSw.Enabled = !isConnected;
+                menuItemConnectToSw.Checked = isConnected;
+                menuItemConnectToSw.Text = isConnected ? "Подключено" : "Подключиться к SolidWorks";
+
+                menuItemDisconnectFromSw.Enabled = isConnected;
             });
         }
 
@@ -238,8 +257,12 @@ namespace Modellic.App.UI.Forms
             try
             {
                 SetUiState(true);
+                menuItemConnectToSw.Enabled = false;
+                menuItemConnectToSw.Text = "Подключение...";
 
                 await ModellicEnv.ApplicationManager.ConnectAsync();
+
+                UpdateConnectionMenuState();
 
                 Logger.LogInformation("Подключение к SolidWorks успешно");
             }
@@ -298,8 +321,6 @@ namespace Modellic.App.UI.Forms
             }
 
         }
-
-        private bool VerifySwConnection() => ModellicEnv.ApplicationManager.IsConnected;
 
         #endregion
 
