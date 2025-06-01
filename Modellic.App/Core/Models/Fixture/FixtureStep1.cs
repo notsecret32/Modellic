@@ -2,6 +2,7 @@
 using Modellic.App.Core.Models.Fixture.Parameters;
 using Modellic.App.Enums;
 using Modellic.App.Extensions;
+using Modellic.App.SolidWorks.Managers.Helpers;
 using SolidWorks.Interop.swconst;
 using static Modellic.App.Logging.LoggerService;
 
@@ -72,32 +73,9 @@ namespace Modellic.App.Core.Models.Fixture
             },
             "ВнешнийДискЭскиз");
 
-            double thickness = Parameters.Thickness.ToMeters();
-
-            var feature = Document.FeatureManager.UnsafeObject.FeatureExtrusion3(
-                true,
-                false,
-                true,
-                (int)swEndConditions_e.swEndCondBlind,
-                0,
-                thickness,
-                0,
-                false,
-                false,
-                false,
-                false,
-                0,
-                0,
-                false,
-                false,
-                false,
-                false,
-                true,
-                true,
-                true,
-                (int)swStartConditions_e.swStartSketchPlane,
-                0,
-                false
+            var createdFeature = Document.FeatureManager.FeatureExtrusion(
+                new StartExtrusionParameters(swStartConditions_e.swStartSketchPlane, 0, false),
+                new EndExtrusionParameters(swEndConditions_e.swEndCondBlind, Parameters.Thickness.ToMeters(), false, 0, false, false, false)
             );
         }
 
