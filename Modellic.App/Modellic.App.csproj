@@ -186,6 +186,18 @@
     <Compile Include="UI\Forms\AssemblyManagerForm.Designer.cs">
       <DependentUpon>AssemblyManagerForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="UI\Forms\FixtureStep1Form.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\Forms\FixtureStep1Form.Designer.cs">
+      <DependentUpon>FixtureStep1Form.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Forms\FixtureStepBaseForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\Forms\FixtureStepBaseForm.Designer.cs">
+      <DependentUpon>FixtureStepBaseForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="UI\Forms\MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -205,6 +217,12 @@
     </Compile>
     <EmbeddedResource Include="UI\Forms\AssemblyManagerForm.resx">
       <DependentUpon>AssemblyManagerForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\Forms\FixtureStep1Form.resx">
+      <DependentUpon>FixtureStep1Form.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\Forms\FixtureStepBaseForm.resx">
+      <DependentUpon>FixtureStepBaseForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UI\Forms\MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
@@ -234,6 +252,9 @@
     <Content Include="Resources\Examples\Assemblies\StopExample.SLDASM">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <EmbeddedResource Include="Resources\Images\FixtureStep1.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
     <Content Include="Resources\Templates\EmptyAssembly.asmdot">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

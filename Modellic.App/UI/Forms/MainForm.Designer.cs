@@ -36,6 +36,13 @@
             this.menuItemSolidWorks = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItemConnectToSw = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItemDisconnectFromSw = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuItemFixture = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuItemBuildStep = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuItemChangeStep = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuItemClearStep = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.menuItemNextStep = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuItemPreviousStep = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItemAssembly = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItemAssemblyManager = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
@@ -67,6 +74,7 @@
             this.appMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.menuItemFile,
             this.menuItemSolidWorks,
+            this.menuItemFixture,
             this.menuItemAssembly});
             this.appMenu.Location = new System.Drawing.Point(0, 0);
             this.appMenu.Name = "appMenu";
@@ -128,6 +136,55 @@
             this.menuItemDisconnectFromSw.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D)));
             this.menuItemDisconnectFromSw.Size = new System.Drawing.Size(205, 22);
             this.menuItemDisconnectFromSw.Text = "Отключиться";
+            // 
+            // menuItemFixture
+            // 
+            this.menuItemFixture.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.menuItemBuildStep,
+            this.menuItemChangeStep,
+            this.menuItemClearStep,
+            this.toolStripSeparator2,
+            this.menuItemNextStep,
+            this.menuItemPreviousStep});
+            this.menuItemFixture.Name = "menuItemFixture";
+            this.menuItemFixture.Size = new System.Drawing.Size(115, 20);
+            this.menuItemFixture.Text = "Приспособление";
+            // 
+            // menuItemBuildStep
+            // 
+            this.menuItemBuildStep.Name = "menuItemBuildStep";
+            this.menuItemBuildStep.Size = new System.Drawing.Size(180, 22);
+            this.menuItemBuildStep.Text = "Построить";
+            this.menuItemBuildStep.Click += new System.EventHandler(this.MenuItemBuildStep_Click);
+            // 
+            // menuItemChangeStep
+            // 
+            this.menuItemChangeStep.Name = "menuItemChangeStep";
+            this.menuItemChangeStep.Size = new System.Drawing.Size(180, 22);
+            this.menuItemChangeStep.Text = "Изменить";
+            // 
+            // menuItemClearStep
+            // 
+            this.menuItemClearStep.Name = "menuItemClearStep";
+            this.menuItemClearStep.Size = new System.Drawing.Size(180, 22);
+            this.menuItemClearStep.Text = "Очистить";
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(177, 6);
+            // 
+            // menuItemNextStep
+            // 
+            this.menuItemNextStep.Name = "menuItemNextStep";
+            this.menuItemNextStep.Size = new System.Drawing.Size(180, 22);
+            this.menuItemNextStep.Text = "Следующий шаг";
+            // 
+            // menuItemPreviousStep
+            // 
+            this.menuItemPreviousStep.Name = "menuItemPreviousStep";
+            this.menuItemPreviousStep.Size = new System.Drawing.Size(180, 22);
+            this.menuItemPreviousStep.Text = "Предудущий шаг";
             // 
             // menuItemAssembly
             // 
@@ -394,6 +451,13 @@
         private System.Windows.Forms.ToolStripMenuItem menuItemPlatformExample;
         private System.Windows.Forms.ToolStripMenuItem menuItemFixtureExample;
         private System.Windows.Forms.ToolStripMenuItem menuItemStopExample;
+        private System.Windows.Forms.ToolStripMenuItem menuItemFixture;
+        private System.Windows.Forms.ToolStripMenuItem menuItemBuildStep;
+        private System.Windows.Forms.ToolStripMenuItem menuItemChangeStep;
+        private System.Windows.Forms.ToolStripMenuItem menuItemClearStep;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+        private System.Windows.Forms.ToolStripMenuItem menuItemNextStep;
+        private System.Windows.Forms.ToolStripMenuItem menuItemPreviousStep;
     }
 }
 

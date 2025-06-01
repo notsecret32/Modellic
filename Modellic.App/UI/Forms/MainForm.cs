@@ -47,6 +47,14 @@ namespace Modellic.App.UI.Forms
 
         private void BtnCursorDown_Click(object sender, EventArgs e) => _fixtureManager.CursorDown();
 
+        private void MenuItemBuildStep_Click(object sender, EventArgs e)
+        {
+            using (var form = new FixtureStep1Form())
+            {
+                form.ShowDialog();
+            }
+        }
+
         private void OpenAssemblyManager_Click(object sender, EventArgs e) => CreateAssemblyManagerForm();
 
         #endregion

@@ -56,6 +56,11 @@ namespace Modellic.App.Core.Services
         /// </summary>
         public static string UserDataAssembliesDirectory => GetOrCreateDirectory(Path.Combine(UserDataDirectory, "Assemblies"));
 
+        /// <summary>
+        /// Путь до папки с картинками.
+        /// </summary>
+        public static string ImagesDirectory => IsDirectoryExists(Path.Combine(ResourceDirectory, "Images"));
+
         #endregion
 
         #region Constructor
@@ -72,6 +77,7 @@ namespace Modellic.App.Core.Services
                 $"\n* UserDataDirectory: {UserDataDirectory}" +
                 $"\n* UserDataFixturesDirectory: {UserDataFixturesDirectory}" +
                 $"\n* UserDataAssembliesDirectory: {UserDataAssembliesDirectory}" +
+                $"\n* ImagesDirectory: {ImagesDirectory}" +
                 "\n======================================"
             );
         }
