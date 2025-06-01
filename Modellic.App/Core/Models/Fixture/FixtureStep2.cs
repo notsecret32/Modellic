@@ -1,25 +1,33 @@
 ﻿using Microsoft.Extensions.Logging;
+using Modellic.App.Core.Models.Fixture.Parameters;
 using static Modellic.App.Logging.LoggerService;
 
 namespace Modellic.App.Core.Models.Fixture
 {
     public class FixtureStep2 : FixtureStep
     {
-        #region Constants
+        #region Publuc Overrided Members
 
-        private const double DEFAULT_MOUNT_WIDTH = 27.5;
-
-        private const double DEFAULT_MOUNT_HEIGHT = 24;
-
-        private const int DEFAULT_MOUNT_QUANTITY = 8;
-
-        private const double DEFAULT_HOLE_DIAMETER = 8.5;
-
-        private const double DEFAULT_FILLET_RADIUS = 30;
+        public override string Title => "Крепления внешнего диска";
 
         #endregion
 
-        public override string Title => "Крепления внешнего диска";
+        #region Public Properties
+
+        public FixtureStep2Parameters Parameters { get; protected set; }
+
+        #endregion
+
+        #region Constructor
+
+        public FixtureStep2(FixtureStep2Parameters parameters = null) : base()
+        {
+            Parameters = parameters;
+        }
+
+        #endregion
+
+        #region Protected Overrided Methods
 
         protected override void BuildStep()
         {
@@ -30,5 +38,7 @@ namespace Modellic.App.Core.Models.Fixture
         {
             return true;
         }
+        
+        #endregion
     }
 }

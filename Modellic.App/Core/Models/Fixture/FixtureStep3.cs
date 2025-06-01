@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using Modellic.App.Core.Models.Fixture.Parameters;
 using Modellic.App.Enums;
 using Modellic.App.Extensions;
 using SolidWorks.Interop.swconst;
@@ -8,31 +9,28 @@ namespace Modellic.App.Core.Models.Fixture
 {
     public class FixtureStep3 : FixtureStep
     {
-        #region Constants
+        #region Publuc Overrided Members
 
-        const double DEFAULT_DIAMETER = 195.2;
-
-        const double DEFAULT_CHAMFER_WIDTH = 1.5;
-
-        const double DEFAULT_CHAMFER_ANGLE_DEG = 45;
-
-        const double DEFAULT_OFFSET = 1.5;
-
-        const double DEFAULT_THICKNESS = 27.4;
-
-        const int DEFAULT_HOLE_QUANTITY = 8;
-
-        const double DEFAULT_HOLE_DIAMETER = 15;
-
-        const double DEFAULT_CUTOUT_OFFSET = 10.5;
-
-        const double DEFAULT_CUTOUT_THICKNESS = 10;
-
-        const double DEFAULT_CUTOUT_DEPTH = 6;
+        public override string Title => "Внутренний диск";
 
         #endregion
 
-        public override string Title => "Внутренний диск";
+        #region Public Properties
+
+        public FixtureStep3Parameters Parameters { get; protected set; }
+
+        #endregion
+
+        #region Constructor
+
+        public FixtureStep3(FixtureStep3Parameters parameters = null) : base()
+        {
+            Parameters = parameters;
+        }
+
+        #endregion
+
+        #region Protected Overrided Methods
 
         protected override void BuildStep()
         {
@@ -50,7 +48,7 @@ namespace Modellic.App.Core.Models.Fixture
 
                 Document.SketchManager.CreateCircle(
                     0, 0, 0,
-                    (DEFAULT_DIAMETER / 2).ToMeters(), 0, 0
+                    (Parameters.Diameter / 2).ToMeters(), 0, 0
                 );
             },
             "ВнешннийДискЭскиз");
@@ -61,7 +59,7 @@ namespace Modellic.App.Core.Models.Fixture
                 true,
                 0,
                 0,
-                DEFAULT_THICKNESS.ToMeters(),
+                Parameters.Thickness.ToMeters(),
                 0,
                 false,
                 false,
@@ -77,7 +75,7 @@ namespace Modellic.App.Core.Models.Fixture
                 true,
                 true,
                 (int)swStartConditions_e.swStartOffset,
-                DEFAULT_OFFSET.ToMeters(),
+                Parameters.Offset.ToMeters(),
                 true
             );
         }
@@ -86,5 +84,7 @@ namespace Modellic.App.Core.Models.Fixture
         {
             return true;
         }
+
+        #endregion
     }
 }

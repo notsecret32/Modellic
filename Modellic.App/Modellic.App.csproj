@@ -130,11 +130,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Core\Models\Fixture\FixtureStep.cs" />
-    <Compile Include="Core\Models\Fixture\FixtureStep4.cs" />
     <Compile Include="Core\Models\Fixture\FixtureStep3.cs" />
     <Compile Include="Core\Models\Fixture\FixtureStep2.cs" />
     <Compile Include="Core\Models\Fixture\FixtureStep1.cs" />
     <Compile Include="Core\Models\Fixture\FixtureStepStatus.cs" />
+    <Compile Include="Core\Models\Fixture\Parameters\FixtureStep1Parameters.cs" />
+    <Compile Include="Core\Models\Fixture\Parameters\FixtureStep2Parameters.cs" />
+    <Compile Include="Core\Models\Fixture\Parameters\FixtureStep3Parameters.cs" />
+    <Compile Include="Core\Models\Fixture\Parameters\FixtureStepParameters.cs" />
     <Compile Include="Core\Services\AssemblyManager.cs" />
     <Compile Include="Core\Services\FixtureBuilder.cs" />
     <Compile Include="Core\Services\FixtureManager.cs" />

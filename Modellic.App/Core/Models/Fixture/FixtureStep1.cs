@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using Modellic.App.Core.Models.Fixture.Parameters;
 using Modellic.App.Enums;
 using Modellic.App.Extensions;
 using SolidWorks.Interop.swconst;
@@ -8,13 +9,26 @@ namespace Modellic.App.Core.Models.Fixture
 {
     public class FixtureStep1 : FixtureStep
     {
-        private const double DEFAULT_DIAMETER = 280;
-
-        private const double DEFAULT_WIDTH = 10;
-
-        private const double DEFAULT_THICKNESS = 12;
+        #region Publuc Overrided Members
 
         public override string Title => "Внешний диск";
+
+        #endregion
+
+        #region Public Properties
+
+        public FixtureStep1Parameters Parameters { get; protected set; }
+
+        #endregion
+
+        #region Constructor
+
+        public FixtureStep1(FixtureStep1Parameters parameters = null) : base()
+        {
+            Parameters = parameters;
+        }
+
+        #endregion
 
         #region Protected Methods
 
@@ -24,8 +38,6 @@ namespace Modellic.App.Core.Models.Fixture
 
             // Создаем диск
             CreateDisk();
-
-            // Создаем препление
         }
 
         protected override bool Validate()
@@ -48,7 +60,7 @@ namespace Modellic.App.Core.Models.Fixture
             Document.SketchManager.CreateSketch(() =>
             {
                 // Высчитываем радиус внешней окружности
-                double radius = (DEFAULT_DIAMETER / 2).ToMeters();
+                double radius = (Parameters.Diameter / 2).ToMeters();
                 Logger.LogInformation($"[FixtureStep1] Радиус внешней окружности = {radius}");
 
                 // Создаем внешнюю окружность
@@ -58,7 +70,7 @@ namespace Modellic.App.Core.Models.Fixture
                 );
 
                 // Высчитываем радиус внутренней окружности
-                radius = (DEFAULT_DIAMETER / 2 - DEFAULT_WIDTH).ToMeters();
+                radius = (Parameters.Diameter / 2 - Parameters.Width).ToMeters();
                 Logger.LogInformation($"[FixtureStep1] Радиус внутренней окружности = {radius}");
 
                 // Создаем внутреннюю окружность
@@ -69,7 +81,7 @@ namespace Modellic.App.Core.Models.Fixture
             },
             "ВнешнийДискЭскиз");
 
-            double thickness = DEFAULT_THICKNESS.ToMeters();
+            double thickness = Parameters.Thickness.ToMeters();
 
             var feature = Document.FeatureManager.UnsafeObject.FeatureExtrusion3(
                 true,

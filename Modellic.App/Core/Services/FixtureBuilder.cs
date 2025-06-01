@@ -74,7 +74,6 @@ namespace Modellic.App.Core.Services
                 new FixtureStep1(),
                 new FixtureStep2(),
                 new FixtureStep3(),
-                new FixtureStep4(),
             };
 
             foreach (FixtureStep step in _steps)

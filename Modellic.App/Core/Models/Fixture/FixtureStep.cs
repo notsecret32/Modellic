@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using Modellic.App.Core.Models.Fixture.Parameters;
 using Modellic.App.SolidWorks.Documents;
 using System;
 using System.Threading;
