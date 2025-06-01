@@ -29,6 +29,7 @@ namespace Modellic.App.Core.Models.Fixture
         #endregion
 
         #region Public Properties
+        public FixtureStepParameters Parameters { get; set; }
 
         /// <summary>
         /// Название шага.

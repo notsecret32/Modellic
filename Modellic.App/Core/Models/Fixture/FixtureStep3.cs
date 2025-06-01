@@ -9,23 +9,14 @@ namespace Modellic.App.Core.Models.Fixture
 {
     public class FixtureStep3 : FixtureStep
     {
-        #region Publuc Overrided Members
+        #region Public Overrided Members
 
-        public override string Title => "Внутренний диск";
+        public override string Title => "Внешний диск";
 
-        #endregion
-
-        #region Public Properties
-
-        public FixtureStep3Parameters Parameters { get; protected set; }
-
-        #endregion
-
-        #region Constructor
-
-        public FixtureStep3(FixtureStep3Parameters parameters = null) : base()
+        public new FixtureStep3Parameters Parameters
         {
-            Parameters = parameters;
+            get => (FixtureStep3Parameters)base.Parameters;
+            set => base.Parameters = value;
         }
 
         #endregion

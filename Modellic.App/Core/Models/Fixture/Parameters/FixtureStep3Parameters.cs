@@ -49,5 +49,40 @@
         public double CutoutDepth { get; set; } = DEFAULT_CUTOUT_DEPTH;
 
         #endregion
+
+        #region Public Const Properties
+
+        public static double DefaultDiameter => DEFAULT_DIAMETER;
+
+        public static double DefaultChamferWidth => DEFAULT_CHAMFER_WIDTH;
+
+        public static double DefaultChamferAngleDeg => DEFAULT_CHAMFER_ANGLE_DEG;
+
+        public static double DefaultOffset => DEFAULT_OFFSET;
+
+        public static double DefaultThickness => DEFAULT_THICKNESS;
+
+        public static int DefaultHoleQuanity => DEFAULT_HOLE_QUANTITY;
+
+        public static double DefaultHoleDiameter => DEFAULT_HOLE_DIAMETER;
+
+        public static double DefaultCutoutOffset => DEFAULT_CUTOUT_OFFSET;
+
+        public static double DefaultCutoutThickness => DEFAULT_CUTOUT_THICKNESS;
+
+        public static double DefaultCutoutDepth => DEFAULT_CUTOUT_DEPTH;
+
+        #endregion
+
+        #region Overrided Methods
+
+        public override string ToString()
+        {
+            return $"Diameter: {Diameter}; ChamferWidth: {ChamferWidth}; ChamferAngleDeg: {ChamferAngleDeg}; Offset: {Offset}; " +
+                $"Thickness: {Thickness}; HoleQuanity: {HoleQuanity}; HoleDiameter: {HoleDiameter}; CutoutOffset: {CutoutOffset}; " +
+                $"CutoutThickness: {CutoutThickness}; CutoutDepth: {CutoutDepth}";
+        }
+
+        #endregion
     }
 }

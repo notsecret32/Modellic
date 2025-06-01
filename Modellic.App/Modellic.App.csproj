@@ -195,6 +195,18 @@
     <Compile Include="UI\Forms\FixtureStep1Form.Designer.cs">
       <DependentUpon>FixtureStep1Form.cs</DependentUpon>
     </Compile>
+    <Compile Include="UI\Forms\FixtureStep2Form.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\Forms\FixtureStep2Form.Designer.cs">
+      <DependentUpon>FixtureStep2Form.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Forms\FixtureStep3Form.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\Forms\FixtureStep3Form.Designer.cs">
+      <DependentUpon>FixtureStep3Form.cs</DependentUpon>
+    </Compile>
     <Compile Include="UI\Forms\FixtureStepBaseForm.cs">
       <SubType>Form</SubType>
     </Compile>

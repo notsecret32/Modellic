@@ -6,23 +6,27 @@ using System.Windows.Forms;
 
 namespace Modellic.App.UI.Forms
 {
-    public partial class FixtureStep1Form : FixtureStepBaseForm
+    public partial class FixtureStep2Form : FixtureStepBaseForm
     {
         #region Private Form Elements
-        
-        private GroupBox _groupGeneral;
 
-        private TextBox _inputDiameter;
+        private GroupBox _groupMount;
 
-        private TextBox _inputWidth;
+        private TextBox _inputMountWidth;
 
-        private TextBox _inputThickness;
+        private TextBox _inputMountHeight;
+
+        private TextBox _inputMountQuantity;
+
+        private TextBox _inputMountHoleDiameter;
+
+        private TextBox _inputMountFillerRadius;
 
         #endregion
 
         #region Constructor
 
-        public FixtureStep1Form()
+        public FixtureStep2Form()
         {
             InitializeComponent();
 
@@ -35,21 +39,25 @@ namespace Modellic.App.UI.Forms
 
         public override FixtureStepParameters GetParameters()
         {
-            return new FixtureStep1Parameters
+            return new FixtureStep2Parameters
             {
-                Diameter = double.Parse(_inputDiameter.Text),
-                Width = double.Parse(_inputWidth.Text),
-                Thickness = double.Parse(_inputThickness.Text),
+                MountWidth = double.Parse(_inputMountWidth.Text),
+                MountHeight = double.Parse(_inputMountHeight.Text),
+                Quantity = int.Parse(_inputMountQuantity.Text),
+                HoleDiameter = double.Parse(_inputMountHoleDiameter.Text),
+                FilletRadius = double.Parse(_inputMountFillerRadius.Text),
             };
         }
 
         public override void SetParameters(FixtureStepParameters parameters)
         {
-            if (parameters is FixtureStep1Parameters step1Params)
+            if (parameters is FixtureStep2Parameters step2Params)
             {
-                _inputDiameter.Text = step1Params.Diameter.ToString();
-                _inputWidth.Text = step1Params.Width.ToString();
-                _inputThickness.Text = step1Params.Thickness.ToString();
+                _inputMountWidth.Text = step2Params.MountWidth.ToString();
+                _inputMountHeight.Text = step2Params.MountHeight.ToString();
+                _inputMountQuantity.Text = step2Params.Quantity.ToString();
+                _inputMountHoleDiameter.Text = step2Params.HoleDiameter.ToString();
+                _inputMountFillerRadius.Text = step2Params.FilletRadius.ToString();
             }
         }
 
@@ -74,9 +82,9 @@ namespace Modellic.App.UI.Forms
             tableLayoutFixtureStepControls.RowStyles.Add(new RowStyle(SizeType.AutoSize)); // 3 строка
             tableLayoutFixtureStepControls.RowStyles.Add(new RowStyle(SizeType.AutoSize)); // 4 строка
 
-            // Настраиваем главную группу
-            ConfigureGeneralGroup();
-            tableLayoutFixtureStepControls.Controls.Add(_groupGeneral, 0, 0);
+            // Настраиваем группу крепление
+            ConfigureMountGroup();
+            tableLayoutFixtureStepControls.Controls.Add(_groupMount, 0, 0);
 
             // Добавляем кнопки в последние две строки
             tableLayoutFixtureStepControls.Controls.Add(btnCancel, 0, 2);
@@ -87,11 +95,11 @@ namespace Modellic.App.UI.Forms
 
         #region Private Methods
 
-        private void ConfigureGeneralGroup()
+        private void ConfigureMountGroup()
         {
-            _groupGeneral = new GroupBox
+            _groupMount = new GroupBox
             {
-                Text = "Общее",
+                Text = "Крепление",
                 Dock = DockStyle.Fill,
                 AutoSize = true,
                 AutoSizeMode = AutoSizeMode.GrowAndShrink,
@@ -102,7 +110,7 @@ namespace Modellic.App.UI.Forms
             {
                 Dock = DockStyle.Fill,
                 ColumnCount = 2,
-                RowCount = 3,
+                RowCount = 5,
                 AutoSize = true,
                 AutoSizeMode = AutoSizeMode.GrowAndShrink,
                 Margin = new Padding(0),
@@ -115,53 +123,92 @@ namespace Modellic.App.UI.Forms
             innerTable.RowStyles.Add(new RowStyle(SizeType.AutoSize));
             innerTable.RowStyles.Add(new RowStyle(SizeType.AutoSize));
             innerTable.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+            innerTable.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+            innerTable.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+            innerTable.RowStyles.Add(new RowStyle(SizeType.AutoSize));
 
+            // Строка 1
             innerTable.Controls.Add(new Label
             {
-                Text = "D1 (Диаметр, мм):",
+                Text = "Ширина:",
                 Dock = DockStyle.Fill,
                 TextAlign = ContentAlignment.MiddleLeft
             }, 0, 0);
 
-            _inputDiameter = new TextBox
+            _inputMountWidth = new TextBox
             {
-                Text = FixtureStep1Parameters.DefaultDiameter.ToString(),
+                Text = FixtureStep2Parameters.DefaultMountWidth.ToString(),
                 Dock = DockStyle.Fill,
                 Margin = new Padding(3, 0, 3, 5)
             };
-            innerTable.Controls.Add(_inputDiameter, 1, 0);
+            innerTable.Controls.Add(_inputMountWidth, 1, 0);
 
+            // Строка 2
             innerTable.Controls.Add(new Label
             {
-                Text = "D2 (Ширина, мм):",
+                Text = "Высота:",
                 Dock = DockStyle.Fill,
                 TextAlign = ContentAlignment.MiddleLeft
             }, 0, 1);
 
-            _inputWidth = new TextBox
+            _inputMountHeight = new TextBox
             {
-                Text = FixtureStep1Parameters.DefaultWidth.ToString(),
+                Text = FixtureStep2Parameters.DefaultMountHeight.ToString(),
                 Dock = DockStyle.Fill,
                 Margin = new Padding(3, 0, 3, 5)
             };
-            innerTable.Controls.Add(_inputWidth, 1, 1);
+            innerTable.Controls.Add(_inputMountHeight, 1, 1);
 
+            // Строка 3
             innerTable.Controls.Add(new Label
             {
-                Text = "D3 (Глубина, мм):",
+                Text = "Количество:",
                 Dock = DockStyle.Fill,
                 TextAlign = ContentAlignment.MiddleLeft
             }, 0, 2);
 
-            _inputThickness = new TextBox
+            _inputMountQuantity = new TextBox
             {
-                Text = FixtureStep1Parameters.DefaultThickness.ToString(),
+                Text = FixtureStep2Parameters.DefaultQuantity.ToString(),
                 Dock = DockStyle.Fill,
                 Margin = new Padding(3, 0, 3, 5)
             };
-            innerTable.Controls.Add(_inputThickness, 1, 2);
+            innerTable.Controls.Add(_inputMountQuantity, 1, 2);
 
-            _groupGeneral.Controls.Add(innerTable);
+            // Строка 4
+            innerTable.Controls.Add(new Label
+            {
+                Text = "Диаметр отверстия:",
+                Dock = DockStyle.Fill,
+                TextAlign = ContentAlignment.MiddleLeft
+            }, 0, 3);
+
+            _inputMountHoleDiameter = new TextBox
+            {
+                Text = FixtureStep2Parameters.DefaultHoleDiameter.ToString(),
+                Dock = DockStyle.Fill,
+                Margin = new Padding(3, 0, 3, 5)
+            };
+            innerTable.Controls.Add(_inputMountHoleDiameter, 1, 3);
+
+            // Строка 5
+            innerTable.Controls.Add(new Label
+            {
+                Text = "Радиус скругления:",
+                Dock = DockStyle.Fill,
+                TextAlign = ContentAlignment.MiddleLeft
+            }, 0, 4);
+
+            _inputMountFillerRadius = new TextBox
+            {
+                Text = FixtureStep2Parameters.DefaultFilletRadius.ToString(),
+                Dock = DockStyle.Fill,
+                Margin = new Padding(3, 0, 3, 5)
+            };
+            innerTable.Controls.Add(_inputMountFillerRadius, 1, 4);
+
+            // Добавляем в группу
+            _groupMount.Controls.Add(innerTable);
         }
 
         #endregion

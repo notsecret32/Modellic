@@ -101,6 +101,15 @@ namespace Modellic.App.Core.Services
             return _steps[index];
         }
 
+        /// <summary>
+        /// Проверяет, построен ли предыдущий шаг относительно курсора.
+        /// </summary>
+        /// <param name="cursorPosition">Позиция курсора.</param>
+        /// <returns>True - если предыдущий шаг относильно курсора построен.</returns>
+        public bool IsPreviousStepBuilded(int cursorPosition) => !(cursorPosition != _lastBuiltStepIndex + 1);
+        
+        public bool IsSelectedStepBuilded(int cursorPosition) => _steps[cursorPosition].Status == FixtureStepStatus.Builded;
+
         #endregion
 
         #region Public Async Methods
@@ -115,13 +124,13 @@ namespace Modellic.App.Core.Services
         /// </summary>
         /// <param name="cancellationToken">Уведовление об остановке построения шага.</param>
         /// <exception cref="FixtureBuilderException">Если какое-то из условий не удовлетворено.</exception>
-        public async Task BuildStepAsync(int cursorPosition, CancellationToken cancellationToken = default)
+        public async Task BuildSelectedStepAsync(int cursorPosition, CancellationToken cancellationToken = default)
         {
             // Проверяем отмену в начале
             cancellationToken.ThrowIfCancellationRequested();
 
             // Проверяем, что выбранный шаг еще не построен
-            if (_steps[cursorPosition].Status == FixtureStepStatus.Builded)
+            if (IsSelectedStepBuilded(cursorPosition))
             {
                 Logger.LogWarning("Выбранный шаг уже построен");
 
@@ -132,7 +141,7 @@ namespace Modellic.App.Core.Services
             }
 
             // Проверяем, что предыдущий шаг был построен
-            if (cursorPosition != _lastBuiltStepIndex + 1)
+            if (!IsPreviousStepBuilded(cursorPosition))
             {
                 Logger.LogWarning("Предыдущий шаг не построен");
 

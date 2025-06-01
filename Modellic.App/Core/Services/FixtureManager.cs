@@ -25,7 +25,7 @@ namespace Modellic.App.Core.Services
 
         #endregion
 
-        #region Service Instances
+        #region Private Services
 
         /// <summary>
         /// Сборщик приспособления.
@@ -80,6 +80,8 @@ namespace Modellic.App.Core.Services
                 _cursorPosition = value;
             }
         }
+
+        public FixtureBuilder Builder => _fixtureBuilder;
 
         /// <summary>
         /// текущий шаг на который указывает курсор.
@@ -198,35 +200,6 @@ namespace Modellic.App.Core.Services
 
             // Оповещаем подписчиков об изменении позиции курсора
             CursorPositionChanged?.Invoke(_fixtureBuilder.FixtureSteps[_cursorPosition], _cursorPosition);
-        }
-
-        #endregion
-
-        #region Public Async Methods
-
-        /// <summary>
-        /// Строит шаг на который указывает курсор.
-        /// </summary>
-        /// <param name="cancellationToken">Токен для отмены построения шага.</param>
-        /// <exception cref="FixtureBuilderException">Если какое-то из условий не удовлетворено.</exception>
-        public async Task BuildStepAsync(CancellationToken cancellationToken = default)
-        {
-            try
-            {
-                Logger.LogInformation($"Пробуем построить шаг {CursorPosition + 1}");
-
-                // Строим шаг
-                await _fixtureBuilder.BuildStepAsync(CursorPosition, cancellationToken);
-
-                // Передвигаем курсор вниз
-                CursorDown();
-            }
-            catch (FixtureBuilderException ex)
-            {
-                Logger.LogWarning($"При попытке построить шаг произошла ошибка. Подробности: {ex.Message}");
-
-                throw ex;
-            }
         }
 
         #endregion

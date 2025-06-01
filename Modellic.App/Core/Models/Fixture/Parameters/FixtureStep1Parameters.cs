@@ -21,5 +21,24 @@
         public double Thickness { get; set; } = DEFAULT_THICKNESS;
 
         #endregion
+
+        #region Public Const Properties
+
+        public static double DefaultDiameter => DEFAULT_DIAMETER;
+
+        public static double DefaultWidth => DEFAULT_WIDTH;
+
+        public static double DefaultThickness => DEFAULT_THICKNESS;
+
+        #endregion
+
+        #region Overrided Methods
+
+        public override string ToString()
+        {
+            return $"Diameter: {Diameter}; Width: {Width}; Thickness: {Thickness}";
+        }
+
+        #endregion
     }
 }

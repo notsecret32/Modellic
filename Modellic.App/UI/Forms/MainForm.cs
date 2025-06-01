@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Modellic.App.Core.Models.Fixture;
+using Modellic.App.Core.Models.Fixture.Parameters;
 using Modellic.App.Core.Services;
 using Modellic.App.Enums;
 using Modellic.App.Exceptions;
@@ -47,14 +48,6 @@ namespace Modellic.App.UI.Forms
 
         private void BtnCursorDown_Click(object sender, EventArgs e) => _fixtureManager.CursorDown();
 
-        private void MenuItemBuildStep_Click(object sender, EventArgs e)
-        {
-            using (var form = new FixtureStep1Form())
-            {
-                form.ShowDialog();
-            }
-        }
-
         private void OpenAssemblyManager_Click(object sender, EventArgs e) => CreateAssemblyManagerForm();
 
         #endregion
@@ -65,8 +58,11 @@ namespace Modellic.App.UI.Forms
 
         private async void MenuItemConnectToSw_Click(object sender, EventArgs e) => await HandleSwConnectionAsync();
 
+        private async void MenuItemBuildStep_Click(object sender, EventArgs e) => await BuildStepAsync();
+
         private async void MenuItemOpenAssemblyExample_Click(object sender, EventArgs e)
             => await OpenExampleAsync((ToolStripMenuItem)sender, isAssembly: true);
+
         private async void MenuItemOpenPartExample_Click(object sender, EventArgs e)
              => await OpenExampleAsync((ToolStripMenuItem)sender, isAssembly: false);
 
@@ -140,6 +136,32 @@ namespace Modellic.App.UI.Forms
             _fixtureManager = new FixtureManager(stepsGridView);
             _fixtureManager.CursorPositionChanged += OnCursorPositionChanged;
             _fixtureManager.FixtureStepStatusChanged += OnFixtureStepStatusChanged;
+        }
+
+        private DialogResult OpenFormByCursorPosition(int cursorPosition)
+        {
+            FixtureStepBaseForm form = cursorPosition switch
+            {
+                0 => new FixtureStep1Form(),
+                1 => new FixtureStep2Form(),
+                2 => new FixtureStep3Form(),
+                _ => throw new NotSupportedException($"Такой формы для шага {cursorPosition + 1} не существует")
+            };
+
+            // Получаем текущие параметры из шага и передаем в форму
+            var currentStep = _fixtureManager.Builder.GetStepByIndex(cursorPosition);
+            form.SetParameters(currentStep.Parameters);
+
+            var result = form.ShowDialog();
+
+            if (result == DialogResult.OK)
+            {
+                // Получаем параметры из формы и сохраняем в шаг
+                currentStep.Parameters = form.GetParameters();
+                Logger.LogInformation($"Параметры: {currentStep.Parameters}");
+            }
+
+            return result;
         }
 
         private void SetUiState(bool isBusy, string busyText = null)
@@ -232,9 +254,38 @@ namespace Modellic.App.UI.Forms
                     _isCreatingDocument = false;
                 }
 
-                SetUiState(true);
+                int cursorPosition = _fixtureManager.CursorPosition;
 
-                await _fixtureManager.BuildStepAsync();
+                // Проверяем, что выбранный шаг еще не построен
+                if (_fixtureManager.Builder.IsSelectedStepBuilded(cursorPosition))
+                {
+                    Logger.LogWarning($"Выбранный шаг {cursorPosition + 1} уже построен");
+
+                    throw new FixtureBuilderException(
+                        "Выбранный шаг уже построен, выберите другой.",
+                        FixtureBuilderErrorCode.AlreadyBuilded
+                    );
+                }
+
+                // Проверяем, что предыдущий шаг был построен
+                if (!_fixtureManager.Builder.IsPreviousStepBuilded(cursorPosition))
+                {
+                    Logger.LogWarning("Предыдущий шаг не построен");
+
+                    throw new FixtureBuilderException(
+                        "Предыдущий шаг не построен. Постройте его и повторите попытку.",
+                        FixtureBuilderErrorCode.PreviousStepNotBuilded
+                    );
+                }
+
+                SetUiState(isBusy: true, "Настройка шага");
+
+                if (OpenFormByCursorPosition(cursorPosition) == DialogResult.OK)
+                {
+                    SetUiState(true);
+
+                    await _fixtureManager.Builder.BuildSelectedStepAsync(cursorPosition);
+                }
             }
             catch (OperationCanceledException)
             {

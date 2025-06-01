@@ -29,5 +29,28 @@
         public double FilletRadius { get; set; } = DEFAULT_FILLET_RADIUS;
 
         #endregion
+
+        #region Public Const Properties
+
+        public static double DefaultMountWidth => DEFAULT_MOUNT_WIDTH;
+
+        public static double DefaultMountHeight => DEFAULT_MOUNT_HEIGHT;
+
+        public static double DefaultQuantity => DEFAULT_MOUNT_QUANTITY;
+
+        public static double DefaultHoleDiameter => DEFAULT_HOLE_DIAMETER;
+
+        public static double DefaultFilletRadius => DEFAULT_FILLET_RADIUS;
+
+        #endregion
+
+        #region Overrided Methods
+
+        public override string ToString()
+        {
+            return $"MountWidth: {MountWidth}; MountHeight: {MountHeight}; Quantity: {Quantity}; HoleDiameter: {HoleDiameter}; FilletRadius: {FilletRadius}";
+        }
+
+        #endregion
     }
 }
