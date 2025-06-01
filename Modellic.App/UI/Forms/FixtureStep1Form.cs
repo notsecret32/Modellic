@@ -10,8 +10,6 @@ namespace Modellic.App.UI.Forms
     {
         #region Private Form Elements
         
-        private GroupBox _groupGeneral;
-
         private TextBox _inputDiameter;
 
         private TextBox _inputWidth;
@@ -59,109 +57,47 @@ namespace Modellic.App.UI.Forms
 
         protected override void ConfigureTableLayout()
         {
-            // Сохраняем кнопки, которые нужно перенести
-            var btnCancel = this.btnCancel;
-            var btnBuildStep = this.btnBuildStep;
-
             // Удаляем все контролы из таблицы
             tableLayoutFixtureStepControls.Controls.Clear();
 
             // Настраиваем таблицу
-            tableLayoutFixtureStepControls.RowCount = 4;
+            tableLayoutFixtureStepControls.RowCount = 4; 
             tableLayoutFixtureStepControls.RowStyles.Clear();
-            tableLayoutFixtureStepControls.RowStyles.Add(new RowStyle(SizeType.AutoSize)); // 1 строка
-            tableLayoutFixtureStepControls.RowStyles.Add(new RowStyle(SizeType.Percent, 100F)); // 2 строка
-            tableLayoutFixtureStepControls.RowStyles.Add(new RowStyle(SizeType.AutoSize)); // 3 строка
-            tableLayoutFixtureStepControls.RowStyles.Add(new RowStyle(SizeType.AutoSize)); // 4 строка
+            tableLayoutFixtureStepControls.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+            tableLayoutFixtureStepControls.RowStyles.Add(new RowStyle(SizeType.Percent, 100F)); 
+            tableLayoutFixtureStepControls.RowStyles.Add(new RowStyle(SizeType.AutoSize)); 
+            tableLayoutFixtureStepControls.RowStyles.Add(new RowStyle(SizeType.AutoSize)); 
 
-            // Настраиваем главную группу
-            ConfigureGeneralGroup();
-            tableLayoutFixtureStepControls.Controls.Add(_groupGeneral, 0, 0);
+            var (groupBox, tableLayout) = CreateParametersPanel("Общее", 3);
 
-            // Добавляем кнопки в последние две строки
+            // Инициализируем TextBox'ы и добавляем их
+            _inputDiameter = AddParameter(
+                tableLayout,
+                "D1 (Диаметр, мм):",
+                FixtureStep1Parameters.DefaultDiameter.ToString(),
+                0
+            ).textBox;
+
+            _inputWidth = AddParameter(
+                tableLayout,
+                "D2 (Ширина, мм):",
+                FixtureStep1Parameters.DefaultWidth.ToString(),
+                1
+            ).textBox;
+
+            _inputThickness = AddParameter(
+                tableLayout,
+                "D3 (Глубина, мм):",
+                FixtureStep1Parameters.DefaultThickness.ToString(),
+                2
+            ).textBox;
+
+            groupBox.Controls.Add(tableLayout);
+            tableLayoutFixtureStepControls.Controls.Add(groupBox, 0, 0);
+
+            // Добавляем кнопки
             tableLayoutFixtureStepControls.Controls.Add(btnCancel, 0, 2);
             tableLayoutFixtureStepControls.Controls.Add(btnBuildStep, 0, 3);
-        }
-
-        #endregion
-
-        #region Private Methods
-
-        private void ConfigureGeneralGroup()
-        {
-            _groupGeneral = new GroupBox
-            {
-                Text = "Общее",
-                Dock = DockStyle.Fill,
-                AutoSize = true,
-                AutoSizeMode = AutoSizeMode.GrowAndShrink,
-                Padding = new Padding(4)
-            };
-
-            var innerTable = new TableLayoutPanel
-            {
-                Dock = DockStyle.Fill,
-                ColumnCount = 2,
-                RowCount = 3,
-                AutoSize = true,
-                AutoSizeMode = AutoSizeMode.GrowAndShrink,
-                Margin = new Padding(0),
-                Padding = new Padding(0),
-            };
-
-            innerTable.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
-            innerTable.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
-
-            innerTable.RowStyles.Add(new RowStyle(SizeType.AutoSize));
-            innerTable.RowStyles.Add(new RowStyle(SizeType.AutoSize));
-            innerTable.RowStyles.Add(new RowStyle(SizeType.AutoSize));
-
-            innerTable.Controls.Add(new Label
-            {
-                Text = "D1 (Диаметр, мм):",
-                Dock = DockStyle.Fill,
-                TextAlign = ContentAlignment.MiddleLeft
-            }, 0, 0);
-
-            _inputDiameter = new TextBox
-            {
-                Text = FixtureStep1Parameters.DefaultDiameter.ToString(),
-                Dock = DockStyle.Fill,
-                Margin = new Padding(3, 0, 3, 5)
-            };
-            innerTable.Controls.Add(_inputDiameter, 1, 0);
-
-            innerTable.Controls.Add(new Label
-            {
-                Text = "D2 (Ширина, мм):",
-                Dock = DockStyle.Fill,
-                TextAlign = ContentAlignment.MiddleLeft
-            }, 0, 1);
-
-            _inputWidth = new TextBox
-            {
-                Text = FixtureStep1Parameters.DefaultWidth.ToString(),
-                Dock = DockStyle.Fill,
-                Margin = new Padding(3, 0, 3, 5)
-            };
-            innerTable.Controls.Add(_inputWidth, 1, 1);
-
-            innerTable.Controls.Add(new Label
-            {
-                Text = "D3 (Глубина, мм):",
-                Dock = DockStyle.Fill,
-                TextAlign = ContentAlignment.MiddleLeft
-            }, 0, 2);
-
-            _inputThickness = new TextBox
-            {
-                Text = FixtureStep1Parameters.DefaultThickness.ToString(),
-                Dock = DockStyle.Fill,
-                Margin = new Padding(3, 0, 3, 5)
-            };
-            innerTable.Controls.Add(_inputThickness, 1, 2);
-
-            _groupGeneral.Controls.Add(innerTable);
         }
 
         #endregion

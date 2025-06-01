@@ -8,7 +8,7 @@ namespace Modellic.App.Core.Models.Fixture
     {
         #region Public Overrided Members
 
-        public override string Title => "Внешний диск";
+        public override string Title => "Крепление внешнего диска";
 
         public new FixtureStep2Parameters Parameters
         {

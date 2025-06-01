@@ -10,8 +10,6 @@ namespace Modellic.App.UI.Forms
     {
         #region Private Form Elements
 
-        private GroupBox _groupGeneral;
-
         private TextBox _inputDiameter;
 
         private TextBox _inputChamferWidth;
@@ -95,224 +93,106 @@ namespace Modellic.App.UI.Forms
             tableLayoutFixtureStepControls.Controls.Clear();
 
             // Настраиваем таблицу
-            tableLayoutFixtureStepControls.RowCount = 4;
+            tableLayoutFixtureStepControls.RowCount = 6;
             tableLayoutFixtureStepControls.RowStyles.Clear();
             tableLayoutFixtureStepControls.RowStyles.Add(new RowStyle(SizeType.AutoSize)); // 1 строка
-            tableLayoutFixtureStepControls.RowStyles.Add(new RowStyle(SizeType.Percent, 100F)); // 2 строка
-            tableLayoutFixtureStepControls.RowStyles.Add(new RowStyle(SizeType.AutoSize)); // 3 строка
-            tableLayoutFixtureStepControls.RowStyles.Add(new RowStyle(SizeType.AutoSize)); // 4 строка
+            tableLayoutFixtureStepControls.RowStyles.Add(new RowStyle(SizeType.AutoSize)); // 1 строка
+            tableLayoutFixtureStepControls.RowStyles.Add(new RowStyle(SizeType.AutoSize)); // 1 строка
+            tableLayoutFixtureStepControls.RowStyles.Add(new RowStyle(SizeType.Percent, 100F)); 
+            tableLayoutFixtureStepControls.RowStyles.Add(new RowStyle(SizeType.AutoSize)); 
+            tableLayoutFixtureStepControls.RowStyles.Add(new RowStyle(SizeType.AutoSize));
 
-            // Настраиваем главную группу
-            ConfigureGeneralGroup();
-            tableLayoutFixtureStepControls.Controls.Add(_groupGeneral, 0, 0);
+            // Добавляем общую группу
+            var (generalGroup, generalTableLayout) = CreateParametersPanel("Общее", 5);
+
+            _inputDiameter = AddParameter(
+                generalTableLayout,
+                "D1 (Диаметр, мм):",
+                FixtureStep3Parameters.DefaultDiameter.ToString(),
+                0
+            ).textBox;
+
+            _inputChamferWidth = AddParameter(
+                generalTableLayout,
+                "D2 (Ширина фаски, мм):",
+                FixtureStep3Parameters.DefaultChamferWidth.ToString(),
+                1
+            ).textBox;
+
+            _inputChamferAngleDeg = AddParameter(
+                generalTableLayout,
+                "D3 (Угол фаски, °):",
+                FixtureStep3Parameters.DefaultChamferAngleDeg.ToString(),
+                2
+            ).textBox;
+
+            _inputOffset = AddParameter(
+                generalTableLayout,
+                "D4 (Отступ, мм):",
+                FixtureStep3Parameters.DefaultOffset.ToString(),
+                3
+            ).textBox;
+
+            _inputThickness = AddParameter(
+                generalTableLayout,
+                "D5 (Толщина, мм):",
+                FixtureStep3Parameters.DefaultThickness.ToString(),
+                4
+            ).textBox;
+
+            generalGroup.Controls.Add(generalTableLayout);
+            tableLayoutFixtureStepControls.Controls.Add(generalGroup, 0, 0);
+
+            // Добавляем группу с отверстиями
+            var (holeGroup, holeTableLayout) = CreateParametersPanel("Отверстие", 2);
+
+            _inputHoleDiameter = AddParameter(
+                holeTableLayout,
+                "L1 (Диаметр, мм):",
+                FixtureStep3Parameters.DefaultHoleDiameter.ToString(),
+                0
+            ).textBox;
+
+            _inputHoleQuanity = AddParameter(
+                holeTableLayout,
+                "L1 (Кол-во, число):",
+                FixtureStep3Parameters.DefaultHoleQuanity.ToString(),
+                1
+            ).textBox;
+
+            holeGroup.Controls.Add(holeTableLayout);
+            tableLayoutFixtureStepControls.Controls.Add(holeGroup, 0, 1);
+
+            // Добавляем группу вырез
+            var (cutoutGroup, cutoutTableLayout) = CreateParametersPanel("Вырез", 3);
+
+            _inputCutoutOffset = AddParameter(
+                cutoutTableLayout,
+                "A1 (Смещение, мм):",
+                FixtureStep3Parameters.DefaultCutoutOffset.ToString(),
+                0
+            ).textBox;
+
+            _inputCutoutDepth = AddParameter(
+                cutoutTableLayout,
+                "A2 (Глубина, мм):",
+                FixtureStep3Parameters.DefaultCutoutDepth.ToString(),
+                1
+            ).textBox;
+
+            _inputCutoutThickness = AddParameter(
+                cutoutTableLayout,
+                "A3 (Толщина, мм):",
+                FixtureStep3Parameters.DefaultCutoutThickness.ToString(),
+                2
+            ).textBox;
+
+            cutoutGroup.Controls.Add(cutoutTableLayout);
+            tableLayoutFixtureStepControls.Controls.Add(cutoutGroup, 0, 2);
 
             // Добавляем кнопки в последние две строки
-            tableLayoutFixtureStepControls.Controls.Add(btnCancel, 0, 2);
-            tableLayoutFixtureStepControls.Controls.Add(btnBuildStep, 0, 3);
-        }
-
-        #endregion
-
-        #region Private Methods
-
-        private void ConfigureGeneralGroup()
-        {
-            _groupGeneral = new GroupBox
-            {
-                Text = "Общее",
-                Dock = DockStyle.Fill,
-                AutoSize = true,
-                AutoSizeMode = AutoSizeMode.GrowAndShrink,
-                Padding = new Padding(4)
-            };
-
-            var innerTable = new TableLayoutPanel
-            {
-                Dock = DockStyle.Fill,
-                ColumnCount = 2,
-                RowCount = 10,
-                AutoSize = true,
-                AutoSizeMode = AutoSizeMode.GrowAndShrink,
-                Margin = new Padding(0),
-                Padding = new Padding(0),
-            };
-
-            innerTable.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
-            innerTable.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
-
-            innerTable.RowStyles.Add(new RowStyle(SizeType.AutoSize));
-            innerTable.RowStyles.Add(new RowStyle(SizeType.AutoSize));
-            innerTable.RowStyles.Add(new RowStyle(SizeType.AutoSize));
-            innerTable.RowStyles.Add(new RowStyle(SizeType.AutoSize));
-            innerTable.RowStyles.Add(new RowStyle(SizeType.AutoSize));
-            innerTable.RowStyles.Add(new RowStyle(SizeType.AutoSize));
-            innerTable.RowStyles.Add(new RowStyle(SizeType.AutoSize));
-            innerTable.RowStyles.Add(new RowStyle(SizeType.AutoSize));
-            innerTable.RowStyles.Add(new RowStyle(SizeType.AutoSize));
-            innerTable.RowStyles.Add(new RowStyle(SizeType.AutoSize));
-
-            // ===== Строка 1 =====
-            innerTable.Controls.Add(new Label
-            {
-                Text = "D1 (Диаметр, мм):",
-                Dock = DockStyle.Fill,
-                TextAlign = ContentAlignment.MiddleLeft
-            }, 0, 0);
-
-            _inputDiameter = new TextBox
-            {
-                Text = FixtureStep3Parameters.DefaultDiameter.ToString(),
-                Dock = DockStyle.Fill,
-                Margin = new Padding(3, 0, 3, 5)
-            };
-            innerTable.Controls.Add(_inputDiameter, 1, 0);
-
-            // ===== Строка 2 =====
-            innerTable.Controls.Add(new Label
-            {
-                Text = "D2 (Ширина фаски, мм):",
-                Dock = DockStyle.Fill,
-                TextAlign = ContentAlignment.MiddleLeft
-            }, 0, 1);
-
-            _inputChamferWidth = new TextBox
-            {
-                Text = FixtureStep3Parameters.DefaultChamferWidth.ToString(),
-                Dock = DockStyle.Fill,
-                Margin = new Padding(3, 0, 3, 5)
-            };
-            innerTable.Controls.Add(_inputChamferWidth, 1, 1);
-
-            // ===== Строка 3 =====
-            innerTable.Controls.Add(new Label
-            {
-                Text = "D3 (Угол фаски, градус):",
-                Dock = DockStyle.Fill,
-                TextAlign = ContentAlignment.MiddleLeft
-            }, 0, 2);
-
-            _inputChamferAngleDeg = new TextBox
-            {
-                Text = FixtureStep3Parameters.DefaultChamferAngleDeg.ToString(),
-                Dock = DockStyle.Fill,
-                Margin = new Padding(3, 0, 3, 5)
-            };
-            innerTable.Controls.Add(_inputChamferAngleDeg, 1, 2);
-
-            // ===== Строка 4 =====
-            innerTable.Controls.Add(new Label
-            {
-                Text = "D4 (Смещение, мм):",
-                Dock = DockStyle.Fill,
-                TextAlign = ContentAlignment.MiddleLeft
-            }, 0, 3);
-
-            _inputOffset = new TextBox
-            {
-                Text = FixtureStep3Parameters.DefaultOffset.ToString(),
-                Dock = DockStyle.Fill,
-                Margin = new Padding(3, 0, 3, 5)
-            };
-            innerTable.Controls.Add(_inputOffset, 1, 3);
-
-            // ===== Строка 5 =====
-            innerTable.Controls.Add(new Label
-            {
-                Text = "D5 (Толщина, мм):",
-                Dock = DockStyle.Fill,
-                TextAlign = ContentAlignment.MiddleLeft
-            }, 0, 4);
-
-            _inputThickness = new TextBox
-            {
-                Text = FixtureStep3Parameters.DefaultThickness.ToString(),
-                Dock = DockStyle.Fill,
-                Margin = new Padding(3, 0, 3, 5)
-            };
-            innerTable.Controls.Add(_inputThickness, 1, 4);
-
-            // ===== Строка 6 =====
-            innerTable.Controls.Add(new Label
-            {
-                Text = "D6 (Кол-во отвестий, число):",
-                Dock = DockStyle.Fill,
-                TextAlign = ContentAlignment.MiddleLeft
-            }, 0, 5);
-
-            _inputHoleQuanity = new TextBox
-            {
-                Text = FixtureStep3Parameters.DefaultHoleQuanity.ToString(),
-                Dock = DockStyle.Fill,
-                Margin = new Padding(3, 0, 3, 5)
-            };
-            innerTable.Controls.Add(_inputHoleQuanity, 1, 5);
-
-            // ===== Строка 7 =====
-            innerTable.Controls.Add(new Label
-            {
-                Text = "D7 (Диаметр отверстий, мм):",
-                Dock = DockStyle.Fill,
-                TextAlign = ContentAlignment.MiddleLeft
-            }, 0, 6);
-
-            _inputHoleDiameter = new TextBox
-            {
-                Text = FixtureStep3Parameters.DefaultHoleDiameter.ToString(),
-                Dock = DockStyle.Fill,
-                Margin = new Padding(3, 0, 3, 5)
-            };
-            innerTable.Controls.Add(_inputHoleDiameter, 1, 6);
-
-            // ===== Строка 8 =====
-            innerTable.Controls.Add(new Label
-            {
-                Text = "D8 (Смещение выреза, мм):",
-                Dock = DockStyle.Fill,
-                TextAlign = ContentAlignment.MiddleLeft
-            }, 0, 7);
-
-            _inputCutoutOffset = new TextBox
-            {
-                Text = FixtureStep3Parameters.DefaultCutoutOffset.ToString(),
-                Dock = DockStyle.Fill,
-                Margin = new Padding(3, 0, 3, 5)
-            };
-            innerTable.Controls.Add(_inputCutoutOffset, 1, 7);
-
-            // ===== Строка 9 =====
-            innerTable.Controls.Add(new Label
-            {
-                Text = "D9 (Глубина выреза, мм):",
-                Dock = DockStyle.Fill,
-                TextAlign = ContentAlignment.MiddleLeft
-            }, 0, 8);
-
-            _inputCutoutDepth = new TextBox
-            {
-                Text = FixtureStep3Parameters.DefaultCutoutDepth.ToString(),
-                Dock = DockStyle.Fill,
-                Margin = new Padding(3, 0, 3, 5)
-            };
-            innerTable.Controls.Add(_inputCutoutDepth, 1, 8);
-
-            // ===== Строка 10 =====
-            innerTable.Controls.Add(new Label
-            {
-                Text = "D10 (Толщина выреза, мм):",
-                Dock = DockStyle.Fill,
-                TextAlign = ContentAlignment.MiddleLeft
-            }, 0, 9);
-
-            _inputCutoutThickness = new TextBox
-            {
-                Text = FixtureStep3Parameters.DefaultCutoutThickness.ToString(),
-                Dock = DockStyle.Fill,
-                Margin = new Padding(3, 0, 3, 5)
-            };
-            innerTable.Controls.Add(_inputCutoutThickness, 1, 9);
-
-            // ===== Конец =====
-            _groupGeneral.Controls.Add(innerTable);
+            tableLayoutFixtureStepControls.Controls.Add(btnCancel, 0, 4);
+            tableLayoutFixtureStepControls.Controls.Add(btnBuildStep, 0, 5);
         }
 
         #endregion

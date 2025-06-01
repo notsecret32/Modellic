@@ -285,6 +285,8 @@ namespace Modellic.App.UI.Forms
                     SetUiState(true);
 
                     await _fixtureManager.Builder.BuildSelectedStepAsync(cursorPosition);
+
+                    _fixtureManager.CursorDown();
                 }
             }
             catch (OperationCanceledException)
