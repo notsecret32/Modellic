@@ -26,6 +26,21 @@ namespace Modellic.App.SolidWorks.Models
 
         #region Public Properties
 
+        public string Name
+        {
+            get
+            {
+                return BaseObject.Name;
+            }
+            set
+            {
+                if (value != BaseObject.Name)
+                {
+                    BaseObject.Name = value;
+                }
+            }
+        }
+
         /// <summary>
         /// Конкретный тип Feature.
         /// </summary>

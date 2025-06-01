@@ -77,6 +77,7 @@ namespace Modellic.App.Core.Models.Fixture
                 new StartExtrusionParameters(swStartConditions_e.swStartSketchPlane, 0, false),
                 new EndExtrusionParameters(swEndConditions_e.swEndCondBlind, Parameters.Thickness.ToMeters(), false, 0, false, false, false)
             );
+            createdFeature.Name = "ВнешнийДиск";
         }
 
         #endregion
