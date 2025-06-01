@@ -15,8 +15,11 @@ namespace Modellic.App.UI.Controls
             // Базовые настройки
             Configure();
 
-            // Добавляем дефолтные колонки
-            AddDefaultColumns();
+            if (!DesignMode)
+            {
+                // Добавляем дефолтные колонки
+                AddDefaultColumns();
+            }
         }
 
         #endregion
