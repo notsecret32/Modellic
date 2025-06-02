@@ -6,6 +6,7 @@ using Modellic.App.SolidWorks.Core;
 using SolidWorks.Interop.sldworks;
 using System;
 using static Modellic.App.Logging.LoggerService;
+using static System.Windows.Forms.AxHost;
 
 namespace Modellic.App.SolidWorks.Managers
 {
@@ -41,7 +42,24 @@ namespace Modellic.App.SolidWorks.Managers
             );
         }
         
-        public void CreateSketch(Action action, string sketchName = null, bool updateEditRebuild = true)
+        public SketchSegment CreateCircleByRadius(double x, double y, double z, double radius)
+        {
+            Logger.LogInformation($"[ЭСКИЗ] Создаем окружность по радиусу ([x={x}, y={y}, z={z}, radius: {radius}]");
+
+            return BaseObject.CreateCircleByRadius(x, y, z, radius);
+        }
+
+        public SketchSegment CreateLine(double startX, double startY, double startZ, double endX, double endY, double endZ)
+        {
+            Logger.LogInformation($"[ЭСКИЗ] Создаем линию ([x={startX}, y={startY}, z={startZ}] => [x={endX}, y={endY}, z={endZ}])");
+
+            return BaseObject.CreateLine(
+                startX, startY, startZ,
+                endX, endY, endZ
+            );
+        }
+
+        public void CreateSketch(Action<string> action, string sketchName = null, bool updateEditRebuild = true)
         {
             Logger.LogInformation("[ЭСКИЗ] Создаем новый эскиз");
 
@@ -58,7 +76,9 @@ namespace Modellic.App.SolidWorks.Managers
 
                 BaseObject.InsertSketch(updateEditRebuild);
 
-                action();
+                var name = GetActiveSketchName();
+
+                action(name);
 
                 if (!string.IsNullOrEmpty(sketchName))
                 {
@@ -90,6 +110,9 @@ namespace Modellic.App.SolidWorks.Managers
         public string GetActiveSketchName()
         {
             Feature sketchAsFeature = (Feature)BaseObject.ActiveSketch;
+
+            Logger.LogInformation($"[SketchManager] Name: {sketchAsFeature.Name}");
+
             return sketchAsFeature.Name;
         }
 

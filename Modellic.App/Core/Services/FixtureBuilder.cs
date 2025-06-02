@@ -71,9 +71,9 @@ namespace Modellic.App.Core.Services
             // Инициализируем шаги сборки
             _steps = new List<FixtureStep>()
             {
-                new FixtureStep1(),
-                new FixtureStep2(),
-                new FixtureStep3(),
+                new FixtureStep1(this),
+                new FixtureStep2(this),
+                new FixtureStep3(this),
             };
 
             foreach (FixtureStep step in _steps)
@@ -99,6 +99,19 @@ namespace Modellic.App.Core.Services
         public FixtureStep GetStepByIndex(int index)
         {
             return _steps[index];
+        }
+
+        public T GetStep<T>() where T : FixtureStep
+        {
+            foreach (var step in _steps)
+            {
+                if (step is T)
+                {
+                    return (T)step;
+                }
+            }
+
+            throw new InvalidOperationException($"Класса {nameof(T)} не существует в массиве шагов.");
         }
 
         /// <summary>

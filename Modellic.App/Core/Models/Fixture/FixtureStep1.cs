@@ -1,7 +1,9 @@
 ﻿using Microsoft.Extensions.Logging;
 using Modellic.App.Core.Models.Fixture.Parameters;
+using Modellic.App.Core.Services;
 using Modellic.App.Enums;
 using Modellic.App.Extensions;
+using Modellic.App.SolidWorks.Documents;
 using Modellic.App.SolidWorks.Managers.Helpers;
 using SolidWorks.Interop.swconst;
 using static Modellic.App.Logging.LoggerService;
@@ -18,6 +20,15 @@ namespace Modellic.App.Core.Models.Fixture
         {
             get => (FixtureStep1Parameters)base.Parameters;
             set => base.Parameters = value;
+        }
+
+        #endregion
+
+        #region Constructors
+
+        public FixtureStep1(FixtureBuilder builder, SwPartDoc partDoc = null) : base(builder, partDoc)
+        {
+
         }
 
         #endregion
@@ -49,7 +60,7 @@ namespace Modellic.App.Core.Models.Fixture
             Document.Extension.SelectPlane(SwPlane.Front);
 
             // Создаем эскиз
-            Document.SketchManager.CreateSketch(() =>
+            Document.SketchManager.CreateSketch((sketchName) =>
             {
                 // Высчитываем радиус внешней окружности
                 double radius = (Parameters.Diameter / 2).ToMeters();

@@ -153,38 +153,40 @@
             // menuItemBuildStep
             // 
             this.menuItemBuildStep.Name = "menuItemBuildStep";
-            this.menuItemBuildStep.Size = new System.Drawing.Size(180, 22);
+            this.menuItemBuildStep.Size = new System.Drawing.Size(170, 22);
             this.menuItemBuildStep.Text = "Построить";
             this.menuItemBuildStep.Click += new System.EventHandler(this.MenuItemBuildStep_Click);
             // 
             // menuItemChangeStep
             // 
             this.menuItemChangeStep.Name = "menuItemChangeStep";
-            this.menuItemChangeStep.Size = new System.Drawing.Size(180, 22);
+            this.menuItemChangeStep.Size = new System.Drawing.Size(170, 22);
             this.menuItemChangeStep.Text = "Изменить";
             // 
             // menuItemClearStep
             // 
             this.menuItemClearStep.Name = "menuItemClearStep";
-            this.menuItemClearStep.Size = new System.Drawing.Size(180, 22);
+            this.menuItemClearStep.Size = new System.Drawing.Size(170, 22);
             this.menuItemClearStep.Text = "Очистить";
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(177, 6);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(167, 6);
             // 
             // menuItemNextStep
             // 
             this.menuItemNextStep.Name = "menuItemNextStep";
             this.menuItemNextStep.Size = new System.Drawing.Size(180, 22);
             this.menuItemNextStep.Text = "Следующий шаг";
+            this.menuItemNextStep.Click += new System.EventHandler(this.MenuItemCursorDown_Click);
             // 
             // menuItemPreviousStep
             // 
             this.menuItemPreviousStep.Name = "menuItemPreviousStep";
             this.menuItemPreviousStep.Size = new System.Drawing.Size(180, 22);
             this.menuItemPreviousStep.Text = "Предудущий шаг";
+            this.menuItemPreviousStep.Click += new System.EventHandler(this.MenuItemCursorUp_Click);
             // 
             // menuItemAssembly
             // 

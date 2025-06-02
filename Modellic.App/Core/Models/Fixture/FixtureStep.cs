@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Modellic.App.Core.Models.Fixture.Parameters;
+using Modellic.App.Core.Services;
 using Modellic.App.SolidWorks.Documents;
 using System;
 using System.Threading;
@@ -26,9 +27,15 @@ namespace Modellic.App.Core.Models.Fixture
         /// </summary>
         protected string _stepName = "Название шага не переопределено";
 
+        /// <summary>
+        /// Ссылка на сборщик.
+        /// </summary>
+        protected FixtureBuilder _builder;
+
         #endregion
 
         #region Public Properties
+
         public FixtureStepParameters Parameters { get; set; }
 
         /// <summary>
@@ -70,8 +77,9 @@ namespace Modellic.App.Core.Models.Fixture
 
         #region Constructor
 
-        public FixtureStep(SwPartDoc partDoc = null)
+        public FixtureStep(FixtureBuilder builder, SwPartDoc partDoc = null)
         {
+            _builder = builder;
             Document = partDoc;
         }
 
