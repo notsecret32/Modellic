@@ -20,7 +20,7 @@ namespace Modellic.App.Core.Models.Conductor
 
         #endregion
 
-        #region Protectede Members
+        #region Protected Members
 
         /// <summary>
         /// Название шага.
@@ -31,6 +31,11 @@ namespace Modellic.App.Core.Models.Conductor
         /// Ссылка на сборщик.
         /// </summary>
         protected ConductorBuilder _builder;
+
+        /// <summary>
+        /// Файл в котором строится шаг приспособления.
+        /// </summary>
+        protected SwPartDoc Document { get; private set; } = null;
 
         #endregion
 
@@ -58,11 +63,6 @@ namespace Modellic.App.Core.Models.Conductor
                 }
             }
         }
-
-        /// <summary>
-        /// Файл в котором строится шаг приспособления.
-        /// </summary>
-        public SwPartDoc Document { get; set; } = null;
 
         #endregion
 
@@ -130,6 +130,11 @@ namespace Modellic.App.Core.Models.Conductor
             }
         }
 
+        public void SetWorkingDoc(SwPartDoc document)
+        {
+            Document = document;
+        }
+
         #endregion
 
         #region Protected Abstract Methods
@@ -142,7 +147,7 @@ namespace Modellic.App.Core.Models.Conductor
         /// <summary>
         /// Метод для валидации параметров шага.
         /// </summary>
-        /// <returns>True - Строим шаг; False - Отменяем построение шага.</returns>
+        /// <returns>true - Строим шаг; False - Отменяем построение шага.</returns>
         protected abstract bool Validate();
 
         #endregion

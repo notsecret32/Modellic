@@ -6,7 +6,7 @@
 
         const double DEFAULT_WIDTH = 135;
 
-        const double DEFAULT_HEIGHT = 40;
+        const double DEFAULT_HEIGHT = 55;
 
         const double DEFAULT_CHAMFER_WIDTH = 1.5;
 

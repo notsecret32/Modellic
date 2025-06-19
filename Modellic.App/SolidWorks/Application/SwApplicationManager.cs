@@ -89,7 +89,7 @@ namespace Modellic.App.SolidWorks.Application
         /// <summary>
         /// Метод для подключения к приложению SolidWorks. Если SolidWorks не открыт, то приложение откроет его.
         /// </summary>
-        /// <returns>True - если удалось подключиться.</returns>
+        /// <returns>true - если удалось подключиться.</returns>
         /// <exception cref="SolidWorksException">При любой непредвиденной ошибке.</exception>
         public async Task<bool> ConnectAsync()
         {
@@ -118,6 +118,9 @@ namespace Modellic.App.SolidWorks.Application
 
                         // Обновляем язык в локализаторе
                         LocalizationManager.Language = currentLanguage;
+
+                        // Обновляем настройки
+                        swApp.SetUserPreferenceToggle((int)swUserPreferenceToggle_e.swInputDimValOnCreate, false);
 
                         Logger.LogInformation(
                             $"Параметры SOLIDWORKS:" +
@@ -163,7 +166,7 @@ namespace Modellic.App.SolidWorks.Application
         /// <summary>
         /// Метод для отключения от SolidWorks.
         /// </summary>
-        /// <param name="closeApp">Если True - закрыть приложение SolidWorks.</param>
+        /// <param name="closeApp">Если true - закрыть приложение SolidWorks.</param>
         public void Disconnect(bool closeApp = false)
         {
             if (!IsConnected) return;

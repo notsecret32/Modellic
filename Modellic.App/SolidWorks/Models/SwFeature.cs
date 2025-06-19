@@ -1,6 +1,9 @@
-﻿using Modellic.App.Enums;
+﻿using Microsoft.Extensions.Logging;
+using Modellic.App.Enums;
 using Modellic.App.SolidWorks.Core;
 using SolidWorks.Interop.sldworks;
+using System.Reflection;
+using static Modellic.App.Logging.LoggerService;
 
 namespace Modellic.App.SolidWorks.Models
 {
@@ -83,7 +86,7 @@ namespace Modellic.App.SolidWorks.Models
 
         #endregion
 
-        #region Public Static Methods
+        #region Public Methods
 
         /// <summary>
         /// Возвращает тип Feature.
@@ -101,6 +104,58 @@ namespace Modellic.App.SolidWorks.Models
             {
                 _ => SwFeatureType.None,
             };
+        }
+
+        #endregion
+
+        #region Public Selection Methods
+
+        public bool SelectFaceByIndex(int index)
+        {
+            var faces = (dynamic[])BaseObject.GetFaces();
+
+            if (index < 0 || index >= faces.Length)
+                return false;
+
+            var entity = faces[index] as Entity;
+            entity?.Select(true);
+
+            return entity != null;
+        }
+
+        public IFace2 ISelectFaceByIndex(int index)
+        {
+            var faces = (dynamic[])BaseObject.GetFaces();
+
+            if (index < 0 || index >= faces.Length)
+                return null;
+
+            var entity = faces[index] as Entity;
+            entity?.Select(true);
+
+            return faces[index] as IFace2;
+        }
+
+        public bool SelectEdgeByIndex(int faceIndex, int edgeIndex, bool append = true, SelectData selectData = default)
+        {
+            var faces = (dynamic[])BaseObject.GetFaces();
+
+            if (faceIndex < 0 || faceIndex >= faces.Length)
+                return false;
+
+            var selectedFace = faces[faceIndex];
+
+            if (selectedFace == null) return false;
+
+            var edges = (dynamic[])selectedFace.GetEdges();
+
+            if (edgeIndex < 0 || edgeIndex >= edges.Length)
+                return false;
+
+            var edge = edges[edgeIndex] as IEntity;
+            edge?.Select4(append, selectData);
+
+            return edge != null;
         }
 
         #endregion

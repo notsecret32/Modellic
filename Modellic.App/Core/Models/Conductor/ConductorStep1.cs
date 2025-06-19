@@ -5,6 +5,7 @@ using Modellic.App.Enums;
 using Modellic.App.Extensions;
 using Modellic.App.SolidWorks.Documents;
 using Modellic.App.SolidWorks.Managers.Helpers;
+using Modellic.App.SolidWorks.Models;
 using SolidWorks.Interop.swconst;
 using static Modellic.App.Logging.LoggerService;
 
@@ -21,6 +22,12 @@ namespace Modellic.App.Core.Models.Conductor
             get => (ConductorStep1Params)base.Parameters;
             set => base.Parameters = value;
         }
+
+        #endregion
+        
+        #region Public Properties
+
+        public SwFeature OuterDisk { get; private set; } = default;
 
         #endregion
 
@@ -60,7 +67,7 @@ namespace Modellic.App.Core.Models.Conductor
             Document.Extension.SelectPlane(SwPlane.Front);
 
             // Создаем эскиз
-            Document.SketchManager.CreateSketch((sketchName) =>
+            Document.SketchManager.CreateSketch(() =>
             {
                 // Высчитываем радиус внешней окружности
                 double radius = (Parameters.Diameter / 2).ToMeters();
@@ -84,11 +91,14 @@ namespace Modellic.App.Core.Models.Conductor
             },
             "ВнешнийДискЭскиз");
 
-            var createdFeature = Document.FeatureManager.FeatureExtrusion(
+            OuterDisk = Document.FeatureManager.FeatureExtrusion(
+                "ВнешнийДиск",
                 new StartExtrusionParameters(swStartConditions_e.swStartSketchPlane, 0, false),
-                new EndExtrusionParameters(swEndConditions_e.swEndCondBlind, Parameters.Thickness.ToMeters(), false, 0, false, false, false)
+                new EndExtrusionParameters(swEndConditions_e.swEndCondBlind, Parameters.Thickness.ToMeters(), false, 0, false, false, false),
+                reverseExtrudeSide: true
             );
-            createdFeature.Name = "ВнешнийДиск";
+
+            Document.ClearSelection();
         }
 
         #endregion

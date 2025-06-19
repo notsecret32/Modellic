@@ -36,6 +36,15 @@ namespace Modellic.App.SolidWorks.Documents
 
         #endregion
 
+        #region Public Methods
+
+        public void ClearSelection(bool all = true)
+        {
+            BaseObject.ClearSelection2(all);
+        }
+
+        #endregion
+
         #region Feature Methods
 
         public void GetFeatureByName(string featureName, Action<SwFeature> action)

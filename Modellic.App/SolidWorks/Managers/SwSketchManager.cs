@@ -3,10 +3,13 @@ using Modellic.App.Enums;
 using Modellic.App.Errors;
 using Modellic.App.Exceptions;
 using Modellic.App.SolidWorks.Core;
+using Modellic.App.SolidWorks.Models;
 using SolidWorks.Interop.sldworks;
 using System;
+using System.Linq;
+using System.Reflection;
+using System.Xml.Linq;
 using static Modellic.App.Logging.LoggerService;
-using static System.Windows.Forms.AxHost;
 
 namespace Modellic.App.SolidWorks.Managers
 {
@@ -15,9 +18,11 @@ namespace Modellic.App.SolidWorks.Managers
     /// </summary>
     public class SwSketchManager : SwObject<SketchManager>
     {
-        #region Private Members
+        #region Public Properties
 
-        private bool _hasActiveSketch = false;
+        public Sketch ActiveSketch => BaseObject.ActiveSketch;
+
+        public bool HasActiveSketch => BaseObject.ActiveSketch != null;
 
         #endregion
 
@@ -25,13 +30,38 @@ namespace Modellic.App.SolidWorks.Managers
 
         public SwSketchManager(SketchManager sketchManager) : base(sketchManager)
         {
-            
+
         }
 
         #endregion
 
-        #region Public Methods
+        #region Public Sketch Elements Methods
 
+        public SketchSegment CreateArc(
+            double circleCenterX,
+            double circleCenterY,
+            double circleCenterZ,
+            double circleStartX,
+            double circleStartY,
+            double circleStartZ,
+            double circleEndX,
+            double circleEndY,
+            double circleEndZ,
+            short direction)
+        {
+            return BaseObject.CreateArc(
+                circleCenterX,
+                circleCenterY,
+                circleCenterZ,
+                circleStartX,
+                circleStartY,
+                circleStartZ,
+                circleEndX,
+                circleEndY,
+                circleEndZ,
+                direction
+            );
+        }
         public SketchSegment CreateCircle(double startX, double startY, double startZ, double endX, double endY, double endZ)
         {
             Logger.LogInformation($"[ЭСКИЗ] Создаем окружность ([x={startX}, y={startY}, z={startZ}] => [x={endX}, y={endY}, z={endZ}])");
@@ -41,7 +71,7 @@ namespace Modellic.App.SolidWorks.Managers
                 endX, endY, endZ
             );
         }
-        
+
         public SketchSegment CreateCircleByRadius(double x, double y, double z, double radius)
         {
             Logger.LogInformation($"[ЭСКИЗ] Создаем окружность по радиусу ([x={x}, y={y}, z={z}, radius: {radius}]");
@@ -59,11 +89,27 @@ namespace Modellic.App.SolidWorks.Managers
             );
         }
 
-        public void CreateSketch(Action<string> action, string sketchName = null, bool updateEditRebuild = true)
+        public SketchSegment CreateCenterLine(double startX, double startY, double startZ, double endX, double endY, double endZ)
+        {
+            Logger.LogInformation($"[ЭСКИЗ] Создаем вспомогательную линию ([x={startX}, y={startY}, z={startZ}] => [x={endX}, y={endY}, z={endZ}])");
+
+            return BaseObject.CreateCenterLine(
+                startX, startY, startZ,
+                endX, endY, endZ
+            );
+        }
+
+        #endregion
+
+        #region Public Sketch Methods
+
+        public SwSketch CreateSketch(Action action, string sketchName = null, bool updateEditRebuild = true)
         {
             Logger.LogInformation("[ЭСКИЗ] Создаем новый эскиз");
 
-            if (_hasActiveSketch)
+            SwSketch activeSketch;
+
+            if (HasActiveSketch)
             {
                 Logger.LogWarning("[ЭСКИЗ] Предудущий эскиз не закрыт");
 
@@ -72,18 +118,11 @@ namespace Modellic.App.SolidWorks.Managers
 
             try
             {
-                _hasActiveSketch = true;
-
                 BaseObject.InsertSketch(updateEditRebuild);
 
-                var name = GetActiveSketchName();
+                action();
 
-                action(name);
-
-                if (!string.IsNullOrEmpty(sketchName))
-                {
-                    RenameSketch(sketchName);
-                }
+                RenameActiveSketch(sketchName);
             }
             catch (Exception ex)
             {
@@ -91,7 +130,7 @@ namespace Modellic.App.SolidWorks.Managers
 
                 throw new SolidWorksException(
                     SwObjectErrorManager.CreateError(
-                        "Что-то пошло не так при работе с эскизом.", 
+                        "Что-то пошло не так при работе с эскизом.",
                         SwObjectErrorCode.SketchCreationFailed
                     ),
                     ex
@@ -101,14 +140,22 @@ namespace Modellic.App.SolidWorks.Managers
             {
                 Logger.LogInformation("[ЭСКИЗ] Сохраняем эскиз");
 
+                activeSketch = HasActiveSketch ? new SwSketch(ActiveSketch) : null;
+
                 BaseObject.InsertSketch(updateEditRebuild);
 
-                _hasActiveSketch = false;
             }
+
+            return activeSketch;
         }
 
         public string GetActiveSketchName()
         {
+            if (!HasActiveSketch)
+            {
+                throw new InvalidOperationException("Нет активного эскиза");
+            }
+
             Feature sketchAsFeature = (Feature)BaseObject.ActiveSketch;
 
             Logger.LogInformation($"[SketchManager] Name: {sketchAsFeature.Name}");
@@ -116,23 +163,68 @@ namespace Modellic.App.SolidWorks.Managers
             return sketchAsFeature.Name;
         }
 
-        public void RenameSketch(string newName)
+        public bool RenameActiveSketch(string newName)
         {
-            SwObjectErrorManager.Wrap(() =>
+            if (!HasActiveSketch)
             {
-                // Преобразуем эскиз
+                throw new InvalidOperationException("Нет активного эскиза");
+            }
+
+            if (string.IsNullOrEmpty(newName))
+            {
+                throw new ArgumentException($"Указано неправильное название эскиза: \"{newName}\"");
+            }
+
+            try
+            {
                 Feature sketchAsFeature = (Feature)BaseObject.ActiveSketch;
 
-                // Получаем предыдущее название эскиза
                 string previousName = sketchAsFeature.Name;
 
                 Logger.LogInformation($"[ЭСКИЗ] Переименовываем \"{previousName}\" в \"{newName}\"");
 
-                // Меняем название эскиза на новое
                 sketchAsFeature.Name = newName;
-            },
-            "$[ЭСКИЗ] Не удалось переименовать эскиз в \"{previousName}\"",
-            SwObjectErrorCode.SketchRenameFailed);
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError($"Произошла ошибка при попытке переименовать эскиз. Подробнее: \n{ex.Message}");
+
+                return false;
+            }
+        }
+
+        #endregion
+
+        #region Public Selection Methods
+
+        public bool SelectPointByIndex(int index, bool append = true, SelectData selectData = default)
+        {
+            if (!HasActiveSketch)
+            {
+                throw new InvalidOperationException("Нет активного эскиза");
+            }
+
+            var points = (dynamic[])ActiveSketch.GetSketchPoints2();
+
+            if (index < 0 || index >= points.Length)
+                return false;
+
+            var point = points[index] as SketchPoint;
+
+            if (point == null)
+            {
+                Logger.LogWarning($"Не удалось выбрать точку по индексу {index}");
+
+                return false;
+            }
+
+            point.Select4(append, selectData);
+
+            Logger.LogInformation($"Выбрана точка эскиза \"{GetActiveSketchName()}\" => [x: {point.X}; y: {point.Y}; z: {point.Z}]");
+
+            return true;
         }
 
         #endregion

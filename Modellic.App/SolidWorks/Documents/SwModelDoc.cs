@@ -67,12 +67,12 @@ namespace Modellic.App.SolidWorks.Documents
         public SwDocumentType DocumentType { get; protected set; }
 
         /// <summary>
-        /// True, если этот документ детали.
+        /// true, если этот документ детали.
         /// </summary>
         public bool IsPart => DocumentType == SwDocumentType.Part;
 
         /// <summary>
-        /// True, если этот документ сборки.
+        /// true, если этот документ сборки.
         /// </summary>
         public bool IsAssembly => DocumentType == SwDocumentType.Assembly;
 

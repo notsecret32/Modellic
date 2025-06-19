@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Modellic.App.Core.Models.Conductor;
+using Modellic.App.Core.Models.Conductor.Parameters;
 using Modellic.App.Enums;
 using Modellic.App.Exceptions;
 using Modellic.App.SolidWorks.Documents;
@@ -94,7 +95,7 @@ namespace Modellic.App.Core.Services
         {
             foreach (ConductorBaseStep step in _steps)
             {
-                step.Document = document;
+                step.SetWorkingDoc(document);
             }
         }
 
@@ -116,11 +117,19 @@ namespace Modellic.App.Core.Services
             throw new InvalidOperationException($"Класса {nameof(T)} не существует в массиве шагов.");
         }
 
-        /// <summary>
-        /// Проверяет, построен ли предыдущий шаг относительно курсора.
-        /// </summary>
-        /// <param name="cursorPosition">Позиция курсора.</param>
-        /// <returns>True - если предыдущий шаг относильно курсора построен.</returns>
+        public T GetParameters<T>() where T : ConductorBaseParams
+        {
+            foreach (var step in _steps)
+            {
+                if (step.Parameters is T parameters)
+                {
+                    return parameters;
+                }
+            }
+
+            throw new InvalidOperationException($"Параметры типа {nameof(T)} не найдены в массиве шагов.");
+        }
+
         public bool IsPreviousStepBuilded(int cursorPosition) => !(cursorPosition != _lastBuiltStepIndex + 1);
         
         public bool IsSelectedStepBuilded(int cursorPosition) => _steps[cursorPosition].Status == ConductorStepStatus.Builded;
