@@ -1,21 +1,18 @@
 ﻿using Microsoft.Extensions.Logging;
-using Modellic.App.Core.Models.Fixture;
-using Modellic.App.Exceptions;
+using Modellic.App.Core.Models.Conductor;
 using Modellic.App.Extensions;
 using Modellic.App.SolidWorks.Documents;
 using Modellic.App.UI.Controls;
 using System;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using static Modellic.App.Logging.LoggerService;
 
 namespace Modellic.App.Core.Services
 {
     /// <summary>
-    /// Связующее звено между формой и классом сборки приспособления.
+    /// Связующее звено между формой и классом сборки кондуктора.
     /// </summary>
-    public class FixtureManager
+    public class ConductorManager
     {
         #region Private Members
 
@@ -30,7 +27,7 @@ namespace Modellic.App.Core.Services
         /// <summary>
         /// Сборщик приспособления.
         /// </summary>
-        private readonly FixtureBuilder _fixtureBuilder;
+        private readonly ConductorBuilder _fixtureBuilder;
 
         /// <summary>
         /// Опциональный сервис по управлению StepsGridView. Может быть null.
@@ -81,12 +78,12 @@ namespace Modellic.App.Core.Services
             }
         }
 
-        public FixtureBuilder Builder => _fixtureBuilder;
+        public ConductorBuilder Builder => _fixtureBuilder;
 
         /// <summary>
         /// текущий шаг на который указывает курсор.
         /// </summary>
-        public FixtureStep CurrentStep => _fixtureBuilder.FixtureSteps[CursorPosition];
+        public ConductorBaseStep CurrentStep => _fixtureBuilder.FixtureSteps[CursorPosition];
 
         #endregion
 
@@ -97,15 +94,15 @@ namespace Modellic.App.Core.Services
         /// <summary>
         /// Вызывает, когд позиция курсора была изменена.
         /// </summary>
-        public event Action<FixtureStep, int> CursorPositionChanged;
+        public event Action<ConductorBaseStep, int> CursorPositionChanged;
 
-        public event Action<FixtureStep, FixtureStepStatus> FixtureStepStatusChanged;
+        public event Action<ConductorBaseStep, ConductorStepStatus> FixtureStepStatusChanged;
 
         #endregion
 
         #region Constructors
 
-        public FixtureManager(StepsGridView gridView = null)
+        public ConductorManager(StepsGridView gridView = null)
         {
             Logger.LogInformation("Создаем FixtureManager");
 
@@ -113,7 +110,7 @@ namespace Modellic.App.Core.Services
             WorkingDocumentChanged += OnWorkingDocumentChanged;
 
             // Инициализируем сборщик приспособления
-            _fixtureBuilder = new FixtureBuilder();
+            _fixtureBuilder = new ConductorBuilder();
 
             // Подписываемся на изменение статуса построения шага
             _fixtureBuilder.FixtureStepStatusChanged += OnFixtureStepStatusChanged;
@@ -206,7 +203,7 @@ namespace Modellic.App.Core.Services
 
         #region Private Event Handlers
 
-        private void OnFixtureStepStatusChanged(FixtureStep step, FixtureStepStatus status)
+        private void OnFixtureStepStatusChanged(ConductorBaseStep step, ConductorStepStatus status)
         {
             if (_stepsGridViewService?.StepsGridView is Control gridView)
             {

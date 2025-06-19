@@ -1,10 +1,10 @@
 ﻿using Microsoft.Extensions.Logging;
-using Modellic.App.Core.Models.Fixture;
-using Modellic.App.Core.Models.Fixture.Parameters;
+using Modellic.App.Core.Models.Conductor;
 using Modellic.App.Core.Services;
 using Modellic.App.Enums;
 using Modellic.App.Exceptions;
 using Modellic.App.Extensions;
+using Modellic.App.UI.Forms.Conductor;
 using System;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -18,7 +18,7 @@ namespace Modellic.App.UI.Forms
 
         private bool _isCreatingDocument;
 
-        private FixtureManager _fixtureManager;
+        private ConductorManager _fixtureManager;
 
         #endregion
 
@@ -96,11 +96,11 @@ namespace Modellic.App.UI.Forms
                 ResourceManagerErrorCode.InvalidAssemblyTag)
         };
 
-        private string GetButtonText(FixtureStepStatus status) => status switch
+        private string GetButtonText(ConductorStepStatus status) => status switch
         {
-            FixtureStepStatus.NotBuilded => "Построить",
-            FixtureStepStatus.Building => "В процессе",
-            FixtureStepStatus.Builded => "Построено",
+            ConductorStepStatus.NotBuilded => "Построить",
+            ConductorStepStatus.Building => "В процессе",
+            ConductorStepStatus.Builded => "Построено",
             _ => "Перестроить"
         };
 
@@ -137,18 +137,19 @@ namespace Modellic.App.UI.Forms
 
         private void InitializeServices()
         {
-            _fixtureManager = new FixtureManager(stepsGridView);
+            _fixtureManager = new ConductorManager(stepsGridView);
             _fixtureManager.CursorPositionChanged += OnCursorPositionChanged;
             _fixtureManager.FixtureStepStatusChanged += OnFixtureStepStatusChanged;
         }
 
         private DialogResult OpenFormByCursorPosition(int cursorPosition)
         {
-            FixtureStepBaseForm form = cursorPosition switch
+            ConductorBaseForm form = cursorPosition switch
             {
-                0 => new FixtureStep1Form(),
-                1 => new FixtureStep2Form(),
-                2 => new FixtureStep3Form(),
+                0 => new ConductorStep1Form(),
+                1 => new ConductorStep2Form(),
+                2 => new ConductorStep3Form(),
+                3 => new ConductorStep4Form(),
                 _ => throw new NotSupportedException($"Такой формы для шага {cursorPosition + 1} не существует")
             };
 
@@ -185,7 +186,7 @@ namespace Modellic.App.UI.Forms
                 }
                 else
                 {
-                    UpdateButtonsState(_fixtureManager.CurrentStep?.Status ?? FixtureStepStatus.NotBuilded);
+                    UpdateButtonsState(_fixtureManager.CurrentStep?.Status ?? ConductorStepStatus.NotBuilded);
                 }
 
                 Cursor = isBusy ? Cursors.WaitCursor : Cursors.Default;
@@ -200,12 +201,12 @@ namespace Modellic.App.UI.Forms
 
         private bool VerifySwConnection() => ModellicEnv.ApplicationManager.IsConnected;
 
-        private void UpdateButtonsState(FixtureStepStatus status)
+        private void UpdateButtonsState(ConductorStepStatus status)
         {
             this.SafeInvoke(() =>
             {
-                var isBuilding = status == FixtureStepStatus.Building;
-                var isBuilt = status == FixtureStepStatus.Builded;
+                var isBuilding = status == ConductorStepStatus.Building;
+                var isBuilt = status == ConductorStepStatus.Builded;
                 var canBuild = !isBuilding && !isBuilt && !_isCreatingDocument;
 
                 btnBuildStep.Enabled = canBuild;
@@ -404,12 +405,12 @@ namespace Modellic.App.UI.Forms
 
         #region Event Callbacks
 
-        private void OnCursorPositionChanged(FixtureStep step, int cursorPosition)
+        private void OnCursorPositionChanged(ConductorBaseStep step, int cursorPosition)
         {
             UpdateButtonsState(step.Status);
         }
 
-        private void OnFixtureStepStatusChanged(FixtureStep step, FixtureStepStatus status)
+        private void OnFixtureStepStatusChanged(ConductorBaseStep step, ConductorStepStatus status)
         {
             UpdateButtonsState(status);
         }

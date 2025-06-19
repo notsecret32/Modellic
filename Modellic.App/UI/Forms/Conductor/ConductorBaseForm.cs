@@ -1,16 +1,35 @@
-﻿using Modellic.App.Core.Models.Fixture.Parameters;
+﻿using Modellic.App.Core.Models.Conductor.Parameters;
 using System.Drawing;
 using System.Windows.Forms;
 
-namespace Modellic.App.UI.Forms
+namespace Modellic.App.UI.Forms.Conductor
 {
-    public abstract partial class FixtureStepBaseForm : Form
+    public abstract partial class ConductorBaseForm : Form
     {
         #region Constructors
 
-        public FixtureStepBaseForm()
+        public ConductorBaseForm()
         {
             InitializeComponent();
+
+            // Добавляем Panel с прокруткой
+            var scrollPanel = new Panel
+            {
+                Dock = DockStyle.Fill,
+                AutoScroll = true
+            };
+
+            // Переносим tableLayoutFixtureStepControls в scrollPanel
+            tableLayoutFixtureStepControls.Dock = DockStyle.Top;
+            tableLayoutFixtureStepControls.AutoSize = true;
+            tableLayoutFixtureStepControls.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+
+            scrollPanel.Controls.Add(tableLayoutFixtureStepControls);
+
+            // Заменяем оригинальный tableLayoutFixtureStepControls в tableLayoutBackground
+            tableLayoutBackground.Controls.Remove(tableLayoutFixtureStepControls);
+            tableLayoutBackground.Controls.Add(scrollPanel, 1, 0);
+
             ConfigureTableLayout();
         }
 
@@ -18,7 +37,7 @@ namespace Modellic.App.UI.Forms
 
         #region Public Methods
 
-        public T GetParameters<T>() where T : FixtureStepParameters
+        public T GetParameters<T>() where T : ConductorBaseParams
         {
             return (T)GetParameters();
         }
@@ -27,9 +46,9 @@ namespace Modellic.App.UI.Forms
 
         #region Public Abstract Methods
 
-        public abstract void SetParameters(FixtureStepParameters parameters);
+        public abstract void SetParameters(ConductorBaseParams parameters);
 
-        public abstract FixtureStepParameters GetParameters();
+        public abstract ConductorBaseParams GetParameters();
 
         #endregion
 
@@ -40,10 +59,11 @@ namespace Modellic.App.UI.Forms
             var groupBox = new GroupBox
             {
                 Text = title,
-                Dock = DockStyle.Fill,
+                Dock = DockStyle.Top, 
                 AutoSize = true,
                 AutoSizeMode = AutoSizeMode.GrowAndShrink,
-                Padding = new Padding(4)
+                Padding = new Padding(4),
+                Margin = new Padding(0, 0, 0, 10) 
             };
 
             var tableLayout =  new TableLayoutPanel

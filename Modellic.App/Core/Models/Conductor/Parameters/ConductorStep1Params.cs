@@ -1,8 +1,14 @@
-﻿namespace Modellic.App.Core.Models.Fixture.Parameters
+﻿namespace Modellic.App.Core.Models.Conductor.Parameters
 {
-    public class FixtureStep2Parameters : FixtureStepParameters
+    public class ConductorStep1Params : ConductorBaseParams
     {
         #region Constants
+
+        private const double DEFAULT_DIAMETER = 280;
+
+        private const double DEFAULT_WIDTH = 10;
+
+        private const double DEFAULT_THICKNESS = 12;
 
         private const double DEFAULT_MOUNT_WIDTH = 27.5;
 
@@ -18,19 +24,31 @@
 
         #region Public Properties
 
+        public double Diameter { get; set; } = DEFAULT_DIAMETER;
+
+        public double Width { get; set; } = DEFAULT_WIDTH;
+
+        public double Thickness { get; set; } = DEFAULT_THICKNESS;
+
         public double MountWidth { get; set; } = DEFAULT_MOUNT_WIDTH;
-        
+
         public double MountHeight { get; set; } = DEFAULT_MOUNT_HEIGHT;
 
         public double Quantity { get; set; } = DEFAULT_MOUNT_QUANTITY;
-        
+
         public double HoleDiameter { get; set; } = DEFAULT_HOLE_DIAMETER;
-        
+
         public double FilletRadius { get; set; } = DEFAULT_FILLET_RADIUS;
 
         #endregion
 
         #region Public Const Properties
+
+        public static double DefaultDiameter => DEFAULT_DIAMETER;
+
+        public static double DefaultWidth => DEFAULT_WIDTH;
+
+        public static double DefaultThickness => DEFAULT_THICKNESS;
 
         public static double DefaultMountWidth => DEFAULT_MOUNT_WIDTH;
 
@@ -48,7 +66,9 @@
 
         public override string ToString()
         {
-            return $"MountWidth: {MountWidth}; MountHeight: {MountHeight}; Quantity: {Quantity}; HoleDiameter: {HoleDiameter}; FilletRadius: {FilletRadius}";
+            return $"Diameter: {Diameter}; Width: {Width}; Thickness: {Thickness} " +
+                $"MountWidth: {MountWidth}; MountHeight: {MountHeight}; " +
+                $"Quantity: {Quantity}; HoleDiameter: {HoleDiameter}; FilletRadius: {FilletRadius}";
         }
 
         #endregion

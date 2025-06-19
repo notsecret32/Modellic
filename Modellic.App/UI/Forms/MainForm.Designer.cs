@@ -177,14 +177,14 @@
             // menuItemNextStep
             // 
             this.menuItemNextStep.Name = "menuItemNextStep";
-            this.menuItemNextStep.Size = new System.Drawing.Size(180, 22);
+            this.menuItemNextStep.Size = new System.Drawing.Size(170, 22);
             this.menuItemNextStep.Text = "Следующий шаг";
             this.menuItemNextStep.Click += new System.EventHandler(this.MenuItemCursorDown_Click);
             // 
             // menuItemPreviousStep
             // 
             this.menuItemPreviousStep.Name = "menuItemPreviousStep";
-            this.menuItemPreviousStep.Size = new System.Drawing.Size(180, 22);
+            this.menuItemPreviousStep.Size = new System.Drawing.Size(170, 22);
             this.menuItemPreviousStep.Text = "Предудущий шаг";
             this.menuItemPreviousStep.Click += new System.EventHandler(this.MenuItemCursorUp_Click);
             // 

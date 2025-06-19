@@ -1,6 +1,6 @@
-﻿namespace Modellic.App.UI.Forms
+﻿namespace Modellic.App.UI.Forms.Conductor
 {
-    partial class FixtureStep3Form
+    partial class ConductorStep3Form
     {
         /// <summary>
         /// Required designer variable.

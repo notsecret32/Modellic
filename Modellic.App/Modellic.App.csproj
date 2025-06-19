@@ -129,18 +129,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Core\Models\Fixture\FixtureStep.cs" />
-    <Compile Include="Core\Models\Fixture\FixtureStep3.cs" />
-    <Compile Include="Core\Models\Fixture\FixtureStep2.cs" />
-    <Compile Include="Core\Models\Fixture\FixtureStep1.cs" />
-    <Compile Include="Core\Models\Fixture\FixtureStepStatus.cs" />
-    <Compile Include="Core\Models\Fixture\Parameters\FixtureStep1Parameters.cs" />
-    <Compile Include="Core\Models\Fixture\Parameters\FixtureStep2Parameters.cs" />
-    <Compile Include="Core\Models\Fixture\Parameters\FixtureStep3Parameters.cs" />
-    <Compile Include="Core\Models\Fixture\Parameters\FixtureStepParameters.cs" />
+    <Compile Include="Core\Models\Conductor\ConductorBaseStep.cs" />
+    <Compile Include="Core\Models\Conductor\ConductorStep4.cs" />
+    <Compile Include="Core\Models\Conductor\ConductorStep3.cs" />
+    <Compile Include="Core\Models\Conductor\ConductorStep2.cs" />
+    <Compile Include="Core\Models\Conductor\ConductorStep1.cs" />
+    <Compile Include="Enums\ConductorStepStatus.cs" />
+    <Compile Include="Core\Models\Conductor\Parameters\ConductorStep1Params.cs" />
+    <Compile Include="Core\Models\Conductor\Parameters\ConductorStep2Params.cs" />
+    <Compile Include="Core\Models\Conductor\Parameters\ConductorStep4Params.cs" />
+    <Compile Include="Core\Models\Conductor\Parameters\ConductorStep3Params.cs" />
+    <Compile Include="Core\Models\Conductor\Parameters\ConductorBaseParams.cs" />
     <Compile Include="Core\Services\AssemblyManager.cs" />
-    <Compile Include="Core\Services\FixtureBuilder.cs" />
-    <Compile Include="Core\Services\FixtureManager.cs" />
+    <Compile Include="Core\Services\ConductorBuilder.cs" />
+    <Compile Include="Core\Services\ConductorManager.cs" />
     <Compile Include="Core\Services\ResourceManager.cs" />
     <Compile Include="Core\Services\StepsGridViewService.cs" />
     <Compile Include="Enums\AssemblyExampleType.cs" />
@@ -190,29 +192,35 @@
     <Compile Include="UI\Forms\AssemblyManagerForm.Designer.cs">
       <DependentUpon>AssemblyManagerForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="UI\Forms\FixtureStep1Form.cs">
+    <Compile Include="UI\Forms\Conductor\ConductorStep1Form.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="UI\Forms\FixtureStep1Form.Designer.cs">
-      <DependentUpon>FixtureStep1Form.cs</DependentUpon>
+    <Compile Include="UI\Forms\Conductor\ConductorStep1Form.Designer.cs">
+      <DependentUpon>ConductorStep1Form.cs</DependentUpon>
     </Compile>
-    <Compile Include="UI\Forms\FixtureStep2Form.cs">
+    <Compile Include="UI\Forms\Conductor\ConductorStep2Form.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="UI\Forms\FixtureStep2Form.Designer.cs">
-      <DependentUpon>FixtureStep2Form.cs</DependentUpon>
+    <Compile Include="UI\Forms\Conductor\ConductorStep2Form.Designer.cs">
+      <DependentUpon>ConductorStep2Form.cs</DependentUpon>
     </Compile>
-    <Compile Include="UI\Forms\FixtureStep3Form.cs">
+    <Compile Include="UI\Forms\Conductor\ConductorStep4Form.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="UI\Forms\FixtureStep3Form.Designer.cs">
-      <DependentUpon>FixtureStep3Form.cs</DependentUpon>
+    <Compile Include="UI\Forms\Conductor\ConductorStep4Form.Designer.cs">
+      <DependentUpon>ConductorStep4Form.cs</DependentUpon>
     </Compile>
-    <Compile Include="UI\Forms\FixtureStepBaseForm.cs">
+    <Compile Include="UI\Forms\Conductor\ConductorStep3Form.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="UI\Forms\FixtureStepBaseForm.Designer.cs">
-      <DependentUpon>FixtureStepBaseForm.cs</DependentUpon>
+    <Compile Include="UI\Forms\Conductor\ConductorStep3Form.Designer.cs">
+      <DependentUpon>ConductorStep3Form.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Forms\Conductor\ConductorBaseForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\Forms\Conductor\ConductorBaseForm.Designer.cs">
+      <DependentUpon>ConductorBaseForm.cs</DependentUpon>
     </Compile>
     <Compile Include="UI\Forms\MainForm.cs">
       <SubType>Form</SubType>
@@ -234,11 +242,11 @@
     <EmbeddedResource Include="UI\Forms\AssemblyManagerForm.resx">
       <DependentUpon>AssemblyManagerForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="UI\Forms\FixtureStep1Form.resx">
-      <DependentUpon>FixtureStep1Form.cs</DependentUpon>
+    <EmbeddedResource Include="UI\Forms\Conductor\ConductorStep1Form.resx">
+      <DependentUpon>ConductorStep1Form.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="UI\Forms\FixtureStepBaseForm.resx">
-      <DependentUpon>FixtureStepBaseForm.cs</DependentUpon>
+    <EmbeddedResource Include="UI\Forms\Conductor\ConductorBaseForm.resx">
+      <DependentUpon>ConductorBaseForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UI\Forms\MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>

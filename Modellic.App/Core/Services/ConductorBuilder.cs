@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
-using Modellic.App.Core.Models.Fixture;
+using Modellic.App.Core.Models.Conductor;
 using Modellic.App.Enums;
 using Modellic.App.Exceptions;
 using Modellic.App.SolidWorks.Documents;
@@ -12,9 +12,10 @@ using static Modellic.App.Logging.LoggerService;
 namespace Modellic.App.Core.Services
 {
     /// <summary>
-    /// Класс управляющий сборкой приспособления. В его задачи входит управление шагами, их постройка, изменение, очищение и т.д.
+    /// Класс управляющий созданием кондуктора. В его задачи входит управление шагами, их постройка, изменение, очищение и т.д.
+    /// Логика заключается в том, чтобы описать кондуктор и уже под него сделать приспособление.
     /// </summary>
-    public class FixtureBuilder
+    public class ConductorBuilder
     {
         #region Private Members
 
@@ -30,7 +31,7 @@ namespace Modellic.App.Core.Services
         /// <summary>
         /// Массив, хранящий шаги построения приспособления.
         /// </summary>
-        private readonly List<FixtureStep> _steps;
+        private readonly List<ConductorBaseStep> _steps;
 
         #endregion
 
@@ -39,7 +40,7 @@ namespace Modellic.App.Core.Services
         /// <summary>
         /// Массив со всеми шагами построения приспособления.
         /// </summary>
-        public List<FixtureStep> FixtureSteps => _steps;
+        public List<ConductorBaseStep> FixtureSteps => _steps;
 
         /// <summary>
         /// Количество шагов.
@@ -58,25 +59,26 @@ namespace Modellic.App.Core.Services
         /// <summary>
         /// Событие, вызывается каждый раз, когда изменяется статус построения шага.
         /// </summary>
-        public event Action<FixtureStep, FixtureStepStatus> FixtureStepStatusChanged;
+        public event Action<ConductorBaseStep, ConductorStepStatus> FixtureStepStatusChanged;
 
         #endregion
 
         #region Constructors
 
-        public FixtureBuilder()
+        public ConductorBuilder()
         {
             Logger.LogInformation("Создаем FixtureBuilder");
 
             // Инициализируем шаги сборки
-            _steps = new List<FixtureStep>()
+            _steps = new List<ConductorBaseStep>()
             {
-                new FixtureStep1(this),
-                new FixtureStep2(this),
-                new FixtureStep3(this),
+                new ConductorStep1(this),
+                new ConductorStep2(this),
+                new ConductorStep3(this),
+                new ConductorStep4(this),
             };
 
-            foreach (FixtureStep step in _steps)
+            foreach (ConductorBaseStep step in _steps)
             {
                 step.StatusChanged += OnFixtureStepStatusChanged;
             }
@@ -90,18 +92,18 @@ namespace Modellic.App.Core.Services
 
         public void AttachDocument(SwPartDoc document)
         {
-            foreach (FixtureStep step in _steps)
+            foreach (ConductorBaseStep step in _steps)
             {
                 step.Document = document;
             }
         }
 
-        public FixtureStep GetStepByIndex(int index)
+        public ConductorBaseStep GetStepByIndex(int index)
         {
             return _steps[index];
         }
 
-        public T GetStep<T>() where T : FixtureStep
+        public T GetStep<T>() where T : ConductorBaseStep
         {
             foreach (var step in _steps)
             {
@@ -121,7 +123,7 @@ namespace Modellic.App.Core.Services
         /// <returns>True - если предыдущий шаг относильно курсора построен.</returns>
         public bool IsPreviousStepBuilded(int cursorPosition) => !(cursorPosition != _lastBuiltStepIndex + 1);
         
-        public bool IsSelectedStepBuilded(int cursorPosition) => _steps[cursorPosition].Status == FixtureStepStatus.Builded;
+        public bool IsSelectedStepBuilded(int cursorPosition) => _steps[cursorPosition].Status == ConductorStepStatus.Builded;
 
         #endregion
 
@@ -185,7 +187,7 @@ namespace Modellic.App.Core.Services
 
         #region Private Event Handlers
 
-        private void OnFixtureStepStatusChanged(FixtureStep step, FixtureStepStatus status)
+        private void OnFixtureStepStatusChanged(ConductorBaseStep step, ConductorStepStatus status)
         {
             FixtureStepStatusChanged?.Invoke(step, status);
         }

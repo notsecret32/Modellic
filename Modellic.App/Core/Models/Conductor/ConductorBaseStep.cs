@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
-using Modellic.App.Core.Models.Fixture.Parameters;
+using Modellic.App.Core.Models.Conductor.Parameters;
 using Modellic.App.Core.Services;
 using Modellic.App.SolidWorks.Documents;
 using System;
@@ -7,16 +7,16 @@ using System.Threading;
 using System.Threading.Tasks;
 using static Modellic.App.Logging.LoggerService;
 
-namespace Modellic.App.Core.Models.Fixture
+namespace Modellic.App.Core.Models.Conductor
 {
-    public abstract class FixtureStep
+    public abstract class ConductorBaseStep
     {
         #region Private Members
 
         /// <summary>
-        /// Статус построения шага. Подробнее в <see cref="FixtureStepStatus"/>.
+        /// Статус построения шага. Подробнее в <see cref="ConductorStepStatus"/>.
         /// </summary>
-        private FixtureStepStatus _status = FixtureStepStatus.NotBuilded;
+        private ConductorStepStatus _status = ConductorStepStatus.NotBuilded;
 
         #endregion
 
@@ -30,13 +30,13 @@ namespace Modellic.App.Core.Models.Fixture
         /// <summary>
         /// Ссылка на сборщик.
         /// </summary>
-        protected FixtureBuilder _builder;
+        protected ConductorBuilder _builder;
 
         #endregion
 
         #region Public Properties
 
-        public FixtureStepParameters Parameters { get; set; }
+        public ConductorBaseParams Parameters { get; set; }
 
         /// <summary>
         /// Название шага.
@@ -44,9 +44,9 @@ namespace Modellic.App.Core.Models.Fixture
         public abstract string Title { get; }
 
         /// <summary>
-        /// Статус построения шага. Подробнее в <see cref="FixtureStepStatus"/>.
+        /// Статус построения шага. Подробнее в <see cref="ConductorStepStatus"/>.
         /// </summary>
-        public FixtureStepStatus Status
+        public ConductorStepStatus Status
         {
             get { return _status; }
             private set
@@ -71,13 +71,13 @@ namespace Modellic.App.Core.Models.Fixture
         /// <summary>
         /// Событие, вызывается каждый раз при изменении статуса постройки шага.
         /// </summary>
-        public event Action<FixtureStep, FixtureStepStatus> StatusChanged;
+        public event Action<ConductorBaseStep, ConductorStepStatus> StatusChanged;
 
         #endregion
 
         #region Constructor
 
-        public FixtureStep(FixtureBuilder builder, SwPartDoc partDoc = null)
+        public ConductorBaseStep(ConductorBuilder builder, SwPartDoc partDoc = null)
         {
             _builder = builder;
             Document = partDoc;
@@ -95,7 +95,7 @@ namespace Modellic.App.Core.Models.Fixture
             // Проверяем наличие файла
             if (Document == null)
             {
-                Status = FixtureStepStatus.Error;
+                Status = ConductorStepStatus.Error;
                 Logger.LogWarning($"[FixtureStep] Ссылка на документ равна null");
                 throw new Exception("Нет файла для построения приспособления.");
             }
@@ -103,28 +103,28 @@ namespace Modellic.App.Core.Models.Fixture
             // Проверяем валидацию
             if (!Validate())
             {
-                Status = FixtureStepStatus.ValidationFailed;
+                Status = ConductorStepStatus.ValidationFailed;
                 Logger.LogWarning($"[FixtureStep] Шаг \"{Title}\" не прошел валидацию");
                 return;
             }
 
             // Если шаг уже строиться, выходим
-            if (Status == FixtureStepStatus.Building)
+            if (Status == ConductorStepStatus.Building)
                 return; 
 
             try
             {
-                Status = FixtureStepStatus.Building;
+                Status = ConductorStepStatus.Building;
                 Logger.LogInformation($"[FixtureStep] Начинаем построение шага: \"{Title}\"");
 
                 BuildStep();
 
-                Status = FixtureStepStatus.Builded;
+                Status = ConductorStepStatus.Builded;
                 Logger.LogInformation($"[FixtureStep] Шаг \"{Title}\" успешно построен");
             }
             catch (Exception ex)
             {
-                Status = FixtureStepStatus.Error;
+                Status = ConductorStepStatus.Error;
                 Logger.LogError(ex, $"[FixtureStep] Ошибка при построении шага \"{Title}\"");
                 throw ex; // Пробрасываем исключение дальше
             }
@@ -163,7 +163,7 @@ namespace Modellic.App.Core.Models.Fixture
                 catch (OperationCanceledException)
                 {
                     // Устанавливаем статус при отмене
-                    Status = FixtureStepStatus.Cancel;
+                    Status = ConductorStepStatus.Cancel;
 
                     Logger.LogInformation($"[Отменено] Построение шага \"{Title}\" было отменено");
 

@@ -1,9 +1,9 @@
-﻿namespace Modellic.App.Core.Models.Fixture
+﻿namespace Modellic.App.Core.Models.Conductor
 {
     /// <summary>
     /// Статус построения шага приспособления.
     /// </summary>
-    public enum FixtureStepStatus
+    public enum ConductorStepStatus
     {
         /// <summary>
         /// Шаг приспособления еще не построен. 

@@ -1,6 +1,6 @@
-﻿namespace Modellic.App.UI.Forms
+﻿namespace Modellic.App.UI.Forms.Conductor
 {
-    partial class FixtureStepBaseForm
+    partial class ConductorBaseForm
     {
         /// <summary>
         /// Required designer variable.
@@ -68,6 +68,9 @@
             // 
             // tableLayoutFixtureStepControls
             // 
+            this.tableLayoutFixtureStepControls.AutoScroll = true;
+            this.tableLayoutFixtureStepControls.AutoSize = true;
+            this.tableLayoutFixtureStepControls.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.tableLayoutFixtureStepControls.ColumnCount = 1;
             this.tableLayoutFixtureStepControls.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutFixtureStepControls.Controls.Add(this.btnCancel, 0, 2);
@@ -108,7 +111,7 @@
             this.btnBuildStep.Text = "Построить";
             this.btnBuildStep.UseVisualStyleBackColor = true;
             // 
-            // FixtureStepBaseForm
+            // ConductorBaseForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -116,10 +119,11 @@
             this.Controls.Add(this.tableLayoutBackground);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.MinimizeBox = false;
-            this.Name = "FixtureStepBaseForm";
+            this.Name = "ConductorBaseForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Настройка шага";
             this.tableLayoutBackground.ResumeLayout(false);
+            this.tableLayoutBackground.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureFixtureStep)).EndInit();
             this.tableLayoutFixtureStepControls.ResumeLayout(false);
             this.ResumeLayout(false);

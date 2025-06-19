@@ -5,7 +5,7 @@ using System;
 namespace Modellic.App.Exceptions
 {
     /// <summary>
-    /// Представляет ошибки, возникающие в <see cref="FixtureBuilder"/>.
+    /// Представляет ошибки, возникающие в <see cref="ConductorBuilder"/>.
     /// </summary>
     public class FixtureBuilderException : Exception
     {

@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
-using Modellic.App.Core.Models.Fixture;
+using Modellic.App.Core.Models.Conductor;
 using Modellic.App.UI.Controls;
 using System.Collections.Generic;
 using static Modellic.App.Logging.LoggerService;
@@ -43,7 +43,7 @@ namespace Modellic.App.Core.Services
 
         #region Public Methods
 
-        public void Update(IReadOnlyList<FixtureStep> steps, int cursorPosition)
+        public void Update(IReadOnlyList<ConductorBaseStep> steps, int cursorPosition)
         {
             _stepsGridView.Update((gridView, index, count) =>
             {
@@ -64,15 +64,15 @@ namespace Modellic.App.Core.Services
 
         #region Private Methods
 
-        private string GetFixtureStepStatusText(FixtureStepStatus fixtureStepStatus)
+        private string GetFixtureStepStatusText(ConductorStepStatus fixtureStepStatus)
         {
             return fixtureStepStatus switch
             {
-                FixtureStepStatus.NotBuilded => "Не построен",
-                FixtureStepStatus.Building => "В процессе",
-                FixtureStepStatus.Builded => "Построено",
-                FixtureStepStatus.Error => "Ошибка",
-                FixtureStepStatus.ValidationFailed => "Ошибка валидации",
+                ConductorStepStatus.NotBuilded => "Не построен",
+                ConductorStepStatus.Building => "В процессе",
+                ConductorStepStatus.Builded => "Построено",
+                ConductorStepStatus.Error => "Ошибка",
+                ConductorStepStatus.ValidationFailed => "Ошибка валидации",
                 _ => "Не определено"
             };
         }

@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
-using Modellic.App.Core.Models.Fixture.Parameters;
+using Modellic.App.Core.Models.Conductor.Parameters;
 using Modellic.App.Core.Services;
 using Modellic.App.Enums;
 using Modellic.App.Extensions;
@@ -8,17 +8,17 @@ using Modellic.App.SolidWorks.Managers.Helpers;
 using SolidWorks.Interop.swconst;
 using static Modellic.App.Logging.LoggerService;
 
-namespace Modellic.App.Core.Models.Fixture
+namespace Modellic.App.Core.Models.Conductor
 {
-    public class FixtureStep1 : FixtureStep
+    public class ConductorStep1 : ConductorBaseStep
     {
         #region Public Overrided Members
 
         public override string Title => "Внешний диск";
 
-        public new FixtureStep1Parameters Parameters
+        public new ConductorStep1Params Parameters
         {
-            get => (FixtureStep1Parameters)base.Parameters;
+            get => (ConductorStep1Params)base.Parameters;
             set => base.Parameters = value;
         }
 
@@ -26,7 +26,7 @@ namespace Modellic.App.Core.Models.Fixture
 
         #region Constructors
 
-        public FixtureStep1(FixtureBuilder builder, SwPartDoc partDoc = null) : base(builder, partDoc)
+        public ConductorStep1(ConductorBuilder builder, SwPartDoc partDoc = null) : base(builder, partDoc)
         {
 
         }

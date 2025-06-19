@@ -1,6 +1,6 @@
-﻿namespace Modellic.App.UI.Forms
+﻿namespace Modellic.App.UI.Forms.Conductor
 {
-    partial class FixtureStep2Form
+    partial class ConductorStep4Form
     {
         /// <summary>
         /// Required designer variable.
@@ -31,7 +31,7 @@
             this.components = new System.ComponentModel.Container();
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Text = "FixtureStep2Form";
+            this.Text = "FixtureStep3Form";
         }
 
         #endregion
